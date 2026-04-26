@@ -1,0 +1,1 @@
+<img src="{{ asset('images/academiq.png') }}" class="w-32 h-16"/>
