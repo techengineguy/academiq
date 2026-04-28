@@ -8,9 +8,6 @@ return [
     |
     | Configure your application's multi-domain setup here.
     | Set domains in .env:
-    | MAIN_DOMAIN=eschool.test
-    | APP_DOMAIN=app.eschool.test
-    | AUTH_DOMAIN=auth.eschool.test
     |
     */
 

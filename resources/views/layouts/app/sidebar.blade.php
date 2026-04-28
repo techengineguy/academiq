@@ -5,8 +5,8 @@
     </head>
     <body class="min-h-screen bg-white dark:bg-zinc-800">
         <flux:sidebar sticky collapsible="mobile" class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
-            <flux:sidebar.header class="flex gap-2">
-                <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate class="w-16 h-16" />
+            <flux:sidebar.header class="flex gap-2 shrink-0">
+                <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
                 <flux:button x-data x-on:click="$flux.dark = ! $flux.dark" icon="moon" variant="subtle" aria-label="Toggle dark mode" class="hidden lg:flex" />
                 <flux:sidebar.collapse class="lg:hidden" />
             </flux:sidebar.header>
@@ -18,7 +18,7 @@
                 </flux:sidebar.item>
 
                 <!-- Academic Management -->
-                <flux:sidebar.group expandable :expanded="false" :heading="__('Academic')" class="grid">
+                <flux:sidebar.group expandable :expanded="request()->routeIs('academic-years.*', 'classes.*', 'subjects.*', 'timetables.*', 'lesson-plans.*')" :heading="__('Academic')" class="grid">
                     <flux:sidebar.item icon="calendar" :href="route('academic-years.index')" :current="request()->routeIs('academic-years.*')" wire:navigate>
                         {{ __('Academic Years') }}
                     </flux:sidebar.item>
@@ -37,7 +37,7 @@
                 </flux:sidebar.group>
 
                 <!-- Student Management -->
-                <flux:sidebar.group expandable :expanded="false" :heading="__('Students')" class="grid">
+                <flux:sidebar.group expandable :expanded="request()->routeIs('students.*', 'admission-applications.*', 'scholarships.*', 'promotions.*')" :heading="__('Students')" class="grid">
                     <flux:sidebar.item icon="users" :href="route('students.index')" :current="request()->routeIs('students.*')" wire:navigate>
                         {{ __('Students') }}
                     </flux:sidebar.item>
@@ -53,7 +53,7 @@
                 </flux:sidebar.group>
 
                 <!-- Staff Management -->
-                <flux:sidebar.group expandable :expanded="false" :heading="__('Staff')" class="grid">
+                <flux:sidebar.group expandable :expanded="request()->routeIs('teachers.*', 'staff.*', 'payroll.*')" :heading="__('Staff')" class="grid">
                     <flux:sidebar.item icon="academic-cap" :href="route('teachers.index')" :current="request()->routeIs('teachers.*')" wire:navigate>
                         {{ __('Teachers') }}
                     </flux:sidebar.item>
@@ -66,7 +66,7 @@
                 </flux:sidebar.group>
 
                 <!-- Attendance -->
-                <flux:sidebar.group expandable :expanded="false" :heading="__('Attendance')" class="grid">
+                <flux:sidebar.group expandable :expanded="request()->routeIs('attendance.*', 'staff-attendance.*')" :heading="__('Attendance')" class="grid">
                     <flux:sidebar.item icon="clipboard-document-check" :href="route('attendance.index')" :current="request()->routeIs('attendance.*')" wire:navigate>
                         {{ __('Student Attendance') }}
                     </flux:sidebar.item>
@@ -76,7 +76,7 @@
                 </flux:sidebar.group>
 
                 <!-- Exams & Results -->
-                <flux:sidebar.group expandable :expanded="false" :heading="__('Exams')" class="grid">
+                <flux:sidebar.group expandable :expanded="request()->routeIs('exams.*', 'exam-schedules.*', 'results.*', 'grade-scales.*')" :heading="__('Exams')" class="grid">
                     <flux:sidebar.item icon="pencil-square" :href="route('exams.index')" :current="request()->routeIs('exams.*')" wire:navigate>
                         {{ __('Exams') }}
                     </flux:sidebar.item>
@@ -92,7 +92,7 @@
                 </flux:sidebar.group>
 
                 <!-- Fee Management -->
-                <flux:sidebar.group expandable :expanded="false" :heading="__('Fees')" class="grid">
+                <flux:sidebar.group expandable :expanded="request()->routeIs('fee-types.*', 'fee-structures.*', 'fee-invoices.*', 'fee-payments.*')" :heading="__('Fees')" class="grid">
                     <flux:sidebar.item icon="tag" :href="route('fee-types.index')" :current="request()->routeIs('fee-types.*')" wire:navigate>
                         {{ __('Fee Types') }}
                     </flux:sidebar.item>
@@ -108,7 +108,7 @@
                 </flux:sidebar.group>
 
                 <!-- Assignments -->
-                <flux:sidebar.group expandable :expanded="false" :heading="__('Assignments')" class="grid">
+                <flux:sidebar.group expandable :expanded="request()->routeIs('assignments.*', 'submissions.*')" :heading="__('Assignments')" class="grid">
                     <flux:sidebar.item icon="document-plus" :href="route('assignments.index')" :current="request()->routeIs('assignments.*')" wire:navigate>
                         {{ __('Assignments') }}
                     </flux:sidebar.item>
@@ -118,7 +118,7 @@
                 </flux:sidebar.group>
 
                 <!-- Leave Management -->
-                <flux:sidebar.group expandable :expanded="false" :heading="__('Leave')" class="grid">
+                <flux:sidebar.group expandable :expanded="request()->routeIs('leave-types.*', 'leave-applications.*')" :heading="__('Leave')" class="grid">
                     <flux:sidebar.item icon="document-text" :href="route('leave-types.index')" :current="request()->routeIs('leave-types.*')" wire:navigate>
                         {{ __('Leave Types') }}
                     </flux:sidebar.item>
@@ -128,7 +128,7 @@
                 </flux:sidebar.group>
 
                 <!-- Hostel Management -->
-                <flux:sidebar.group expandable :expanded="false" :heading="__('Hostel')" class="grid">
+                <flux:sidebar.group expandable :expanded="request()->routeIs('hostel-buildings.*', 'hostel-rooms.*', 'hostel-allocations.*', 'hostel-visitors.*')" :heading="__('Hostel')" class="grid">
                     <flux:sidebar.item icon="building-office" :href="route('hostel-buildings.index')" :current="request()->routeIs('hostel-buildings.*')" wire:navigate>
                         {{ __('Buildings') }}
                     </flux:sidebar.item>
@@ -144,7 +144,7 @@
                 </flux:sidebar.group>
 
                 <!-- Communications -->
-                <flux:sidebar.group expandable :expanded="false" :heading="__('Communications')" class="grid">
+                <flux:sidebar.group expandable :expanded="request()->routeIs('announcements.*', 'events.*', 'messages.*', 'notifications.*')" :heading="__('Communications')" class="grid">
                     <flux:sidebar.item icon="megaphone" :href="route('announcements.index')" :current="request()->routeIs('announcements.*')" wire:navigate>
                         {{ __('Announcements') }}
                     </flux:sidebar.item>
@@ -160,7 +160,7 @@
                 </flux:sidebar.group>
 
                 <!-- Documents -->
-                <flux:sidebar.group expandable :expanded="false" :heading="__('Documents')" class="grid">
+                <flux:sidebar.group expandable :expanded="request()->routeIs('certificates.*', 'id-cards.*', 'document-templates.*')" :heading="__('Documents')" class="grid">
                     <flux:sidebar.item icon="document-duplicate" :href="route('certificates.index')" :current="request()->routeIs('certificates.*')" wire:navigate>
                         {{ __('Certificates') }}
                     </flux:sidebar.item>
@@ -173,7 +173,7 @@
                 </flux:sidebar.group>
 
                 <!-- More -->
-                <flux:sidebar.group expandable :expanded="false" :heading="__('More')" class="grid">
+                <flux:sidebar.group expandable :expanded="request()->routeIs('complaints.*', 'backups.*', 'activity-logs.*')" :heading="__('More')" class="grid">
                     <flux:sidebar.item icon="exclamation-circle" :href="route('complaints.index')" :current="request()->routeIs('complaints.*')" wire:navigate>
                         {{ __('Complaints') }}
                     </flux:sidebar.item>

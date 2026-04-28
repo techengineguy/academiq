@@ -1,1 +1,1 @@
-<img src="{{ asset('images/academiq.png') }}" class="w-32 h-16"/>
+<img src="{{ asset('images/academiq.png') }}" class="w-56 h-16"/>

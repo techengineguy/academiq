@@ -10,7 +10,7 @@
         <div class="w-full max-w-lg mx-auto sm:max-w-4xl p-6 md:p-6">
             <a href="{{ route('home') }}" class="flex flex-col items-center gap-2 font-medium" wire:navigate>
                 <span class="flex mb-1 items-center justify-center rounded-md">
-                    <x-app-logo-icon class="w-32 h-16" />
+                    <x-app-logo-icon />
                 </span>
                 <span class="sr-only">{{ config('app.name', 'Laravel') }}</span>
             </a>
