@@ -192,7 +192,7 @@
        
         <flux:header container class="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700">
             <flux:sidebar.toggle class="lg:hidden" icon="bars-3" inset="left" />
-            <flux:text class="text-base max-lg:hidden font-semibold" variant="strong">Good {{ now()->hour < 12 ? 'morning' : (now()->hour < 17 ? 'afternoon' : 'evening') }}, {{ auth()->user()->username }}!</flux:text>
+            <flux:text class="text-base max-lg:hidden font-semibold capitalize" variant="strong">Good {{ now()->hour < 12 ? 'morning' : (now()->hour < 17 ? 'afternoon' : 'evening') }}, {{ auth()->user()->username }}!</flux:text>
             {{-- <flux:navbar class="-mb-px max-lg:hidden">
                 <flux:navbar.item icon="home" href="#" current>Home</flux:navbar.item>
                 <flux:navbar.item icon="inbox" badge="12" href="#">Inbox</flux:navbar.item>

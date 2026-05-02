@@ -51,6 +51,10 @@
     }
 }
 
+[data-flux-button][type="submit"] {
+    @apply bg-primary hover:bg-primary/90 text-white cursor-pointer;
+}
+
 [data-flux-field]:not(ui-radio, ui-checkbox) {
     @apply grid gap-2;
 }

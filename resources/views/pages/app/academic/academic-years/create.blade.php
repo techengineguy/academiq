@@ -2,14 +2,45 @@
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
+use App\Models\AcademicYear;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use Flux\Flux;
 
-new #[Title('Create Academic Years')] 
+new #[Title('Create Academic Year')] 
 class extends Component {
-    public $id;
 
-    public function mount($id = null)
+    public $name = '';
+    public $start_date = '';
+    public $end_date = '';
+    public $is_current = false;
+    public $status = 'active';
+
+    public function save()
     {
-        if($id) $this->id = $id;
+        $validated = $this->validate([
+            'name' => 'required|string|max:255',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after:start_date',
+            'is_current' => 'boolean',
+            'status' => 'required|in:active,inactive,archived',
+        ]);
+
+        $institution = Auth::user()->institution;
+
+        AcademicYear::create([
+            'uuid' => Str::uuid(),
+            'institution_id' => $institution->id,
+            'name' => $validated['name'],
+            'start_date' => $validated['start_date'],
+            'end_date' => $validated['end_date'],
+            'is_current' => $validated['is_current'],
+            'status' => $validated['status'],
+        ]);
+
+        Flux::toast(variant: 'success', text: __('Academic year created successfully.'));
+
+        $this->redirect(route('academic-years.index'), navigate: true);
     }
 };
 ?>
@@ -23,12 +54,38 @@ class extends Component {
 
         <flux:card>
             <form wire:submit="save" class="space-y-6">
-                <flux:input label="{{ __('Name') }}" wire:model="form.name" />
-                <flux:input label="{{ __('Start Date') }}" type="date" wire:model="form.start_date" />
-                <flux:input label="{{ __('End Date') }}" type="date" wire:model="form.end_date" />
+                <!-- Name Field -->
+                <flux:input 
+                    label="{{ __('Name') }}" 
+                    placeholder="e.g., 2024-2025"
+                    wire:model="name" 
+                />
 
-                <div class="flex gap-3">
-                    <flux:button type="submit">{{ __('Create') }}</flux:button>
+                <!-- Start Date Field -->
+                <flux:date-picker label="{{ __('Start Date') }}" wire:model="start_date"/>
+
+                <!-- End Date Field -->
+                <flux:date-picker label="{{ __('End Date') }}" wire:model="end_date"/>
+
+                <!-- Status Field -->
+                <flux:select 
+                    label="{{ __('Status') }}" 
+                    wire:model="status"
+                >
+                    <flux:select.option value="active">{{ __('Active') }}</flux:select.option>
+                    <flux:select.option value="inactive">{{ __('Inactive') }}</flux:select.option>
+                    <flux:select.option value="archived">{{ __('Archived') }}</flux:select.option>
+                </flux:select>
+
+                <!-- Is Current Field -->
+                <flux:checkbox 
+                    label="{{ __('Set as Current Academic Year') }}" 
+                    wire:model="is_current"
+                />
+
+                <!-- Action Buttons -->
+                <div class="flex gap-3 pt-4">
+                    <flux:button type="submit" variant="primary">{{ __('Create') }}</flux:button>
                     <flux:button href="{{ route('academic-years.index') }}" wire:navigate variant="subtle">{{ __('Cancel') }}</flux:button>
                 </div>
             </form>

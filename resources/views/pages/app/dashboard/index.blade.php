@@ -198,8 +198,10 @@ class extends Component {
         {{-- ── RIGHT COLUMN: Calendar & Student Activity ── --}}
         <div class="lg:col-span-3">
             {{-- Calendar Widget --}}
-            <x-calendar class="p-5 mb-6"/>
-
+            <div class="mb-6">
+                <x-calendar />
+            </div>
+            
             {{-- Student Activity Feed --}}
             <div class="bg-white dark:bg-zinc-800 rounded-2xl border border-zinc-200 dark:border-zinc-700 p-5">
                 <div class="flex items-center justify-between mb-4">

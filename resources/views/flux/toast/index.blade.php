@@ -1,7 +1,7 @@
 @blaze(fold: true, safe: ['position'])
 
 @props([
-    'position' => 'bottom end',
+    'position' => 'top end',
 ])
 
 <ui-toast x-data x-on:toast-show.document="! $el.closest('ui-toast-group') && $el.showToast($event.detail)" popover="manual" position="{{ $position }}" wire:ignore>

@@ -13,12 +13,16 @@ new #[Title('Profile settings')] class extends Component {
 
     public string $username = '';
     public string $email = '';
+    public string $first_name = '';
+    public string $last_name = '';
 
     /**
      * Mount the component.
      */
     public function mount(): void
     {
+        $this->first_name = Auth::user()->first_name;
+        $this->last_name = Auth::user()->last_name;
         $this->username = Auth::user()->username;
         $this->email = Auth::user()->email;
     }
@@ -102,7 +106,7 @@ new #[Title('Profile settings')] class extends Component {
             </div>
 
             <div class="flex items-center gap-4">
-                <flux:button variant="primary" type="submit" data-test="update-profile-button">
+                <flux:button variant="primary" color="blue" type="submit" data-test="update-profile-button">
                     {{ __('Save') }}
                 </flux:button>
             </div>
