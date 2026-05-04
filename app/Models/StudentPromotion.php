@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class StudentPromotion extends Model
 {
     protected $fillable = [
+        'tenant_id',
         'uuid',
         'student_id',
         'from_class_id',

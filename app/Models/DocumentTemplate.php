@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class DocumentTemplate extends Model
 {
     protected $fillable = [
+        'tenant_id',
         'uuid',
         'institution_id',
         'name',

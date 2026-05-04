@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class HostelAllocation extends Model
 {
     protected $fillable = [
+        'tenant_id',
         'uuid',
         'student_id',
         'hostel_room_id',

@@ -11,6 +11,7 @@ class Student extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'tenant_id',
         'uuid',
         'user_id',
         'institution_id',

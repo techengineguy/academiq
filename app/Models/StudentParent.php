@@ -12,6 +12,7 @@ class StudentParent extends Model
     protected $table = 'parents';
 
     protected $fillable = [
+        'tenant_id',
         'uuid',
         'user_id',
         'father_name',

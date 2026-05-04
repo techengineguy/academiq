@@ -90,9 +90,15 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web'])->gr
     Route::livewire('timetables/create', 'pages::app.academic.timetables.create')->name('timetables.create');
     Route::livewire('timetables/{id}/edit', 'pages::app.academic.timetables.edit')->name('timetables.edit');
     
+    Route::livewire('time-slots', 'pages::app.academic.time-slots.index')->name('time-slots.index');
+    Route::livewire('time-slots/create', 'pages::app.academic.time-slots.create')->name('time-slots.create');
+    Route::livewire('time-slots/{id}/edit', 'pages::app.academic.time-slots.edit')->name('time-slots.edit');
+    
     Route::livewire('lesson-plans', 'pages::app.academic.lesson-plans.index')->name('lesson-plans.index');
     Route::livewire('lesson-plans/create', 'pages::app.academic.lesson-plans.create')->name('lesson-plans.create');
     Route::livewire('lesson-plans/{id}/edit', 'pages::app.academic.lesson-plans.edit')->name('lesson-plans.edit');
+    
+    Route::livewire('academic/trash', 'pages::app.academic.trash.index')->name('academic.trash');
 
     // Student Management Routes
     Route::livewire('students', 'pages::app.students.index')->name('students.index');
@@ -115,6 +121,7 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web'])->gr
     Route::livewire('teachers', 'pages::app.staff.teachers.index')->name('teachers.index');
     Route::livewire('teachers/create', 'pages::app.staff.teachers.create')->name('teachers.create');
     Route::livewire('teachers/{id}/edit', 'pages::app.staff.teachers.edit')->name('teachers.edit');
+    Route::livewire('staff/trash', 'pages::app.staff.trash.index')->name('staff.trash');
     
     Route::livewire('staff', 'pages::app.staff.staff.index')->name('staff.index');
     Route::livewire('staff/create', 'pages::app.staff.staff.create')->name('staff.create');

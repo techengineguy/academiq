@@ -8,6 +8,7 @@ use App\Models\ClassModel;
 class ClassSubject extends Model
 {
     protected $fillable = [
+        'tenant_id',
         'uuid',
         'class_id',
         'subject_id',

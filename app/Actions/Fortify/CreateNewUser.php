@@ -46,6 +46,7 @@ class CreateNewUser implements CreatesNewUsers
         return User::create([
             'uuid' => Str::uuid(),
             'institution_id' => $institution->id,
+            'tenant_id' => $institution->uuid,
             'username' => $input['username'],
             'email' => $input['email'],
             'first_name' => $input['first_name'],

@@ -10,6 +10,7 @@ class Payroll extends Model
     protected $table = 'payrolls';
 
     protected $fillable = [
+        'tenant_id',
         'uuid',
         'user_id',
         'month',

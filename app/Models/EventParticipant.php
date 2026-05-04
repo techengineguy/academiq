@@ -8,6 +8,7 @@ use App\Models\Event;
 class EventParticipant extends Model
 {
     protected $fillable = [
+        'tenant_id',
         'uuid',
         'event_id',
         'user_id',

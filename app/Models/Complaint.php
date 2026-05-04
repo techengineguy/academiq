@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Complaint extends Model
 {
     protected $fillable = [
+        'tenant_id',
         'uuid',
         'institution_id',
         'submitted_by',

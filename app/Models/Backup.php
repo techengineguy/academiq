@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Backup extends Model
 {
     protected $fillable = [
+        'tenant_id',
         'uuid',
         'filename',
         'path',

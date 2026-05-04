@@ -8,6 +8,7 @@ use App\Models\Payroll;
 class PayrollAllowance extends Model
 {
     protected $fillable = [
+        'tenant_id',
         'uuid',
         'payroll_id',
         'type',

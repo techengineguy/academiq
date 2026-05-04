@@ -11,6 +11,7 @@ class HostelRoom extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'tenant_id',
         'uuid',
         'hostel_building_id',
         'room_number',

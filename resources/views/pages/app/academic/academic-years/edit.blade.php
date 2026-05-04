@@ -17,7 +17,8 @@ new class extends Component {
     #[On('edit-academic-year')]
     public function loadAcademicYear(string $uuid): void
     {
-        $this->academicYear = AcademicYear::where('uuid', $uuid)->firstOrFail();
+        $this->academicYear = AcademicYear::where('tenant_id', Auth::user()->tenant_id)
+        ->where('uuid', $uuid)->firstOrFail();
 
         $this->name       = $this->academicYear->name;
         $this->start_date = $this->academicYear->start_date?->format('Y-m-d') ?? '';
@@ -36,6 +37,7 @@ new class extends Component {
         ]);
 
         $this->academicYear->update([
+            'tenant_id' => Auth::user()->tenant_id,
             'name'       => $this->name,
             'start_date' => $this->start_date,
             'end_date'   => $this->end_date,
@@ -45,7 +47,7 @@ new class extends Component {
 
         Flux::toast(variant: 'success', text: __('Academic year updated successfully.'));
 
-        $this->dispatch('academic-year-updated');
+        $this->redirect(route('academic-years.index'), navigate: true);
     }
 };
 ?>
@@ -58,17 +60,15 @@ new class extends Component {
                 wire:model="name"
                 placeholder="{{ __('e.g. 2024/2025') }}"
             />
-            <flux:input
+            <flux:date-picker
                 label="{{ __('Start Date') }}"
-                type="date"
                 wire:model="start_date"
             />
-            <flux:input
+            <flux:date-picker
                 label="{{ __('End Date') }}"
-                type="date"
                 wire:model="end_date"
             />
-            <flux:select label="{{ __('Status') }}" wire:model="status">
+            <flux:select variant="listbox" label="{{ __('Status') }}" wire:model="status">
                 <flux:select.option value="active">{{ __('Active') }}</flux:select.option>
                 <flux:select.option value="inactive">{{ __('Inactive') }}</flux:select.option>
             </flux:select>
@@ -77,7 +77,7 @@ new class extends Component {
                 label="{{ __('Set as current academic year') }}"
             />
             <div class="flex gap-3 pt-2">
-                <flux:button type="submit" variant="primary">{{ __('Update') }}</flux:button>
+                <flux:button type="submit" class="button" variant="primary">{{ __('Update') }}</flux:button>
                 <flux:button x-on:click="$tsui.close.slide('edit-academic-year')" variant="subtle">{{ __('Cancel') }}</flux:button>
             </div>
         </form>

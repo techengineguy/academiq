@@ -13,6 +13,7 @@ class ClassModel extends Model
     protected $table = 'classes';
 
     protected $fillable = [
+        'tenant_id',
         'uuid',
         'institution_id',
         'academic_year_id',

@@ -11,6 +11,7 @@ class Subject extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'tenant_id',
         'uuid',
         'institution_id',
         'name',

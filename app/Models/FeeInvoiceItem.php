@@ -8,6 +8,7 @@ use App\Models\FeeInvoice;
 class FeeInvoiceItem extends Model
 {
     protected $fillable = [
+        'tenant_id',
         'uuid',
         'fee_invoice_id',
         'fee_type_id',

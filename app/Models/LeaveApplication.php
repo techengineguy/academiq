@@ -8,6 +8,7 @@ use App\Models\User;
 class LeaveApplication extends Model
 {
     protected $fillable = [
+        'tenant_id',
         'uuid',
         'user_id',
         'leave_type_id',

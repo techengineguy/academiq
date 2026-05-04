@@ -10,6 +10,7 @@ class Message extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'tenant_id',
         'uuid',
         'sender_id',
         'receiver_id',

@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
 #[Fillable([
+    'tenant_id',
     'uuid',
     'institution_id',
     'username',

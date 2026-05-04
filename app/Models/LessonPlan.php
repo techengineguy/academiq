@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class LessonPlan extends Model
 {
     protected $fillable = [
+        'tenant_id',
         'uuid',
         'teacher_id',
         'class_id',

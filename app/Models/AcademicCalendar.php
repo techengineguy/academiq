@@ -9,6 +9,7 @@ class AcademicCalendar extends Model
     protected $table = 'academic_calendar';
 
     protected $fillable = [
+        'tenant_id',
         'uuid',
         'institution_id',
         'academic_year_id',

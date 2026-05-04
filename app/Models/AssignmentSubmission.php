@@ -8,6 +8,7 @@ use App\Models\Assignment;
 class AssignmentSubmission extends Model
 {
     protected $fillable = [
+        'tenant_id',
         'uuid',
         'assignment_id',
         'student_id',

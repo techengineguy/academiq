@@ -17,7 +17,7 @@
                 </flux:sidebar.item>
 
                 <!-- Academic Management -->
-                <flux:sidebar.group expandable :expanded="request()->routeIs('academic-years.*', 'classes.*', 'subjects.*', 'timetables.*', 'lesson-plans.*')" :heading="__('Academic')" class="grid">
+                <flux:sidebar.group expandable :expanded="request()->routeIs('academic-years.*', 'classes.*', 'subjects.*', 'timetables.*', 'time-slots.*', 'lesson-plans.*', 'academic.trash')" :heading="__('Academic')" class="grid">
                     <flux:sidebar.item icon="calendar" :href="route('academic-years.index')" :current="request()->routeIs('academic-years.*')" wire:navigate>
                         {{ __('Academic Years') }}
                     </flux:sidebar.item>
@@ -30,8 +30,14 @@
                     <flux:sidebar.item icon="clock" :href="route('timetables.index')" :current="request()->routeIs('timetables.*')" wire:navigate>
                         {{ __('Timetable') }}
                     </flux:sidebar.item>
+                    <flux:sidebar.item icon="clock" :href="route('time-slots.index')" :current="request()->routeIs('time-slots.*')" wire:navigate>
+                        {{ __('Time Slots') }}
+                    </flux:sidebar.item>
                     <flux:sidebar.item icon="list-bullet" :href="route('lesson-plans.index')" :current="request()->routeIs('lesson-plans.*')" wire:navigate>
                         {{ __('Lesson Plans') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="trash" :href="route('academic.trash')" :current="request()->routeIs('academic.trash')" wire:navigate>
+                        {{ __('Trash') }}
                     </flux:sidebar.item>
                 </flux:sidebar.group>
 
@@ -52,7 +58,7 @@
                 </flux:sidebar.group>
 
                 <!-- Staff Management -->
-                <flux:sidebar.group expandable :expanded="request()->routeIs('teachers.*', 'staff.*', 'payroll.*')" :heading="__('Staff')" class="grid">
+                <flux:sidebar.group expandable :expanded="request()->routeIs('teachers.*', 'staff.*', 'payroll.*', 'staff.trash')" :heading="__('Staff')" class="grid">
                     <flux:sidebar.item icon="academic-cap" :href="route('teachers.index')" :current="request()->routeIs('teachers.*')" wire:navigate>
                         {{ __('Teachers') }}
                     </flux:sidebar.item>
@@ -61,6 +67,9 @@
                     </flux:sidebar.item>
                     <flux:sidebar.item icon="credit-card" :href="route('payroll.index')" :current="request()->routeIs('payroll.*')" wire:navigate>
                         {{ __('Payroll') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="trash" :href="route('staff.trash')" :current="request()->routeIs('staff.trash')" wire:navigate>
+                        {{ __('Staff Trash') }}
                     </flux:sidebar.item>
                 </flux:sidebar.group>
 

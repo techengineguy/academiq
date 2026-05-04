@@ -11,6 +11,7 @@ class FeeInvoice extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'tenant_id',
         'uuid',
         'student_id',
         'invoice_number',

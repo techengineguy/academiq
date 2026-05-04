@@ -8,6 +8,7 @@ use App\Models\Institution;
 class LeaveType extends Model
 {
     protected $fillable = [
+        'tenant_id',
         'uuid',
         'institution_id',
         'name',

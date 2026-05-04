@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class TeacherAttendance extends Model
 {
     protected $fillable = [
+        'tenant_id',
         'uuid',
         'teacher_id',
         'date',

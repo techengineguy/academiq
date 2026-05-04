@@ -9,6 +9,7 @@ class IdCard extends Model
     protected $table = 'id_cards';
 
     protected $fillable = [
+        'tenant_id',
         'uuid',
         'user_id',
         'card_number',

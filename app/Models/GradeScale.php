@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class GradeScale extends Model
 {
     protected $fillable = [
+        'tenant_id',
         'uuid',
         'institution_id',
         'grade',

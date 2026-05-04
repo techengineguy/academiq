@@ -10,6 +10,7 @@ class Attendance extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'tenant_id',
         'uuid',
         'student_id',
         'class_id',

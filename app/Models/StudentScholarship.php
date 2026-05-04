@@ -8,6 +8,7 @@ use App\Models\Scholarship;
 class StudentScholarship extends Model
 {
     protected $fillable = [
+        'tenant_id',
         'uuid',
         'student_id',
         'scholarship_id',

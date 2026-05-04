@@ -8,6 +8,7 @@ use App\Models\TimeSlot;
 class Timetable extends Model
 {
     protected $fillable = [
+        'tenant_id',
         'uuid',
         'class_id',
         'section_id',

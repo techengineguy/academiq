@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class FeeStructure extends Model
 {
     protected $fillable = [
+        'tenant_id',
         'uuid',
         'institution_id',
         'academic_year_id',

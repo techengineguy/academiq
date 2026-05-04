@@ -11,6 +11,7 @@ class Assignment extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'tenant_id',
         'uuid',
         'class_id',
         'section_id',

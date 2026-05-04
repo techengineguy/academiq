@@ -1,38 +1,73 @@
 ﻿<?php
 
 use Livewire\Component;
-use Livewire\Attributes\Title;
+use App\Models\Subject;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use Flux\Flux;
+use TallStackUi\Traits\Interactions;
 
-new #[Title('Create Subjects')] 
-class extends Component {
-    public $id;
+new class extends Component {
+    use Interactions;
 
-    public function mount($id = null)
+    public $name = '';
+    public $code = '';
+    public $type = '';
+    public $description = '';
+    public $status = 'active';
+
+    public function save()
     {
-        if($id) $this->id = $id;
+        $validated = $this->validate([
+            'name' => 'required|string|max:255',
+            'code' => 'required|string|max:50|unique:subjects',
+            'type' => 'required|in:theory,practical,both',
+            'description' => 'nullable|string',
+            'status' => 'required|in:active,inactive',
+        ]);
+
+        $institution = Auth::user()->institution;
+
+        Subject::create([
+            'tenant_id' => Auth::user()->tenant_id,
+            'uuid' => Str::uuid(),
+            'institution_id' => $institution->id,
+            'name' => $validated['name'],
+            'code' => $validated['code'],
+            'type' => $validated['type'],
+            'description' => $validated['description'],
+            'status' => $validated['status'],
+        ]);
+
+        Flux::toast(variant: 'success', text: __('Subject created successfully.'));
+
+        $this->redirect(route('subjects.index'), navigate: true);
     }
 };
 ?>
 
 <div>
-    <div class="space-y-6">
-        <div class="flex items-center gap-4">
-            <flux:button href="{{ route('subjects.index') }}" wire:navigate icon="arrow-left" variant="ghost" />
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Create Subject') }}</h1>
+    <x-dialog/>
+    <form wire:submit="save" class="space-y-6">
+        <flux:input label="{{ __('Name') }}" placeholder="{{ __('Enter subject name') }}" wire:model="name" required />
+        <flux:input label="{{ __('Code') }}" placeholder="{{ __('Enter subject code') }}" wire:model="code" required />
+        <flux:select label="{{ __('Type') }}" variant="listbox" wire:model="type" required>
+            <flux:select.option value="">{{ __('Select Type') }}</flux:select.option>
+            <flux:select.option value="theory">{{ __('Theory') }}</flux:select.option>
+            <flux:select.option value="practical">{{ __('Practical') }}</flux:select.option>
+            <flux:select.option value="both">{{ __('Both') }}</flux:select.option>
+        </flux:select>
+        <flux:textarea label="{{ __('Description') }}" placeholder="{{ __('Enter subject description') }}" wire:model="description" />
+        <flux:select label="{{ __('Status') }}" variant="listbox" wire:model="status" required>
+            <flux:select.option value="active">{{ __('Active') }}</flux:select.option>
+            <flux:select.option value="inactive">{{ __('Inactive') }}</flux:select.option>
+        </flux:select>
+
+        <div class="flex gap-3">
+            <flux:button type="submit" class="button">{{ __('Create') }}</flux:button>
+            <flux:button x-on:click="$tsui.close.slide('create-subject')" variant="subtle">{{ __('Cancel') }}</flux:button>
         </div>
-
-        <flux:card>
-            <form wire:submit="save" class="space-y-6">
-                <flux:input label="{{ __('Name') }}" wire:model="form.name" />
-                <flux:textarea label="{{ __('Description') }}" wire:model="form.description" />
-
-                <div class="flex gap-3">
-                    <flux:button type="submit">{{ __('Create') }}</flux:button>
-                    <flux:button href="{{ route('subjects.index') }}" wire:navigate variant="subtle">{{ __('Cancel') }}</flux:button>
-                </div>
-            </form>
-        </flux:card>
-    </div>
+    </form>
 </div>
 
 

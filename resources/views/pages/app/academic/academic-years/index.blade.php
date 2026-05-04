@@ -3,13 +3,16 @@
 use Livewire\Component;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\On;
 use App\Models\AcademicYear;
 use Livewire\WithPagination;
 use Flux\Flux;
+use TallStackUi\Traits\Interactions;
 
-new #[Title('Listings Academic Years')] 
+new #[Title('Academic Years')] 
 class extends Component {
     use WithPagination;
+    use Interactions;
 
     #[Computed]
     public function academicYears()
@@ -17,15 +20,35 @@ class extends Component {
         return AcademicYear::orderBy('start_date', 'desc')->paginate(10);
     }
 
-    public function delete($id)
+    public $yearIdToDelete = null;
+
+    public function confirmDelete($id): void
     {
-        $academicYear = AcademicYear::findOrFail($id);
-        $academicYear->delete();
-        Flux::toast(variant: 'success', text: __('Academic year deleted successfully.'));
+        $this->yearIdToDelete = $id;
+
+        $this->dialog()
+            ->question(__('Are you sure you want to delete this academic year?'))
+            ->confirm(__('Delete'), method: 'delete')
+            ->cancel(__('Cancel'))
+            ->send();
+    }
+
+    #[On('confirm')]
+    public function delete(): void
+    {
+        if (! $this->yearIdToDelete) return;
+
+        AcademicYear::findOrFail($this->yearIdToDelete)->delete();
+
+        $this->yearIdToDelete = null;
+        unset($this->academicYears);
+
+        Flux::toast(variant: 'success', text: __('Academic year deleted successfully, Restore from trash.'));
     }
 };
 ?>
 <div>
+    <x-dialog/>
     <div class="space-y-2">
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Academic Years</h1>
@@ -52,7 +75,7 @@ class extends Component {
                                 <flux:table.cell>{{ $year->start_date?->format('M d, Y') }}</flux:table.cell>
                                 <flux:table.cell>{{ $year->end_date?->format('M d, Y') }}</flux:table.cell>
                                 <flux:table.cell>
-                                    <flux:badge :variant="$year->status == 'active' ? 'success' : 'green'">
+                                    <flux:badge :color="$year->status == 'active' ? 'green' : 'gray'">
                                         {{ ucfirst($year->status) }}
                                     </flux:badge>
                                 </flux:table.cell>
@@ -65,13 +88,14 @@ class extends Component {
                                 </flux:table.cell>
                                 <flux:table.cell>
                                     <div class="flex gap-2">
-                                        <flux:button size="sm" variant="subtle" x-on:click="$tsui.open.slide('edit-academic-year'); $wire.dispatch('edit-academic-year', { uuid: '{{ $year->uuid }}' })" icon="pencil" />
+                                        <flux:button size="sm" variant="subtle" 
+                                        x-on:click="$tsui.open.slide('edit-academic-year'); $wire.dispatch('edit-academic-year', { uuid: '{{ $year->uuid }}' })" 
+                                        icon="pencil" />
                                         <flux:button 
                                             size="sm" 
                                             variant="danger" 
                                             icon="trash"
-                                            wire:click="delete({{ $year->id }})"
-                                            wire:confirm="{{ __('Are you sure you want to delete this academic year?') }}"
+                                            wire:click="confirmDelete({{ $year->id }})"
                                         />
                                     </div>
                                 </flux:table.cell>

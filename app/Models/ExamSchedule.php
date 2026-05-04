@@ -8,6 +8,7 @@ use App\Models\Exam;
 class ExamSchedule extends Model
 {
     protected $fillable = [
+        'tenant_id',
         'uuid',
         'exam_id',
         'class_id',
