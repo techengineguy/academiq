@@ -11,16 +11,24 @@ return new class extends Migration
         Schema::create('student_promotions', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('student_id')->constrained()->onDelete('cascade');
-            $table->foreignId('from_class_id')->constrained('classes')->onDelete('cascade');
-            $table->foreignId('to_class_id')->constrained('classes')->onDelete('cascade');
-            $table->foreignId('from_section_id')->nullable()->constrained('sections')->onDelete('set null');
-            $table->foreignId('to_section_id')->nullable()->constrained('sections')->onDelete('set null');
-            $table->foreignId('from_academic_year_id')->constrained('academic_years')->onDelete('cascade');
-            $table->foreignId('to_academic_year_id')->constrained('academic_years')->onDelete('cascade');
+            $table->unsignedBigInteger('student_id');
+            $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
+            $table->unsignedBigInteger('from_class_id');
+            $table->foreign('from_class_id')->references('id')->on('classes')->onDelete('cascade');
+            $table->unsignedBigInteger('to_class_id');
+            $table->foreign('to_class_id')->references('id')->on('classes')->onDelete('cascade');
+            $table->unsignedBigInteger('from_section_id')->nullable();
+            $table->foreign('from_section_id')->references('id')->on('sections')->onDelete('set null');
+            $table->unsignedBigInteger('to_section_id')->nullable();
+            $table->foreign('to_section_id')->references('id')->on('sections')->onDelete('set null');
+            $table->unsignedBigInteger('from_academic_year_id');
+            $table->foreign('from_academic_year_id')->references('id')->on('academic_years')->onDelete('cascade');
+            $table->unsignedBigInteger('to_academic_year_id');
+            $table->foreign('to_academic_year_id')->references('id')->on('academic_years')->onDelete('cascade');
             $table->enum('status', ['promoted', 'detained', 'transferred'])->default('promoted');
             $table->text('remarks')->nullable();
-            $table->foreignId('processed_by')->constrained('users')->onDelete('cascade');
+            $table->unsignedBigInteger('processed_by');
+            $table->foreign('processed_by')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -11,14 +11,17 @@ return new class extends Migration
         Schema::create('exam_results', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('exam_schedule_id')->constrained()->onDelete('cascade');
-            $table->foreignId('student_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('exam_schedule_id');
+            $table->foreign('exam_schedule_id')->references('id')->on('exam_schedules')->onDelete('cascade');
+            $table->unsignedBigInteger('student_id');
+            $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
             $table->decimal('marks_obtained', 5, 2);
             $table->decimal('total_marks', 5, 2);
             $table->string('grade')->nullable();
             $table->text('remarks')->nullable();
             $table->boolean('is_absent')->default(false);
-            $table->foreignId('entered_by')->nullable()->constrained('users')->onDelete('set null');
+            $table->unsignedBigInteger('entered_by')->nullable();
+            $table->foreign('entered_by')->references('id')->on('users')->onDelete('set null');
             $table->timestamps();
             
             $table->unique(['exam_schedule_id', 'student_id']);

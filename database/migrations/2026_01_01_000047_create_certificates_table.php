@@ -11,13 +11,15 @@ return new class extends Migration
         Schema::create('certificates', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('student_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('student_id');
+            $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
             $table->enum('type', ['transfer', 'character', 'bonafide', 'completion', 'other'])->default('bonafide');
             $table->string('certificate_number')->unique();
             $table->date('issue_date');
             $table->text('purpose')->nullable();
             $table->text('content')->nullable();
-            $table->foreignId('issued_by')->constrained('users')->onDelete('cascade');
+            $table->unsignedBigInteger('issued_by');
+            $table->foreign('issued_by')->references('id')->on('users')->onDelete('cascade');
             $table->string('file_path')->nullable();
             $table->timestamps();
         });

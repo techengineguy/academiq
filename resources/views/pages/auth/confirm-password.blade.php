@@ -19,7 +19,7 @@
                 :placeholder="__('Password')"
                 viewable
             />
-            <x-button type="submit" class="w-full" data-test="confirm-password-button">{{ __('Confirm') }}</x-button>
+            <flux:button type="submit" class="w-full button" data-test="confirm-password-button">{{ __('Confirm') }}</flux:button>
         </form>
     </div>
 </x-layouts::auth>

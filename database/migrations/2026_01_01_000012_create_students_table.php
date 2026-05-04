@@ -11,14 +11,19 @@ return new class extends Migration
         Schema::create('students', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('institution_id')->constrained()->onDelete('cascade');
-            $table->foreignId('class_id')->nullable()->constrained()->onDelete('set null');
-            $table->foreignId('section_id')->nullable()->constrained()->onDelete('set null');
-            $table->foreignId('academic_year_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('user_id')->index();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('institution_id')->index();
+            $table->foreign('institution_id')->references('id')->on('institutions')->onDelete('cascade');
+            $table->unsignedBigInteger('class_id')->nullable()->index();
+            $table->foreign('class_id')->references('id')->on('classes')->onDelete('set null');
+            $table->unsignedBigInteger('section_id')->nullable()->index();
+            $table->foreign('section_id')->references('id')->on('sections')->onDelete('set null');
+            $table->unsignedBigInteger('academic_year_id')->index();
+            $table->foreign('academic_year_id')->references('id')->on('academic_years')->onDelete('cascade');
             $table->string('admission_number')->unique();
-            $table->date('admission_date');
-            $table->string('roll_number')->nullable();
+            $table->date('admission_date')->index();
+            $table->string('roll_number')->nullable()->index();
             $table->enum('blood_group', ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])->nullable();
             $table->string('nationality')->nullable();
             $table->string('religion')->nullable();
@@ -29,7 +34,7 @@ return new class extends Migration
             $table->text('medical_conditions')->nullable();
             $table->text('allergies')->nullable();
             $table->string('house')->nullable();
-            $table->enum('status', ['active', 'inactive', 'transferred', 'graduated'])->default('active');
+            $table->enum('status', ['active', 'inactive', 'transferred', 'graduated'])->default('active')->index();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -11,14 +11,16 @@ return new class extends Migration
         Schema::create('assignment_submissions', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('assignment_id')->constrained()->onDelete('cascade');
-            $table->foreignId('student_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('assignment_id')->index();
+            $table->foreign('assignment_id')->references('id')->on('assignments')->onDelete('cascade');
+            $table->unsignedBigInteger('student_id')->index();
+            $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
             $table->text('content')->nullable();
             $table->string('attachment')->nullable();
-            $table->timestamp('submitted_at');
+            $table->timestamp('submitted_at')->index();
             $table->decimal('marks_obtained', 5, 2)->nullable();
             $table->text('feedback')->nullable();
-            $table->enum('status', ['submitted', 'graded', 'late'])->default('submitted');
+            $table->enum('status', ['submitted', 'graded', 'late'])->default('submitted')->index();
             $table->timestamps();
             
             $table->unique(['assignment_id', 'student_id']);

@@ -11,12 +11,14 @@ return new class extends Migration
         Schema::create('teacher_attendances', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('teacher_id')->constrained('users')->onDelete('cascade');
+            $table->unsignedBigInteger('teacher_id');
+            $table->foreign('teacher_id')->references('id')->on('users')->onDelete('cascade');
             $table->date('date');
             $table->enum('status', ['present', 'absent', 'late', 'half_day', 'on_leave'])->default('present');
             $table->time('check_in_time')->nullable();
             $table->time('check_out_time')->nullable();
-            $table->foreignId('marked_by')->nullable()->constrained('users')->onDelete('set null');
+            $table->unsignedBigInteger('marked_by')->nullable();
+            $table->foreign('marked_by')->references('id')->on('users')->onDelete('set null');
             $table->text('remarks')->nullable();
             $table->timestamps();
             

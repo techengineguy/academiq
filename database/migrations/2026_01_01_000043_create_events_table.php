@@ -11,19 +11,21 @@ return new class extends Migration
         Schema::create('events', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('institution_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('institution_id')->index();
+            $table->foreign('institution_id')->references('id')->on('institutions')->onDelete('cascade');
             $table->string('title');
             $table->text('description')->nullable();
             $table->enum('type', ['academic', 'sports', 'cultural', 'holiday', 'meeting', 'other'])->default('other');
-            $table->date('start_date');
-            $table->date('end_date')->nullable();
+            $table->date('start_date')->index();
+            $table->date('end_date')->nullable()->index();
             $table->time('start_time')->nullable();
             $table->time('end_time')->nullable();
             $table->string('venue')->nullable();
-            $table->foreignId('organized_by')->nullable()->constrained('users')->onDelete('set null');
+            $table->unsignedBigInteger('organized_by')->nullable()->index();
+            $table->foreign('organized_by')->references('id')->on('users')->onDelete('set null');
             $table->boolean('requires_rsvp')->default(false);
             $table->string('banner_image')->nullable();
-            $table->enum('status', ['upcoming', 'ongoing', 'completed', 'cancelled'])->default('upcoming');
+            $table->enum('status', ['upcoming', 'ongoing', 'completed', 'cancelled'])->default('upcoming')->index();
             $table->timestamps();
             $table->softDeletes();
         });

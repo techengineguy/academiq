@@ -11,8 +11,10 @@ return new class extends Migration
         Schema::create('academic_calendar', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('institution_id')->constrained()->onDelete('cascade');
-            $table->foreignId('academic_year_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('institution_id');
+            $table->foreign('institution_id')->references('id')->on('institutions')->onDelete('cascade');
+            $table->unsignedBigInteger('academic_year_id');
+            $table->foreign('academic_year_id')->references('id')->on('academic_years')->onDelete('cascade');
             $table->string('title');
             $table->text('description')->nullable();
             $table->date('start_date');

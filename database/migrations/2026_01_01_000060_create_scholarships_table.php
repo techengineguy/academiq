@@ -11,7 +11,8 @@ return new class extends Migration
         Schema::create('scholarships', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('institution_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('institution_id');
+            $table->foreign('institution_id')->references('id')->on('institutions')->onDelete('cascade');
             $table->string('name');
             $table->text('description')->nullable();
             $table->enum('type', ['percentage', 'fixed_amount'])->default('percentage');

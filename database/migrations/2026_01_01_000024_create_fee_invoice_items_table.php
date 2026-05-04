@@ -11,8 +11,10 @@ return new class extends Migration
         Schema::create('fee_invoice_items', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('fee_invoice_id')->constrained()->onDelete('cascade');
-            $table->foreignId('fee_type_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('fee_invoice_id');
+            $table->foreign('fee_invoice_id')->references('id')->on('fee_invoices')->onDelete('cascade');
+            $table->unsignedBigInteger('fee_type_id');
+            $table->foreign('fee_type_id')->references('id')->on('fee_types')->onDelete('cascade');
             $table->decimal('amount', 10, 2);
             $table->text('description')->nullable();
             $table->timestamps();

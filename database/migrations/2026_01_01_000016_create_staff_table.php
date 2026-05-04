@@ -11,8 +11,10 @@ return new class extends Migration
         Schema::create('staff', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('institution_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('user_id')->index();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('institution_id')->index();
+            $table->foreign('institution_id')->references('id')->on('institutions')->onDelete('cascade');
             $table->string('employee_id')->unique();
             $table->date('joining_date');
             $table->string('designation');
@@ -21,7 +23,7 @@ return new class extends Migration
             $table->enum('employment_type', ['permanent', 'temporary', 'contract'])->default('permanent');
             $table->string('emergency_contact_name')->nullable();
             $table->string('emergency_contact_phone')->nullable();
-            $table->enum('status', ['active', 'inactive', 'on_leave'])->default('active');
+            $table->enum('status', ['active', 'inactive', 'on_leave'])->default('active')->index();
             $table->timestamps();
             $table->softDeletes();
         });

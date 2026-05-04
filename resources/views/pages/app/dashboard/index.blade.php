@@ -67,7 +67,7 @@ class extends Component {
 ?>
 <div>
 
-<div class="min-h-screen bg-zinc-50 dark:bg-zinc-900 space-y-6">
+<div class="min-h-screen bg-zinc-50 dark:bg-zinc-900 space-y-6 py-4">
 
     {{-- ── Main Layout: 2 Columns (Left Content + Right Sidebar) ── --}}
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -198,8 +198,8 @@ class extends Component {
         {{-- ── RIGHT COLUMN: Calendar & Student Activity ── --}}
         <div class="lg:col-span-3">
             {{-- Calendar Widget --}}
-            <div class="mb-6">
-                <x-calendar />
+            <div class="mb-6 box-shadow-sm">
+                <x-calendar/>
             </div>
             
             {{-- Student Activity Feed --}}

@@ -11,14 +11,18 @@ return new class extends Migration
         Schema::create('student_scholarships', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('student_id')->constrained()->onDelete('cascade');
-            $table->foreignId('scholarship_id')->constrained()->onDelete('cascade');
-            $table->foreignId('academic_year_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('student_id');
+            $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
+            $table->unsignedBigInteger('scholarship_id');
+            $table->foreign('scholarship_id')->references('id')->on('scholarships')->onDelete('cascade');
+            $table->unsignedBigInteger('academic_year_id');
+            $table->foreign('academic_year_id')->references('id')->on('academic_years')->onDelete('cascade');
             $table->decimal('discount_amount', 10, 2);
             $table->date('granted_date');
             $table->enum('status', ['active', 'revoked', 'expired'])->default('active');
             $table->text('remarks')->nullable();
-            $table->foreignId('granted_by')->constrained('users')->onDelete('cascade');
+            $table->unsignedBigInteger('granted_by');
+            $table->foreign('granted_by')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

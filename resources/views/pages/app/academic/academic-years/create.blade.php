@@ -1,14 +1,12 @@
 ﻿<?php
 
 use Livewire\Component;
-use Livewire\Attributes\Title;
 use App\Models\AcademicYear;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Flux\Flux;
 
-new #[Title('Create Academic Year')] 
-class extends Component {
+new class extends Component {
 
     public $name = '';
     public $start_date = '';
@@ -47,11 +45,6 @@ class extends Component {
 
 <div>
     <div class="space-y-6">
-        <div class="flex items-center gap-4">
-            <flux:button href="{{ route('academic-years.index') }}" wire:navigate icon="arrow-left" variant="ghost" />
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Create Academic Year') }}</h1>
-        </div>
-
         <flux:card>
             <form wire:submit="save" class="space-y-6">
                 <!-- Name Field -->
@@ -85,7 +78,7 @@ class extends Component {
 
                 <!-- Action Buttons -->
                 <div class="flex gap-3 pt-4">
-                    <flux:button type="submit" variant="primary">{{ __('Create') }}</flux:button>
+                    <flux:button type="submit" class="button" variant="primary">{{ __('Create') }}</flux:button>
                     <flux:button href="{{ route('academic-years.index') }}" wire:navigate variant="subtle">{{ __('Cancel') }}</flux:button>
                 </div>
             </form>

@@ -179,10 +179,10 @@
 
             <!-- Navigation Buttons -->
             <div class="flex justify-between gap-3">
-                <x-button type="button" @click="step = 1" x-show="step === 2" variant="outline">{{ __('Back') }}</x-button>
+                <flux:button type="button" class="button" @click="step = 1" x-show="step === 2" variant="outline">{{ __('Back') }}</flux:button>
                 <div class="flex gap-3 ms-auto">
-                    <x-button type="button" @click="next()" x-show="step === 1">{{ __('Next') }}</x-button>
-                    <x-button type="submit" x-show="step === 2" loading>{{ __('Register') }}</x-button>
+                    <flux:button type="button" class="button" @click="next()" x-show="step === 1">{{ __('Next') }}</flux:button>
+                    <flux:button type="submit" class="button" x-show="step === 2" loading>{{ __('Register') }}</flux:button>
                 </div>
             </div>
         </form>

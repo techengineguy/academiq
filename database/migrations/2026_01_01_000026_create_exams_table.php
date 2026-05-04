@@ -11,15 +11,17 @@ return new class extends Migration
         Schema::create('exams', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('institution_id')->constrained()->onDelete('cascade');
-            $table->foreignId('academic_year_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('institution_id')->index();
+            $table->foreign('institution_id')->references('id')->on('institutions')->onDelete('cascade');
+            $table->unsignedBigInteger('academic_year_id')->index();
+            $table->foreign('academic_year_id')->references('id')->on('academic_years')->onDelete('cascade');
             $table->string('name');
             $table->enum('type', ['mid_term', 'final', 'unit_test', 'practical', 'assignment'])->default('mid_term');
-            $table->date('start_date');
-            $table->date('end_date');
+            $table->date('start_date')->index();
+            $table->date('end_date')->index();
             $table->text('description')->nullable();
-            $table->boolean('result_published')->default(false);
-            $table->enum('status', ['scheduled', 'ongoing', 'completed', 'cancelled'])->default('scheduled');
+            $table->boolean('result_published')->default(false)->index();
+            $table->enum('status', ['scheduled', 'ongoing', 'completed', 'cancelled'])->default('scheduled')->index();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -11,12 +11,16 @@ return new class extends Migration
         Schema::create('attendances', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('student_id')->constrained()->onDelete('cascade');
-            $table->foreignId('class_id')->constrained()->onDelete('cascade');
-            $table->foreignId('section_id')->constrained()->onDelete('cascade');
-            $table->date('date');
-            $table->enum('status', ['present', 'absent', 'late', 'half_day', 'excused'])->default('present');
-            $table->foreignId('marked_by')->nullable()->constrained('users')->onDelete('set null');
+            $table->unsignedBigInteger('student_id')->index();
+            $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
+            $table->unsignedBigInteger('class_id')->index();
+            $table->foreign('class_id')->references('id')->on('classes')->onDelete('cascade');
+            $table->unsignedBigInteger('section_id')->index();
+            $table->foreign('section_id')->references('id')->on('sections')->onDelete('cascade');
+            $table->date('date')->index();
+            $table->enum('status', ['present', 'absent', 'late', 'half_day', 'excused'])->default('present')->index();
+            $table->unsignedBigInteger('marked_by')->nullable()->index();
+            $table->foreign('marked_by')->references('id')->on('users')->onDelete('set null');
             $table->text('remarks')->nullable();
             $table->time('check_in_time')->nullable();
             $table->time('check_out_time')->nullable();

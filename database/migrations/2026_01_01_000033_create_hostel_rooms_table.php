@@ -11,7 +11,8 @@ return new class extends Migration
         Schema::create('hostel_rooms', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('hostel_building_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('hostel_building_id');
+            $table->foreign('hostel_building_id')->references('id')->on('hostel_buildings')->onDelete('cascade');
             $table->string('room_number');
             $table->integer('floor');
             $table->integer('capacity');

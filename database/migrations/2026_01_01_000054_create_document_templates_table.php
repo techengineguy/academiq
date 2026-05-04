@@ -11,7 +11,8 @@ return new class extends Migration
         Schema::create('document_templates', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('institution_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('institution_id');
+            $table->foreign('institution_id')->references('id')->on('institutions')->onDelete('cascade');
             $table->string('name');
             $table->enum('type', ['certificate', 'report_card', 'invoice', 'id_card', 'letter', 'other'])->default('other');
             $table->text('content');

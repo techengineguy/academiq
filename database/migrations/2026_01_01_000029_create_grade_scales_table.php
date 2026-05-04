@@ -11,7 +11,8 @@ return new class extends Migration
         Schema::create('grade_scales', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('institution_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('institution_id');
+            $table->foreign('institution_id')->references('id')->on('institutions')->onDelete('cascade');
             $table->string('grade');
             $table->decimal('min_percentage', 5, 2);
             $table->decimal('max_percentage', 5, 2);

@@ -11,13 +11,14 @@ return new class extends Migration
         Schema::create('notifications', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('user_id')->index();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('title');
             $table->text('message');
-            $table->enum('type', ['info', 'success', 'warning', 'error'])->default('info');
+            $table->enum('type', ['info', 'success', 'warning', 'error'])->default('info')->index();
             $table->string('action_url')->nullable();
-            $table->boolean('is_read')->default(false);
-            $table->timestamp('read_at')->nullable();
+            $table->boolean('is_read')->default(false)->index();
+            $table->timestamp('read_at')->nullable()->index();
             $table->timestamps();
         });
     }

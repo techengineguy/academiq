@@ -11,7 +11,8 @@ return new class extends Migration
         Schema::create('payroll_deductions', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('payroll_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('payroll_id');
+            $table->foreign('payroll_id')->references('id')->on('payrolls')->onDelete('cascade');
             $table->string('type');
             $table->decimal('amount', 10, 2);
             $table->text('description')->nullable();

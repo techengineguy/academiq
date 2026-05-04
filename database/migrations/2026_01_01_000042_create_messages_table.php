@@ -11,14 +11,17 @@ return new class extends Migration
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('sender_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('receiver_id')->constrained('users')->onDelete('cascade');
+            $table->unsignedBigInteger('sender_id')->index();
+            $table->foreign('sender_id')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('receiver_id')->index();
+            $table->foreign('receiver_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('subject');
             $table->text('body');
             $table->string('attachment')->nullable();
-            $table->boolean('is_read')->default(false);
-            $table->timestamp('read_at')->nullable();
-            $table->foreignId('parent_message_id')->nullable()->constrained('messages')->onDelete('cascade');
+            $table->boolean('is_read')->default(false)->index();
+            $table->timestamp('read_at')->nullable()->index();
+            $table->unsignedBigInteger('parent_message_id')->nullable()->index();
+            $table->foreign('parent_message_id')->references('id')->on('messages')->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
         });

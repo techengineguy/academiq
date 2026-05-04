@@ -11,17 +11,21 @@ return new class extends Migration
         Schema::create('assignments', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('class_id')->constrained()->onDelete('cascade');
-            $table->foreignId('section_id')->constrained()->onDelete('cascade');
-            $table->foreignId('subject_id')->constrained()->onDelete('cascade');
-            $table->foreignId('teacher_id')->constrained('users')->onDelete('cascade');
+            $table->unsignedBigInteger('class_id')->index();
+            $table->foreign('class_id')->references('id')->on('classes')->onDelete('cascade');
+            $table->unsignedBigInteger('section_id')->index();
+            $table->foreign('section_id')->references('id')->on('sections')->onDelete('cascade');
+            $table->unsignedBigInteger('subject_id')->index();
+            $table->foreign('subject_id')->references('id')->on('subjects')->onDelete('cascade');
+            $table->unsignedBigInteger('teacher_id')->index();
+            $table->foreign('teacher_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('title');
             $table->text('description')->nullable();
             $table->string('attachment')->nullable();
-            $table->date('assigned_date');
-            $table->date('due_date');
+            $table->date('assigned_date')->index();
+            $table->date('due_date')->index();
             $table->integer('total_marks')->default(100);
-            $table->enum('status', ['active', 'closed'])->default('active');
+            $table->enum('status', ['active', 'closed'])->default('active')->index();
             $table->timestamps();
             $table->softDeletes();
         });

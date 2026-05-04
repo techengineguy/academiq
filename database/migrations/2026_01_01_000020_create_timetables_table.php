@@ -11,12 +11,18 @@ return new class extends Migration
         Schema::create('timetables', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('class_id')->constrained()->onDelete('cascade');
-            $table->foreignId('section_id')->constrained()->onDelete('cascade');
-            $table->foreignId('subject_id')->constrained()->onDelete('cascade');
-            $table->foreignId('teacher_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('time_slot_id')->constrained()->onDelete('cascade');
-            $table->foreignId('academic_year_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('class_id')->index();
+            $table->foreign('class_id')->references('id')->on('classes')->onDelete('cascade');
+            $table->unsignedBigInteger('section_id')->index();
+            $table->foreign('section_id')->references('id')->on('sections')->onDelete('cascade');
+            $table->unsignedBigInteger('subject_id')->index();
+            $table->foreign('subject_id')->references('id')->on('subjects')->onDelete('cascade');
+            $table->unsignedBigInteger('teacher_id')->index();
+            $table->foreign('teacher_id')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('time_slot_id')->index();
+            $table->foreign('time_slot_id')->references('id')->on('time_slots')->onDelete('cascade');
+            $table->unsignedBigInteger('academic_year_id')->index();
+            $table->foreign('academic_year_id')->references('id')->on('academic_years')->onDelete('cascade');
             $table->enum('day', ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']);
             $table->string('room')->nullable();
             $table->timestamps();

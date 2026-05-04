@@ -11,8 +11,10 @@ return new class extends Migration
         Schema::create('student_parents', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('student_id')->constrained()->onDelete('cascade');
-            $table->foreignId('parent_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('student_id');
+            $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
+            $table->unsignedBigInteger('parent_id');
+            $table->foreign('parent_id')->references('id')->on('parents')->onDelete('cascade');
             $table->enum('relation', ['father', 'mother', 'guardian'])->default('father');
             $table->boolean('is_primary')->default(false);
             $table->timestamps();

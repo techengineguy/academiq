@@ -11,13 +11,15 @@ return new class extends Migration
         Schema::create('classes', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('institution_id')->constrained()->onDelete('cascade');
-            $table->foreignId('academic_year_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('institution_id')->index();
+            $table->foreign('institution_id')->references('id')->on('institutions')->onDelete('cascade');
+            $table->unsignedBigInteger('academic_year_id')->index();
+            $table->foreign('academic_year_id')->references('id')->on('academic_years')->onDelete('cascade');
             $table->string('name'); // e.g., "Grade 1", "Class 10"
             $table->string('code')->nullable();
             $table->integer('capacity')->nullable();
             $table->text('description')->nullable();
-            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->enum('status', ['active', 'inactive'])->default('active')->index();
             $table->timestamps();
             $table->softDeletes();
         });

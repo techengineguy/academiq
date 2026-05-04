@@ -11,14 +11,16 @@ return new class extends Migration
         Schema::create('hostel_visitors', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('student_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('student_id');
+            $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
             $table->string('visitor_name');
             $table->string('visitor_phone')->nullable();
             $table->string('relation')->nullable();
             $table->dateTime('check_in_time');
             $table->dateTime('check_out_time')->nullable();
             $table->text('purpose')->nullable();
-            $table->foreignId('approved_by')->nullable()->constrained('users')->onDelete('set null');
+            $table->unsignedBigInteger('approved_by')->nullable();
+            $table->foreign('approved_by')->references('id')->on('users')->onDelete('set null');
             $table->timestamps();
         });
     }

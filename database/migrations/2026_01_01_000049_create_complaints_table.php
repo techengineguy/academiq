@@ -11,18 +11,21 @@ return new class extends Migration
         Schema::create('complaints', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('institution_id')->constrained()->onDelete('cascade');
-            $table->foreignId('submitted_by')->constrained('users')->onDelete('cascade');
+            $table->unsignedBigInteger('institution_id')->index();
+            $table->foreign('institution_id')->references('id')->on('institutions')->onDelete('cascade');
+            $table->unsignedBigInteger('submitted_by')->index();
+            $table->foreign('submitted_by')->references('id')->on('users')->onDelete('cascade');
             $table->string('complaint_number')->unique();
             $table->string('subject');
             $table->text('description');
-            $table->enum('category', ['academic', 'hostel', 'transport', 'infrastructure', 'staff', 'other'])->default('other');
-            $table->enum('priority', ['low', 'medium', 'high', 'urgent'])->default('medium');
+            $table->enum('category', ['academic', 'hostel', 'transport', 'infrastructure', 'staff', 'other'])->default('other')->index();
+            $table->enum('priority', ['low', 'medium', 'high', 'urgent'])->default('medium')->index();
             $table->string('attachment')->nullable();
-            $table->foreignId('assigned_to')->nullable()->constrained('users')->onDelete('set null');
-            $table->enum('status', ['open', 'in_progress', 'resolved', 'closed'])->default('open');
+            $table->unsignedBigInteger('assigned_to')->nullable()->index();
+            $table->foreign('assigned_to')->references('id')->on('users')->onDelete('set null');
+            $table->enum('status', ['open', 'in_progress', 'resolved', 'closed'])->default('open')->index();
             $table->text('resolution')->nullable();
-            $table->timestamp('resolved_at')->nullable();
+            $table->timestamp('resolved_at')->nullable()->index();
             $table->timestamps();
         });
     }

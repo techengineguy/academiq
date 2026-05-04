@@ -17,7 +17,7 @@
                 autofocus
                 placeholder="email@example.com"
             />
-            <x-button type="submit" class="w-full" data-test="email-password-reset-link-button">{{ __('Email password reset link') }}</x-button> 
+            <flux:button type="submit" class="w-full button" data-test="email-password-reset-link-button">{{ __('Email password reset link') }}</flux:button> 
         </form>
 
         <div class="space-x-1 rtl:space-x-reverse text-center text-sm text-zinc-400">

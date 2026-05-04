@@ -11,11 +11,14 @@ return new class extends Migration
         Schema::create('admission_applications', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('institution_id')->constrained()->onDelete('cascade');
-            $table->foreignId('academic_year_id')->constrained()->onDelete('cascade');
-            $table->foreignId('class_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('institution_id')->index();
+            $table->foreign('institution_id')->references('id')->on('institutions')->onDelete('cascade');
+            $table->unsignedBigInteger('academic_year_id')->index();
+            $table->foreign('academic_year_id')->references('id')->on('academic_years')->onDelete('cascade');
+            $table->unsignedBigInteger('class_id')->index();
+            $table->foreign('class_id')->references('id')->on('classes')->onDelete('cascade');
             $table->string('application_number')->unique();
-            $table->date('application_date');
+            $table->date('application_date')->index();
             $table->string('student_name');
             $table->date('date_of_birth');
             $table->enum('gender', ['male', 'female', 'other']);
@@ -33,8 +36,9 @@ return new class extends Migration
             $table->decimal('test_marks', 5, 2)->nullable();
             $table->date('interview_date')->nullable();
             $table->text('interview_remarks')->nullable();
-            $table->enum('status', ['submitted', 'under_review', 'test_scheduled', 'interview_scheduled', 'approved', 'rejected', 'admitted'])->default('submitted');
-            $table->foreignId('reviewed_by')->nullable()->constrained('users')->onDelete('set null');
+            $table->enum('status', ['submitted', 'under_review', 'test_scheduled', 'interview_scheduled', 'approved', 'rejected', 'admitted'])->default('submitted')->index();
+            $table->unsignedBigInteger('reviewed_by')->nullable()->index();
+            $table->foreign('reviewed_by')->references('id')->on('users')->onDelete('set null');
             $table->text('rejection_reason')->nullable();
             $table->timestamps();
             $table->softDeletes();

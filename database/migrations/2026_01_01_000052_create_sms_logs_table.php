@@ -11,7 +11,8 @@ return new class extends Migration
         Schema::create('sms_logs', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
             $table->string('phone');
             $table->text('message');
             $table->enum('type', ['attendance', 'fee', 'exam', 'announcement', 'other'])->default('other');

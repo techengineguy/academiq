@@ -11,15 +11,18 @@ return new class extends Migration
         Schema::create('fee_payments', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('fee_invoice_id')->constrained()->onDelete('cascade');
-            $table->foreignId('student_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('fee_invoice_id')->index();
+            $table->foreign('fee_invoice_id')->references('id')->on('fee_invoices')->onDelete('cascade');
+            $table->unsignedBigInteger('student_id')->index();
+            $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
             $table->string('receipt_number')->unique();
             $table->decimal('amount', 10, 2);
-            $table->date('payment_date');
-            $table->enum('payment_method', ['cash', 'cheque', 'card', 'online', 'bank_transfer'])->default('cash');
-            $table->string('transaction_id')->nullable();
+            $table->date('payment_date')->index();
+            $table->enum('payment_method', ['cash', 'cheque', 'card', 'online', 'bank_transfer'])->default('cash')->index();
+            $table->string('transaction_id')->nullable()->index();
             $table->string('reference_number')->nullable();
-            $table->foreignId('received_by')->nullable()->constrained('users')->onDelete('set null');
+            $table->unsignedBigInteger('received_by')->nullable()->index();
+            $table->foreign('received_by')->references('id')->on('users')->onDelete('set null');
             $table->text('remarks')->nullable();
             $table->timestamps();
         });

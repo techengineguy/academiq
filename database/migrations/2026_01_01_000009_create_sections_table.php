@@ -11,10 +11,12 @@ return new class extends Migration
         Schema::create('sections', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('class_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('class_id');
+            $table->foreign('class_id')->references('id')->on('classes')->onDelete('cascade');
             $table->string('name'); // e.g., "A", "B", "C"
             $table->integer('capacity')->nullable();
-            $table->foreignId('class_teacher_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->unsignedBigInteger('class_teacher_id')->nullable();
+            $table->foreign('class_teacher_id')->references('id')->on('users')->onDelete('set null');
             $table->text('description')->nullable();
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();

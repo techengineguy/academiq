@@ -11,15 +11,17 @@ return new class extends Migration
         Schema::create('activity_logs', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
-            $table->string('action');
-            $table->string('module');
+            $table->unsignedBigInteger('user_id')->nullable()->index();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
+            $table->string('action')->index();
+            $table->string('module')->index();
             $table->string('description');
             $table->text('old_values')->nullable();
             $table->text('new_values')->nullable();
             $table->string('ip_address')->nullable();
             $table->string('user_agent')->nullable();
             $table->timestamps();
+            $table->index(['created_at', 'updated_at']);
         });
     }
 

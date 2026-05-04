@@ -11,10 +11,13 @@ return new class extends Migration
         Schema::create('exam_schedules', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->foreignId('exam_id')->constrained()->onDelete('cascade');
-            $table->foreignId('class_id')->constrained()->onDelete('cascade');
-            $table->foreignId('subject_id')->constrained()->onDelete('cascade');
-            $table->date('exam_date');
+            $table->unsignedBigInteger('exam_id')->index();
+            $table->foreign('exam_id')->references('id')->on('exams')->onDelete('cascade');
+            $table->unsignedBigInteger('class_id')->index();
+            $table->foreign('class_id')->references('id')->on('classes')->onDelete('cascade');
+            $table->unsignedBigInteger('subject_id')->index();
+            $table->foreign('subject_id')->references('id')->on('subjects')->onDelete('cascade');
+            $table->date('exam_date')->index();
             $table->time('start_time');
             $table->time('end_time');
             $table->string('room')->nullable();
