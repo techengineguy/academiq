@@ -10,6 +10,8 @@ return new class extends Migration
     {
         Schema::create('activity_logs', function (Blueprint $table) {
             $table->id();
+            $table->uuid('tenant_id')->nullable();
+            $table->foreign('tenant_id')->references('uuid')->on('institutions')->onDelete('cascade');
             $table->uuid('uuid')->unique();
             $table->unsignedBigInteger('user_id')->nullable()->index();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');

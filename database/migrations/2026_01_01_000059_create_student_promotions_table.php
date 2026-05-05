@@ -10,6 +10,8 @@ return new class extends Migration
     {
         Schema::create('student_promotions', function (Blueprint $table) {
             $table->id();
+            $table->uuid('tenant_id')->nullable();
+            $table->foreign('tenant_id')->references('uuid')->on('institutions')->onDelete('cascade');
             $table->uuid('uuid')->unique();
             $table->unsignedBigInteger('student_id');
             $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');

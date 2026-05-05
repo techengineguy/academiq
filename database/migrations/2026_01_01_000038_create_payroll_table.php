@@ -9,8 +9,8 @@ return new class extends Migration
     public function up()
     {
         Schema::create('payrolls', function (Blueprint $table) {
-            $table->id();
-            $table->uuid('uuid')->unique();
+            $table->id();            $table->uuid('tenant_id')->nullable();
+            $table->foreign('tenant_id')->references('uuid')->on('institutions')->onDelete('cascade');            $table->uuid('uuid')->unique();
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('month');

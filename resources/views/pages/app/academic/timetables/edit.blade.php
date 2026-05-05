@@ -129,7 +129,7 @@ new class extends Component {
             >
                 <flux:select.option value="">{{ __('Select Teacher') }}</flux:select.option>
                 @forelse(User::where('tenant_id', Auth::user()->tenant_id)->where('role', 'teacher')->get() as $teacher)
-                    <flux:select.option value="{{ $teacher->id }}">{{ $teacher->name }}</flux:select.option>
+                    <flux:select.option value="{{ $teacher->id }}">{{ $teacher->first_name }} {{ $teacher->last_name }}</flux:select.option>
                 @empty
                 @endforelse
             </flux:select>
@@ -141,7 +141,7 @@ new class extends Component {
             >
                 <flux:select.option value="">{{ __('Select Time Slot') }}</flux:select.option>
                 @forelse(TimeSlot::where('tenant_id', Auth::user()->tenant_id)->get() as $slot)
-                    <flux:select.option value="{{ $slot->id }}">{{ $slot->start_time }} - {{ $slot->end_time }}</flux:select.option>
+                    <flux:select.option value="{{ $slot->id }}">{{ $slot->start_time->format('H:i') }} - {{ $slot->end_time->format('H:i') }}</flux:select.option>
                 @empty
                 @endforelse
             </flux:select>

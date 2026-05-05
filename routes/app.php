@@ -82,6 +82,10 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web'])->gr
     Route::livewire('classes/create', 'pages::app.academic.classes.create')->name('classes.create');
     Route::livewire('classes/{id}/edit', 'pages::app.academic.classes.edit')->name('classes.edit');
     
+    Route::livewire('sections', 'pages::app.academic.sections.index')->name('sections.index');
+    Route::livewire('sections/create', 'pages::app.academic.sections.create')->name('sections.create');
+    Route::livewire('sections/{id}/edit', 'pages::app.academic.sections.edit')->name('sections.edit');
+    
     Route::livewire('subjects', 'pages::app.academic.subjects.index')->name('subjects.index');
     Route::livewire('subjects/create', 'pages::app.academic.subjects.create')->name('subjects.create');
     Route::livewire('subjects/{id}/edit', 'pages::app.academic.subjects.edit')->name('subjects.edit');

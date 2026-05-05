@@ -10,9 +10,9 @@ return new class extends Migration
     {
         Schema::create('teachers', function (Blueprint $table) {
             $table->id();
-            $table->uuid('uuid')->unique();
-            $table->uuid('tenant_id')->index();
+            $table->uuid('tenant_id')->nullable();
             $table->foreign('tenant_id')->references('uuid')->on('institutions')->onDelete('cascade');
+            $table->uuid('uuid')->unique();
             $table->unsignedBigInteger('user_id')->index()->nullable();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->unsignedBigInteger('institution_id')->index();

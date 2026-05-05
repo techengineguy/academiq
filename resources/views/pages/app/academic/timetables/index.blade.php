@@ -80,11 +80,11 @@ class extends Component {
                             <flux:table.row :key="$timetable->id">
                                 <flux:table.cell>{{ $timetable->class?->name }}</flux:table.cell>
                                 <flux:table.cell>{{ $timetable->subject?->name }}</flux:table.cell>
-                                <flux:table.cell>{{ $timetable->teacher?->name }}</flux:table.cell>
+                                <flux:table.cell>{{ $timetable->teacher?->first_name }} {{ $timetable->teacher?->last_name }}</flux:table.cell>
                                 <flux:table.cell>{{ ucfirst($timetable->day) }}</flux:table.cell>
                                 <flux:table.cell>
                                     @if($timetable->timeSlot)
-                                        {{ $timetable->timeSlot->start_time }} - {{ $timetable->timeSlot->end_time }}
+                                        {{ $timetable->timeSlot->start_time->format('H:i') }} - {{ $timetable->timeSlot->end_time->format('H:i') }}
                                     @endif
                                 </flux:table.cell>
                                 <flux:table.cell>{{ $timetable->room }}</flux:table.cell>

@@ -10,6 +10,8 @@ return new class extends Migration
     {
         Schema::create('assignment_submissions', function (Blueprint $table) {
             $table->id();
+            $table->uuid('tenant_id')->nullable();
+            $table->foreign('tenant_id')->references('uuid')->on('institutions')->onDelete('cascade');
             $table->uuid('uuid')->unique();
             $table->unsignedBigInteger('assignment_id')->index();
             $table->foreign('assignment_id')->references('id')->on('assignments')->onDelete('cascade');

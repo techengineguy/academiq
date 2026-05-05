@@ -10,6 +10,8 @@ return new class extends Migration
     {
         Schema::create('exam_schedules', function (Blueprint $table) {
             $table->id();
+            $table->uuid('tenant_id')->nullable();
+            $table->foreign('tenant_id')->references('uuid')->on('institutions')->onDelete('cascade');
             $table->uuid('uuid')->unique();
             $table->unsignedBigInteger('exam_id')->index();
             $table->foreign('exam_id')->references('id')->on('exams')->onDelete('cascade');

@@ -17,12 +17,15 @@
                 </flux:sidebar.item>
 
                 <!-- Academic Management -->
-                <flux:sidebar.group expandable :expanded="request()->routeIs('academic-years.*', 'classes.*', 'subjects.*', 'timetables.*', 'time-slots.*', 'lesson-plans.*', 'academic.trash')" :heading="__('Academic')" class="grid">
+                <flux:sidebar.group expandable :expanded="request()->routeIs('academic-years.*', 'classes.*', 'sections.*', 'subjects.*', 'timetables.*', 'time-slots.*', 'lesson-plans.*', 'academic.trash')" :heading="__('Academic')" class="grid">
                     <flux:sidebar.item icon="calendar" :href="route('academic-years.index')" :current="request()->routeIs('academic-years.*')" wire:navigate>
                         {{ __('Academic Years') }}
                     </flux:sidebar.item>
                     <flux:sidebar.item icon="building-library" :href="route('classes.index')" :current="request()->routeIs('classes.*')" wire:navigate>
                         {{ __('Classes') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="tag" :href="route('sections.index')" :current="request()->routeIs('sections.*')" wire:navigate>
+                        {{ __('Sections') }}
                     </flux:sidebar.item>
                     <flux:sidebar.item icon="book-open" :href="route('subjects.index')" :current="request()->routeIs('subjects.*')" wire:navigate>
                         {{ __('Subjects') }}

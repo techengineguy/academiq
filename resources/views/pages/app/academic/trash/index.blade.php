@@ -7,10 +7,12 @@ use Livewire\Attributes\On;
 use App\Models\Subject;
 use App\Models\ClassModel;
 use App\Models\AcademicYear;
+use App\Models\LessonPlan;
 use Livewire\WithPagination;
 use Flux\Flux;
 use TallStackUi\Traits\Interactions;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 new #[Title('Trash')] 
 class extends Component {
@@ -39,6 +41,13 @@ class extends Component {
     public function trashedAcademicYears()
     {
         return AcademicYear::where('tenant_id', Auth::user()->tenant_id)
+            ->onlyTrashed()->orderBy('deleted_at', 'desc')->paginate(10);
+    }
+
+    #[Computed]
+    public function trashedLessonPlans()
+    {
+        return LessonPlan::where('tenant_id', Auth::user()->tenant_id)
             ->onlyTrashed()->orderBy('deleted_at', 'desc')->paginate(10);
     }
 
@@ -72,6 +81,16 @@ class extends Component {
         Flux::toast(variant: 'success', text: __('Academic year restored successfully.'));
     }
 
+    public function restoreLessonPlan($id): void
+    {
+        $plan = LessonPlan::where('tenant_id', Auth::user()->tenant_id)
+            ->onlyTrashed()->findOrFail($id);
+        $plan->restore();
+        
+        unset($this->trashedLessonPlans);
+        Flux::toast(variant: 'success', text: __('Lesson plan restored successfully.'));
+    }
+
     public function confirmPermanentDelete($id, $type): void
     {
         $this->itemIdToDelete = $id;
@@ -81,6 +100,7 @@ class extends Component {
             'subject' => 'Subject',
             'class' => 'Class',
             'academic-year' => 'Academic Year',
+            'lesson-plan' => 'Lesson Plan',
         ];
         $itemName = $itemNames[$type] ?? 'Item';
         
@@ -111,6 +131,11 @@ class extends Component {
                 ->onlyTrashed()->findOrFail($this->itemIdToDelete)->forceDelete();
             unset($this->trashedAcademicYears);
             Flux::toast(variant: 'success', text: __('Academic year permanently deleted.'));
+        } elseif ($this->itemTypeToDelete === 'lesson-plan') {
+            LessonPlan::where('tenant_id', Auth::user()->tenant_id)
+                ->onlyTrashed()->findOrFail($this->itemIdToDelete)->forceDelete();
+            unset($this->trashedLessonPlans);
+            Flux::toast(variant: 'success', text: __('Lesson plan permanently deleted.'));
         }
 
         $this->itemIdToDelete = null;
@@ -144,6 +169,12 @@ class extends Component {
                     {{ __('Classes') }}
                     @if($this->trashedClasses->total() > 0)
                         <flux:badge variant="info" class="ml-2">{{ $this->trashedClasses->total() }}</flux:badge>
+                    @endif
+                </flux:tab>
+                <flux:tab name="lesson-plans" icon="trash">
+                    {{ __('Lesson Plans') }}
+                    @if($this->trashedLessonPlans->total() > 0)
+                        <flux:badge variant="info" class="ml-2">{{ $this->trashedLessonPlans->total() }}</flux:badge>
                     @endif
                 </flux:tab>
             </flux:tabs>
@@ -305,6 +336,62 @@ class extends Component {
                             <flux:icon name="inbox" class="mx-auto h-12 w-12 text-gray-400" />
                             <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-white">{{ __('No Deleted Academic Years') }}</h3>
                             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('All your academic years are safe.') }}</p>
+                        </div>
+                    @endif
+                </flux:card>
+            </flux:tab.panel>
+
+            <flux:tab.panel name="lesson-plans">
+                <flux:card>
+                    @if($this->trashedLessonPlans->count())
+                        <flux:table :paginate="$this->trashedLessonPlans">
+                            <flux:table.columns>
+                                <flux:table.column>{{ __('Date') }}</flux:table.column>
+                                <flux:table.column>{{ __('Topic') }}</flux:table.column>
+                                <flux:table.column>{{ __('Teacher') }}</flux:table.column>
+                                <flux:table.column>{{ __('Class') }}</flux:table.column>
+                                <flux:table.column>{{ __('Deleted') }}</flux:table.column>
+                                <flux:table.column>{{ __('Actions') }}</flux:table.column>
+                            </flux:table.columns>
+                            @foreach($this->trashedLessonPlans as $plan)
+                                <flux:table.rows>
+                                    <flux:table.row :key="$plan->id">
+                                        <flux:table.cell>{{ $plan->lesson_date?->format('M d, Y') }}</flux:table.cell>
+                                        <flux:table.cell>{{ Str::limit($plan->topic, 30) }}</flux:table.cell>
+                                        <flux:table.cell>{{ $plan->teacher?->first_name }} {{ $plan->teacher?->last_name }}</flux:table.cell>
+                                        <flux:table.cell>{{ $plan->class?->name }}</flux:table.cell>
+                                        <flux:table.cell>
+                                            <span class="text-sm text-gray-500">
+                                                {{ $plan->deleted_at->format('M d, Y H:i') }}
+                                            </span>
+                                        </flux:table.cell>
+                                        <flux:table.cell>
+                                            <div class="flex gap-2">
+                                                <flux:button 
+                                                    size="sm" 
+                                                    variant="primary" 
+                                                    icon="arrow-uturn-left"
+                                                    wire:click="restoreLessonPlan({{ $plan->id }})"
+                                                    title="{{ __('Restore') }}"
+                                                />
+                                                <flux:button 
+                                                    size="sm" 
+                                                    variant="danger" 
+                                                    icon="trash"
+                                                    wire:click="confirmPermanentDelete({{ $plan->id }}, 'lesson-plan')"
+                                                    title="{{ __('Permanently Delete') }}"
+                                                />
+                                            </div>
+                                        </flux:table.cell>
+                                    </flux:table.row>
+                                </flux:table.rows>
+                            @endforeach
+                        </flux:table>
+                    @else
+                        <div class="p-6 text-center">
+                            <flux:icon name="inbox" class="mx-auto h-12 w-12 text-gray-400" />
+                            <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-white">{{ __('No Deleted Lesson Plans') }}</h3>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('All your lesson plans are safe.') }}</p>
                         </div>
                     @endif
                 </flux:card>
