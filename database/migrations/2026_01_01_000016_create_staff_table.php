@@ -13,6 +13,9 @@ return new class extends Migration
             $table->uuid('tenant_id')->nullable();
             $table->foreign('tenant_id')->references('uuid')->on('institutions')->onDelete('cascade');
             $table->uuid('uuid')->unique();
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('email')->unique();
             $table->unsignedBigInteger('user_id')->index();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->unsignedBigInteger('institution_id')->index();

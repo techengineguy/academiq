@@ -72,6 +72,7 @@ class extends Component {
                         <flux:table.column>{{ __('Teacher') }}</flux:table.column>
                         <flux:table.column>{{ __('Class') }}</flux:table.column>
                         <flux:table.column>{{ __('Subject') }}</flux:table.column>
+                        <flux:table.column>{{ __('Attachment') }}</flux:table.column>
                         <flux:table.column>{{ __('Actions') }}</flux:table.column>
                     </flux:table.columns>
                     @foreach($this->lessonPlans as $plan)
@@ -82,6 +83,16 @@ class extends Component {
                                 <flux:table.cell>{{ $plan->teacher?->first_name }} {{ $plan->teacher?->last_name }}</flux:table.cell>
                                 <flux:table.cell>{{ $plan->class?->name }}</flux:table.cell>
                                 <flux:table.cell>{{ $plan->subject?->name }}</flux:table.cell>
+                                <flux:table.cell>
+                                    @if($plan->attachment)
+                                        <a href="{{ asset('storage/' . $plan->attachment) }}" download class="text-blue-600 hover:text-blue-800 text-sm flex items-center gap-1">
+                                            <flux:icon name="arrow-down-tray" class="h-4 w-4" />
+                                            {{ basename($plan->attachment) }}
+                                        </a>
+                                    @else
+                                        <span class="text-gray-400 text-sm">—</span>
+                                    @endif
+                                </flux:table.cell>
                                 <flux:table.cell>
                                     <div class="flex gap-2">
                                         <flux:button 

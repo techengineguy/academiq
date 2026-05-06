@@ -21,6 +21,7 @@ new class extends Component {
     public $department = '';
     public $qualification = '';
     public $specialization = '';
+    public $salary = '';
     public $employment_type = 'full-time';
     public $emergency_contact_name = '';
     public $emergency_contact_phone = '';
@@ -39,6 +40,7 @@ new class extends Component {
             'department' => 'nullable|string|max:255',
             'qualification' => 'nullable|string|max:255',
             'specialization' => 'nullable|string|max:255',
+            'salary' => 'nullable|numeric|min:0',
             'employment_type' => 'required|in:full-time,part-time,contract',
             'emergency_contact_name' => 'nullable|string|max:255',
             'emergency_contact_phone' => 'nullable|string|max:20',
@@ -77,6 +79,9 @@ new class extends Component {
             'department' => $validated['department'],
             'qualification' => $validated['qualification'],
             'specialization' => $validated['specialization'],
+            'salary' => $validated['salary'] !== null && $validated['salary'] !== ''
+                ? number_format((float) $validated['salary'], 2, '.', '')
+                : null,
             'employment_type' => $validated['employment_type'],
             'emergency_contact_name' => $validated['emergency_contact_name'],
             'emergency_contact_phone' => $validated['emergency_contact_phone'],
@@ -114,7 +119,10 @@ new class extends Component {
             <flux:input label="{{ __('Qualification') }}" placeholder="{{ __('e.g., B.Sc, B.Ed') }}" wire:model="qualification" />
         </div>
 
-        <flux:input label="{{ __('Specialization') }}" placeholder="{{ __('e.g., Physics, Mathematics') }}" wire:model="specialization" />
+        <div class="grid grid-cols-2 gap-4">
+            <flux:input label="{{ __('Specialization') }}" placeholder="{{ __('e.g., Physics, Mathematics') }}" wire:model="specialization" />
+            <flux:input label="{{ __('Salary') }}" type="text" inputmode="decimal" placeholder="{{ __('Enter salary amount') }}" wire:model="salary" />
+        </div>
 
         <div class="grid grid-cols-2 gap-4">
             <flux:select label="{{ __('Employment Type') }}" variant="listbox" wire:model="employment_type" required>

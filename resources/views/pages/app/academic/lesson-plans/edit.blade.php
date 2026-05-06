@@ -7,9 +7,13 @@ use App\Models\User;
 use App\Models\ClassModel;
 use App\Models\Subject;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Flux\Flux;
+use Livewire\WithFileUploads;
 
 new class extends Component {
+    use WithFileUploads;
+
     public ?LessonPlan $lessonPlan = null;
 
     public string $teacher_id = '';
@@ -21,7 +25,8 @@ new class extends Component {
     public string $content = '';
     public string $teaching_method = '';
     public string $resources = '';
-    public string $attachment = '';
+    public $attachment;
+    public ?string $existingAttachment = null;
     public string $homework = '';
     public string $remarks = '';
 
@@ -40,7 +45,7 @@ new class extends Component {
         $this->content = $this->lessonPlan->content;
         $this->teaching_method = $this->lessonPlan->teaching_method;
         $this->resources = $this->lessonPlan->resources;
-        $this->attachment = $this->lessonPlan->attachment;
+        $this->existingAttachment = $this->lessonPlan->attachment;
         $this->homework = $this->lessonPlan->homework;
         $this->remarks = $this->lessonPlan->remarks;
     }
@@ -57,10 +62,20 @@ new class extends Component {
             'content' => ['nullable', 'string'],
             'teaching_method' => ['nullable', 'string', 'max:255'],
             'resources' => ['nullable', 'string'],
-            'attachment' => ['nullable', 'string', 'max:255'],
+            'attachment' => ['nullable', 'file', 'mimes:pdf,docx', 'max:10240'],
             'homework' => ['nullable', 'string'],
             'remarks' => ['nullable', 'string'],
         ]);
+
+        $attachmentPath = $this->existingAttachment;
+        if ($this->attachment) {
+            // Delete old attachment if it exists
+            if ($this->existingAttachment) {
+                Storage::disk('public')->delete($this->existingAttachment);
+            }
+            // Store new attachment
+            $attachmentPath = $this->attachment->store('lesson-plans', 'public');
+        }
 
         $this->lessonPlan->update([
             'teacher_id' => $this->teacher_id,
@@ -72,7 +87,7 @@ new class extends Component {
             'content' => $this->content,
             'teaching_method' => $this->teaching_method,
             'resources' => $this->resources,
-            'attachment' => $this->attachment,
+            'attachment' => $attachmentPath,
             'homework' => $this->homework,
             'remarks' => $this->remarks,
         ]);
@@ -124,7 +139,12 @@ new class extends Component {
             <flux:textarea label="{{ __('Content') }}" wire:model="content" />
             <flux:textarea label="{{ __('Resources') }}" wire:model="resources" />
             <flux:textarea label="{{ __('Homework') }}" wire:model="homework" />
-            <flux:input label="{{ __('Attachment') }}" wire:model="attachment" />
+            <flux:input type="file" wire:model="attachment" label="{{ __('Attachment (PDF or DOCX)') }}" accept=".pdf,.docx" />
+            @if ($attachment)
+                <p class="mt-2 text-sm text-blue-600">{{ __('New file:') }} {{ $attachment->getClientOriginalName() }}</p>
+            @elseif ($existingAttachment)
+                <p class="mt-2 text-sm text-gray-600">{{ __('Current file:') }} {{ basename($existingAttachment) }}</p>
+            @endif
             <flux:textarea label="{{ __('Remarks') }}" wire:model="remarks" />
 
             <div class="flex gap-3 pt-2">

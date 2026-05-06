@@ -20,6 +20,7 @@ new class extends Component {
     public string $department = '';
     public string $qualification = '';
     public string $specialization = '';
+    public string $salary = '';
     public string $employment_type = 'full-time';
     public string $emergency_contact_name = '';
     public string $emergency_contact_phone = '';
@@ -41,6 +42,7 @@ new class extends Component {
         $this->department = $this->teacher->department;
         $this->qualification = $this->teacher->qualification;
         $this->specialization = $this->teacher->specialization;
+        $this->salary = (string) ($this->teacher->salary ?? '');
         $this->employment_type = $this->teacher->employment_type;
         $this->emergency_contact_name = $this->teacher->emergency_contact_name;
         $this->emergency_contact_phone = $this->teacher->emergency_contact_phone;
@@ -60,6 +62,7 @@ new class extends Component {
             'department' => ['nullable', 'string', 'max:255'],
             'qualification' => ['nullable', 'string', 'max:255'],
             'specialization' => ['nullable', 'string', 'max:255'],
+            'salary' => ['nullable', 'numeric', 'min:0'],
             'employment_type' => ['required', 'in:full-time,part-time,contract'],
             'emergency_contact_name' => ['nullable', 'string', 'max:255'],
             'emergency_contact_phone' => ['nullable', 'string', 'max:20'],
@@ -87,6 +90,9 @@ new class extends Component {
             'department' => $this->department,
             'qualification' => $this->qualification,
             'specialization' => $this->specialization,
+            'salary' => $this->salary !== ''
+                ? number_format((float) $this->salary, 2, '.', '')
+                : null,
             'employment_type' => $this->employment_type,
             'emergency_contact_name' => $this->emergency_contact_name,
             'emergency_contact_phone' => $this->emergency_contact_phone,
@@ -124,7 +130,10 @@ new class extends Component {
                 <flux:input label="{{ __('Qualification') }}" wire:model="qualification" />
             </div>
 
-            <flux:input label="{{ __('Specialization') }}" wire:model="specialization" />
+            <div class="grid grid-cols-2 gap-4">
+                <flux:input label="{{ __('Specialization') }}" wire:model="specialization" />
+                <flux:input label="{{ __('Salary') }}" type="text" inputmode="decimal" wire:model="salary" />
+            </div>
 
             <div class="grid grid-cols-2 gap-4">
                 <flux:select label="{{ __('Employment Type') }}" variant="listbox" wire:model="employment_type" required>

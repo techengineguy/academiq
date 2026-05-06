@@ -61,11 +61,11 @@
                 </flux:sidebar.group>
 
                 <!-- Staff Management -->
-                <flux:sidebar.group expandable :expanded="request()->routeIs('teachers.*', 'staff.*', 'payroll.*', 'staff.trash')" :heading="__('Staff')" class="grid">
+                <flux:sidebar.group expandable :expanded="request()->routeIs('teachers.*', 'staffs.*', 'payroll.*', 'staff.trash')" :heading="__('Staff')" class="grid">
                     <flux:sidebar.item icon="academic-cap" :href="route('teachers.index')" :current="request()->routeIs('teachers.*')" wire:navigate>
                         {{ __('Teachers') }}
                     </flux:sidebar.item>
-                    <flux:sidebar.item icon="briefcase" :href="route('staff.index')" :current="request()->routeIs('staff.*')" wire:navigate>
+                    <flux:sidebar.item icon="briefcase" :href="route('staffs.index')" :current="request()->routeIs('staffs.*')" wire:navigate>
                         {{ __('Staff') }}
                     </flux:sidebar.item>
                     <flux:sidebar.item icon="credit-card" :href="route('payroll.index')" :current="request()->routeIs('payroll.*')" wire:navigate>

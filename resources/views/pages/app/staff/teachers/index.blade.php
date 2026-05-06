@@ -58,10 +58,6 @@ class extends Component {
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Teachers') }}</h1>
             <div class="flex gap-2">
-                <a href="{{ route('staff.trash') }}" wire:navigate class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition">
-                    <flux:icon name="trash" class="w-4 h-4 mr-2" />
-                    {{ __('View Trash') }}
-                </a>
                 <flux:button class="button" x-on:click="$tsui.open.slide('create-teacher')" icon="plus">
                     {{ __('New Teacher') }}
                 </flux:button>

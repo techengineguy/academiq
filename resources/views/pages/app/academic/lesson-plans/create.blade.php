@@ -7,11 +7,13 @@ use App\Models\ClassModel;
 use App\Models\Subject;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 use Flux\Flux;
 use TallStackUi\Traits\Interactions;
+use Livewire\WithFileUploads;
 
 new class extends Component {
-    use Interactions;
+    use Interactions, WithFileUploads;
 
     public $teacher_id = '';
     public $class_id = '';
@@ -22,7 +24,7 @@ new class extends Component {
     public $content = '';
     public $teaching_method = '';
     public $resources = '';
-    public $attachment = '';
+    public $attachment;
     public $homework = '';
     public $remarks = '';
 
@@ -38,10 +40,15 @@ new class extends Component {
             'content' => 'nullable|string',
             'teaching_method' => 'nullable|string|max:255',
             'resources' => 'nullable|string',
-            'attachment' => 'nullable|string|max:255',
+            'attachment' => 'nullable|file|mimes:pdf,docx|max:10240',
             'homework' => 'nullable|string',
             'remarks' => 'nullable|string',
         ]);
+
+        $attachmentPath = null;
+        if ($this->attachment) {
+            $attachmentPath = $this->attachment->store('lesson-plans', 'public');
+        }
 
         LessonPlan::create([
             'tenant_id' => Auth::user()->tenant_id,
@@ -55,7 +62,7 @@ new class extends Component {
             'content' => $validated['content'],
             'teaching_method' => $validated['teaching_method'],
             'resources' => $validated['resources'],
-            'attachment' => $validated['attachment'],
+            'attachment' => $attachmentPath,
             'homework' => $validated['homework'],
             'remarks' => $validated['remarks'],
         ]);
@@ -107,7 +114,10 @@ new class extends Component {
         <flux:textarea label="{{ __('Content') }}" placeholder="{{ __('Enter lesson content') }}" wire:model="content" />
         <flux:textarea label="{{ __('Resources') }}" placeholder="{{ __('Enter required resources') }}" wire:model="resources" />
         <flux:textarea label="{{ __('Homework') }}" placeholder="{{ __('Enter homework assignments') }}" wire:model="homework" />
-        <flux:input label="{{ __('Attachment') }}" placeholder="{{ __('e.g., file path or URL') }}" wire:model="attachment" />
+        <flux:input type="file" wire:model="attachment" label="{{ __('Attachment (PDF or DOCX)') }}" accept=".pdf,.docx" />
+        @if ($attachment)
+            <p class="mt-2 text-sm text-gray-600">{{ __('File:') }} {{ $attachment->getClientOriginalName() }}</p>
+        @endif
         <flux:textarea label="{{ __('Remarks') }}" placeholder="{{ __('Enter any additional remarks') }}" wire:model="remarks" />
 
         <div class="flex gap-3">

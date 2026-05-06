@@ -12,6 +12,9 @@ class Staff extends Model
     protected $fillable = [
         'tenant_id',
         'uuid',
+        'first_name',
+        'last_name',
+        'email',
         'user_id',
         'institution_id',
         'employee_id',

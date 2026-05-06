@@ -127,7 +127,7 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web'])->gr
     Route::livewire('teachers/{id}/edit', 'pages::app.staff.teachers.edit')->name('teachers.edit');
     Route::livewire('staff/trash', 'pages::app.staff.trash.index')->name('staff.trash');
     
-    Route::livewire('staff', 'pages::app.staff.staff.index')->name('staff.index');
+    Route::livewire('staff', 'pages::app.staff.staff.index')->name('staffs.index');
     Route::livewire('staff/create', 'pages::app.staff.staff.create')->name('staff.create');
     Route::livewire('staff/{id}/edit', 'pages::app.staff.staff.edit')->name('staff.edit');
     
