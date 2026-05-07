@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -53,70 +53,71 @@ class extends Component {
 };
 ?>
 
-<div>
+<div class="py-4 space-y-6">
     <x-dialog/>
-    <div class="space-y-2">
-        <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between">
+        <div>
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Timetables') }}</h1>
-            <flux:button class="button" x-on:click="$tsui.open.slide('create-timetable')" icon="plus">
-                {{ __('New Timetable') }}
-            </flux:button>
+            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Manage your timetable entries.') }}</p>
         </div>
-
-        <flux:card>
-            @if($this->timetables->count())
-                <flux:table :paginate="$this->timetables">
-                    <flux:table.columns>
-                        <flux:table.column>{{ __('Class') }}</flux:table.column>
-                        <flux:table.column>{{ __('Subject') }}</flux:table.column>
-                        <flux:table.column>{{ __('Teacher') }}</flux:table.column>
-                        <flux:table.column>{{ __('Day') }}</flux:table.column>
-                        <flux:table.column>{{ __('Time') }}</flux:table.column>
-                        <flux:table.column>{{ __('Room') }}</flux:table.column>
-                        <flux:table.column>{{ __('Actions') }}</flux:table.column>
-                    </flux:table.columns>
-                    @foreach($this->timetables as $timetable)
-                        <flux:table.rows>
-                            <flux:table.row :key="$timetable->id">
-                                <flux:table.cell>{{ $timetable->class?->name }}</flux:table.cell>
-                                <flux:table.cell>{{ $timetable->subject?->name }}</flux:table.cell>
-                                <flux:table.cell>{{ $timetable->teacher?->first_name }} {{ $timetable->teacher?->last_name }}</flux:table.cell>
-                                <flux:table.cell>{{ ucfirst($timetable->day) }}</flux:table.cell>
-                                <flux:table.cell>
-                                    @if($timetable->timeSlot)
-                                        {{ $timetable->timeSlot->start_time->format('H:i') }} - {{ $timetable->timeSlot->end_time->format('H:i') }}
-                                    @endif
-                                </flux:table.cell>
-                                <flux:table.cell>{{ $timetable->room }}</flux:table.cell>
-                                <flux:table.cell>
-                                    <div class="flex gap-2">
-                                        <flux:button 
-                                            size="sm" 
-                                            variant="subtle" 
-                                            x-on:click="$tsui.open.slide('edit-timetable'), $wire.dispatch('edit-timetable', { uuid: '{{ $timetable->uuid }}' })" 
-                                            icon="pencil" 
-                                        />
-                                        <flux:button 
-                                            size="sm" 
-                                            variant="danger" 
-                                            icon="trash"
-                                            wire:click="confirmDelete({{ $timetable->id }})"
-                                        />
-                                    </div>
-                                </flux:table.cell>
-                            </flux:table.row>
-                        </flux:table.rows>
-                    @endforeach
-                </flux:table>
-            @else
-                <div class="p-6 text-center">
-                    <flux:icon name="inbox" class="mx-auto h-12 w-12 text-gray-400" />
-                    <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-white">{{ __('No Timetables') }}</h3>
-                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Get started by creating a new timetable.') }}</p>
-                </div>
-            @endif
-        </flux:card>
+        <flux:button class="button" x-on:click="$tsui.open.slide('create-timetable')" icon="plus">
+            {{ __('New Timetable') }}
+        </flux:button>
     </div>
+
+    <flux:card>
+        @if($this->timetables->count())
+            <flux:table :paginate="$this->timetables">
+                <flux:table.columns>
+                    <flux:table.column>{{ __('Class') }}</flux:table.column>
+                    <flux:table.column>{{ __('Subject') }}</flux:table.column>
+                    <flux:table.column>{{ __('Teacher') }}</flux:table.column>
+                    <flux:table.column>{{ __('Day') }}</flux:table.column>
+                    <flux:table.column>{{ __('Time') }}</flux:table.column>
+                    <flux:table.column>{{ __('Room') }}</flux:table.column>
+                    <flux:table.column>{{ __('Actions') }}</flux:table.column>
+                </flux:table.columns>
+                @foreach($this->timetables as $timetable)
+                    <flux:table.rows>
+                        <flux:table.row :key="$timetable->id">
+                            <flux:table.cell>{{ $timetable->class?->name }}</flux:table.cell>
+                            <flux:table.cell>{{ $timetable->subject?->name }}</flux:table.cell>
+                            <flux:table.cell>{{ $timetable->teacher?->first_name }} {{ $timetable->teacher?->last_name }}</flux:table.cell>
+                            <flux:table.cell>{{ ucfirst($timetable->day) }}</flux:table.cell>
+                            <flux:table.cell>
+                                @if($timetable->timeSlot)
+                                    {{ $timetable->timeSlot->start_time->format('H:i') }} - {{ $timetable->timeSlot->end_time->format('H:i') }}
+                                @endif
+                            </flux:table.cell>
+                            <flux:table.cell>{{ $timetable->room }}</flux:table.cell>
+                            <flux:table.cell>
+                                <div class="flex gap-2">
+                                    <flux:button 
+                                        size="sm" 
+                                        variant="subtle" 
+                                        x-on:click="$tsui.open.slide('edit-timetable'), $wire.dispatch('edit-timetable', { uuid: '{{ $timetable->uuid }}' })" 
+                                        icon="pencil" 
+                                    />
+                                    <flux:button 
+                                        size="sm" 
+                                        variant="danger" 
+                                        icon="trash"
+                                        wire:click="confirmDelete({{ $timetable->id }})"
+                                    />
+                                </div>
+                            </flux:table.cell>
+                        </flux:table.row>
+                    </flux:table.rows>
+                @endforeach
+            </flux:table>
+        @else
+            <div class="p-6 text-center">
+                <flux:icon name="inbox" class="mx-auto h-12 w-12 text-gray-400" />
+                <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-white">{{ __('No Timetables') }}</h3>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Get started by creating a new timetable.') }}</p>
+            </div>
+        @endif
+    </flux:card>
 
     <x-slide id="create-timetable" title="{{ __('Create Timetable') }}">
         <livewire:pages::app.academic.timetables.create />

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -53,75 +53,76 @@ class extends Component {
 };
 ?>
 
-<div>
+<div class="py-4 space-y-6">
     <x-dialog/>
-    <div class="space-y-2">
-        <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between">
+        <div>
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Lesson Plans') }}</h1>
-            <flux:button class="button" x-on:click="$tsui.open.slide('create-lesson-plan')" icon="plus">
-                {{ __('New Lesson Plan') }}
-            </flux:button>
+            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Manage your lesson plans.') }}</p>
         </div>
-
-        <flux:card>
-            @if($this->lessonPlans->count())
-                <flux:table :paginate="$this->lessonPlans">
-                    <flux:table.columns>
-                        <flux:table.column>{{ __('Date') }}</flux:table.column>
-                        <flux:table.column>{{ __('Topic') }}</flux:table.column>
-                        <flux:table.column>{{ __('Teacher') }}</flux:table.column>
-                        <flux:table.column>{{ __('Class') }}</flux:table.column>
-                        <flux:table.column>{{ __('Subject') }}</flux:table.column>
-                        <flux:table.column>{{ __('Attachment') }}</flux:table.column>
-                        <flux:table.column>{{ __('Actions') }}</flux:table.column>
-                    </flux:table.columns>
-                    @foreach($this->lessonPlans as $plan)
-                        <flux:table.rows>
-                            <flux:table.row :key="$plan->id">
-                                <flux:table.cell>{{ $plan->lesson_date?->format('M d, Y') }}</flux:table.cell>
-                                <flux:table.cell>{{ Str::limit($plan->topic, 30) }}</flux:table.cell>
-                                <flux:table.cell>{{ $plan->teacher?->first_name }} {{ $plan->teacher?->last_name }}</flux:table.cell>
-                                <flux:table.cell>{{ $plan->class?->name }}</flux:table.cell>
-                                <flux:table.cell>{{ $plan->subject?->name }}</flux:table.cell>
-                                <flux:table.cell>
-                                    @if($plan->attachment)
-                                        <a href="{{ asset('storage/' . $plan->attachment) }}" download class="text-blue-600 hover:text-blue-800 text-sm flex items-center gap-1">
-                                            <flux:icon name="arrow-down-tray" class="h-4 w-4" />
-                                            {{ basename($plan->attachment) }}
-                                        </a>
-                                    @else
-                                        <span class="text-gray-400 text-sm">—</span>
-                                    @endif
-                                </flux:table.cell>
-                                <flux:table.cell>
-                                    <div class="flex gap-2">
-                                        <flux:button 
-                                            size="sm" 
-                                            variant="subtle" 
-                                            x-on:click="$tsui.open.slide('edit-lesson-plan'), $wire.dispatch('edit-lesson-plan', { uuid: '{{ $plan->uuid }}' })" 
-                                            icon="pencil" 
-                                        />
-                                        <flux:button 
-                                            size="sm" 
-                                            variant="danger" 
-                                            icon="trash"
-                                            wire:click="confirmDelete({{ $plan->id }})"
-                                        />
-                                    </div>
-                                </flux:table.cell>
-                            </flux:table.row>
-                        </flux:table.rows>
-                    @endforeach
-                </flux:table>
-            @else
-                <div class="p-6 text-center">
-                    <flux:icon name="inbox" class="mx-auto h-12 w-12 text-gray-400" />
-                    <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-white">{{ __('No Lesson Plans') }}</h3>
-                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Get started by creating a new lesson plan.') }}</p>
-                </div>
-            @endif
-        </flux:card>
+        <flux:button class="button" x-on:click="$tsui.open.slide('create-lesson-plan')" icon="plus">
+            {{ __('New Lesson Plan') }}
+        </flux:button>
     </div>
+
+    <flux:card>
+        @if($this->lessonPlans->count())
+            <flux:table :paginate="$this->lessonPlans">
+                <flux:table.columns>
+                    <flux:table.column>{{ __('Date') }}</flux:table.column>
+                    <flux:table.column>{{ __('Topic') }}</flux:table.column>
+                    <flux:table.column>{{ __('Teacher') }}</flux:table.column>
+                    <flux:table.column>{{ __('Class') }}</flux:table.column>
+                    <flux:table.column>{{ __('Subject') }}</flux:table.column>
+                    <flux:table.column>{{ __('Attachment') }}</flux:table.column>
+                    <flux:table.column>{{ __('Actions') }}</flux:table.column>
+                </flux:table.columns>
+                @foreach($this->lessonPlans as $plan)
+                    <flux:table.rows>
+                        <flux:table.row :key="$plan->id">
+                            <flux:table.cell>{{ $plan->lesson_date?->format('M d, Y') }}</flux:table.cell>
+                            <flux:table.cell>{{ Str::limit($plan->topic, 30) }}</flux:table.cell>
+                            <flux:table.cell>{{ $plan->teacher?->first_name }} {{ $plan->teacher?->last_name }}</flux:table.cell>
+                            <flux:table.cell>{{ $plan->class?->name }}</flux:table.cell>
+                            <flux:table.cell>{{ $plan->subject?->name }}</flux:table.cell>
+                            <flux:table.cell>
+                                @if($plan->attachment)
+                                    <a href="{{ asset('storage/' . $plan->attachment) }}" download class="text-blue-600 hover:text-blue-800 text-sm flex items-center gap-1">
+                                        <flux:icon name="arrow-down-tray" class="h-4 w-4" />
+                                        {{ basename($plan->attachment) }}
+                                    </a>
+                                @else
+                                    <span class="text-gray-400 text-sm">No attachment</span>
+                                @endif
+                            </flux:table.cell>
+                            <flux:table.cell>
+                                <div class="flex gap-2">
+                                    <flux:button 
+                                        size="sm" 
+                                        variant="subtle" 
+                                        x-on:click="$tsui.open.slide('edit-lesson-plan'), $wire.dispatch('edit-lesson-plan', { uuid: '{{ $plan->uuid }}' })" 
+                                        icon="pencil" 
+                                    />
+                                    <flux:button 
+                                        size="sm" 
+                                        variant="danger" 
+                                        icon="trash"
+                                        wire:click="confirmDelete({{ $plan->id }})"
+                                    />
+                                </div>
+                            </flux:table.cell>
+                        </flux:table.row>
+                    </flux:table.rows>
+                @endforeach
+            </flux:table>
+        @else
+            <div class="p-6 text-center">
+                <flux:icon name="inbox" class="mx-auto h-12 w-12 text-gray-400" />
+                <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-white">{{ __('No Lesson Plans') }}</h3>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Get started by creating a new lesson plan.') }}</p>
+            </div>
+        @endif
+    </flux:card>
 
     <x-slide id="create-lesson-plan" title="{{ __('Create Lesson Plan') }}">
         <livewire:pages::app.academic.lesson-plans.create />

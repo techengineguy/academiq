@@ -121,7 +121,7 @@ new class extends Component {
             </div>
 
             <div class="grid grid-cols-2 gap-4">
-                <flux:input label="{{ __('Joining Date') }}" type="date" wire:model="joining_date" required />
+                <flux:date-picker label="{{ __('Joining Date') }}" wire:model="joining_date" required />
                 <flux:input label="{{ __('Designation') }}" wire:model="designation" required />
             </div>
 

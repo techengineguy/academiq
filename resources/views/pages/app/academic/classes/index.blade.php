@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -51,66 +51,67 @@ class extends Component {
 };
 ?>
 
-<div>
+<div class="py-4 space-y-6">
     <x-dialog/>
-    <div class="space-y-2">
-        <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between">
+        <div>
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Classes') }}</h1>
-            <flux:button class="button" x-on:click="$tsui.open.slide('create-class')" icon="plus">
-                {{ __('New Class') }}
-            </flux:button>
+            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Manage classes and their associated sections.') }}</p>
         </div>
-
-        <flux:card>
-            @if($this->classes->count())
-                <flux:table :paginate="$this->classes">
-                    <flux:table.columns>
-                        <flux:table.column>{{ __('Name') }}</flux:table.column>
-                        <flux:table.column>{{ __('Code') }}</flux:table.column>
-                        <flux:table.column>{{ __('Capacity') }}</flux:table.column>
-                        <flux:table.column>{{ __('Status') }}</flux:table.column>
-                        <flux:table.column>{{ __('Actions') }}</flux:table.column>
-                    </flux:table.columns>
-                    @foreach($this->classes as $class)
-                        <flux:table.rows>
-                            <flux:table.row :key="$class->id">
-                                <flux:table.cell>{{ $class->name }}</flux:table.cell>
-                                <flux:table.cell>{{ $class->code }}</flux:table.cell>
-                                <flux:table.cell>{{ $class->capacity }}</flux:table.cell>
-                                <flux:table.cell>
-                                    <flux:badge :color="$class->status == 'active' ? 'green' : 'gray'">
-                                        {{ ucfirst($class->status) }}
-                                    </flux:badge>
-                                </flux:table.cell>
-                                <flux:table.cell>
-                                    <div class="flex gap-2">
-                                        <flux:button 
-                                            size="sm" 
-                                            variant="subtle" 
-                                            x-on:click="$tsui.open.slide('edit-class'), $wire.dispatch('edit-class', { uuid: '{{ $class->uuid }}' })" 
-                                            icon="pencil" 
-                                        />
-                                        <flux:button 
-                                            size="sm" 
-                                            variant="danger" 
-                                            icon="trash"
-                                            wire:click="confirmDelete({{ $class->id }})"
-                                        />
-                                    </div>
-                                </flux:table.cell>
-                            </flux:table.row>
-                        </flux:table.rows>
-                    @endforeach
-                </flux:table>
-            @else
-                <div class="p-6 text-center">
-                    <flux:icon name="inbox" class="mx-auto h-12 w-12 text-gray-400" />
-                    <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-white">{{ __('No Classes') }}</h3>
-                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Get started by creating a new class.') }}</p>
-                </div>
-            @endif
-        </flux:card>
+        <flux:button class="button" x-on:click="$tsui.open.slide('create-class')" icon="plus">
+            {{ __('New Class') }}
+        </flux:button>
     </div>
+
+    <flux:card>
+        @if($this->classes->count())
+            <flux:table :paginate="$this->classes">
+                <flux:table.columns>
+                    <flux:table.column>{{ __('Name') }}</flux:table.column>
+                    <flux:table.column>{{ __('Code') }}</flux:table.column>
+                    <flux:table.column>{{ __('Capacity') }}</flux:table.column>
+                    <flux:table.column>{{ __('Status') }}</flux:table.column>
+                    <flux:table.column>{{ __('Actions') }}</flux:table.column>
+                </flux:table.columns>
+                @foreach($this->classes as $class)
+                    <flux:table.rows>
+                        <flux:table.row :key="$class->id">
+                            <flux:table.cell>{{ $class->name }}</flux:table.cell>
+                            <flux:table.cell>{{ $class->code }}</flux:table.cell>
+                            <flux:table.cell>{{ $class->capacity }}</flux:table.cell>
+                            <flux:table.cell>
+                                <flux:badge :color="$class->status == 'active' ? 'green' : 'gray'">
+                                    {{ ucfirst($class->status) }}
+                                </flux:badge>
+                            </flux:table.cell>
+                            <flux:table.cell>
+                                <div class="flex gap-2">
+                                    <flux:button 
+                                        size="sm" 
+                                        variant="subtle" 
+                                        x-on:click="$tsui.open.slide('edit-class'), $wire.dispatch('edit-class', { uuid: '{{ $class->uuid }}' })" 
+                                        icon="pencil" 
+                                    />
+                                    <flux:button 
+                                        size="sm" 
+                                        variant="danger" 
+                                        icon="trash"
+                                        wire:click="confirmDelete({{ $class->id }})"
+                                    />
+                                </div>
+                            </flux:table.cell>
+                        </flux:table.row>
+                    </flux:table.rows>
+                @endforeach
+            </flux:table>
+        @else
+            <div class="p-6 text-center">
+                <flux:icon name="inbox" class="mx-auto h-12 w-12 text-gray-400" />
+                <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-white">{{ __('No Classes') }}</h3>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Get started by creating a new class.') }}</p>
+            </div>
+        @endif
+    </flux:card>
 
     <x-slide id="create-class" title="{{ __('Create Class') }}">
         <livewire:pages::app.academic.classes.create />

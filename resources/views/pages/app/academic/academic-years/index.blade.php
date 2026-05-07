@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -47,71 +47,72 @@ class extends Component {
     }
 };
 ?>
-<div>
+<div class="py-4 space-y-6">
     <x-dialog/>
-    <div class="space-y-2">
-        <div class="flex items-center justify-between">
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Academic Years</h1>
-            <flux:button class="button" x-on:click="$tsui.open.slide('create-academic-year')" icon="plus">
-                {{ __('New Academic Year') }}
-            </flux:button>
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Academic Years') }}</h1>
+            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Manage academic years and their details.') }}</p>
         </div>
-
-        <flux:card>
-            @if($this->academicYears->count())
-                <flux:table :paginate="$this->academicYears">
-                    <flux:table.columns>
-                        <flux:table.column>{{ __('Name') }}</flux:column>
-                        <flux:table.column>{{ __('Start Date') }}</flux:column>
-                        <flux:table.column>{{ __('End Date') }}</flux:column>
-                        <flux:table.column>{{ __('Status') }}</flux:column>
-                        <flux:table.column>{{ __('Current') }}</flux:table.column>
-                        <flux:table.column>{{ __('Actions') }}</flux:table.column>
-                    </flux:table.columns>
-                    @foreach($this->academicYears as $year)
-                        <flux:table.rows>
-                            <flux:table.row :key="$year->id">
-                                <flux:table.cell>{{ $year->name }}</flux:table.cell>
-                                <flux:table.cell>{{ $year->start_date?->format('M d, Y') }}</flux:table.cell>
-                                <flux:table.cell>{{ $year->end_date?->format('M d, Y') }}</flux:table.cell>
-                                <flux:table.cell>
-                                    <flux:badge :color="$year->status == 'active' ? 'green' : 'gray'">
-                                        {{ ucfirst($year->status) }}
-                                    </flux:badge>
-                                </flux:table.cell>
-                                <flux:table.cell>
-                                    @if($year->is_current)
-                                        <flux:badge variant="info">{{ __('Yes') }}</flux:badge>
-                                    @else
-                                        <span class="text-gray-400">-</span>
-                                    @endif
-                                </flux:table.cell>
-                                <flux:table.cell>
-                                    <div class="flex gap-2">
-                                        <flux:button size="sm" variant="subtle" 
-                                        x-on:click="$tsui.open.slide('edit-academic-year'); $wire.dispatch('edit-academic-year', { uuid: '{{ $year->uuid }}' })" 
-                                        icon="pencil" />
-                                        <flux:button 
-                                            size="sm" 
-                                            variant="danger" 
-                                            icon="trash"
-                                            wire:click="confirmDelete({{ $year->id }})"
-                                        />
-                                    </div>
-                                </flux:table.cell>
-                            </flux:table.row>
-                        </flux:table.rows>
-                    @endforeach
-                </flux:table>
-            @else
-                <div class="p-6 text-center">
-                    <flux:icon name="inbox" class="mx-auto h-12 w-12 text-gray-400" />
-                    <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-white">{{ __('No Academic Years') }}</h3>
-                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Get started by creating a new academic year.') }}</p>
-                </div>
-            @endif
-        </flux:card>
+        <flux:button class="button" x-on:click="$tsui.open.slide('create-academic-year')" icon="plus">
+            {{ __('New Academic Year') }}
+        </flux:button>
     </div>
+
+    <flux:card>
+        @if($this->academicYears->count())
+            <flux:table :paginate="$this->academicYears">
+                <flux:table.columns>
+                    <flux:table.column>{{ __('Name') }}</flux:column>
+                    <flux:table.column>{{ __('Start Date') }}</flux:column>
+                    <flux:table.column>{{ __('End Date') }}</flux:column>
+                    <flux:table.column>{{ __('Status') }}</flux:column>
+                    <flux:table.column>{{ __('Current') }}</flux:table.column>
+                    <flux:table.column>{{ __('Actions') }}</flux:table.column>
+                </flux:table.columns>
+                @foreach($this->academicYears as $year)
+                    <flux:table.rows>
+                        <flux:table.row :key="$year->id">
+                            <flux:table.cell>{{ $year->name }}</flux:table.cell>
+                            <flux:table.cell>{{ $year->start_date?->format('M d, Y') }}</flux:table.cell>
+                            <flux:table.cell>{{ $year->end_date?->format('M d, Y') }}</flux:table.cell>
+                            <flux:table.cell>
+                                <flux:badge :color="$year->status == 'active' ? 'green' : 'gray'">
+                                    {{ ucfirst($year->status) }}
+                                </flux:badge>
+                            </flux:table.cell>
+                            <flux:table.cell>
+                                @if($year->is_current)
+                                    <flux:badge variant="info">{{ __('Yes') }}</flux:badge>
+                                @else
+                                    <span class="text-gray-400">-</span>
+                                @endif
+                            </flux:table.cell>
+                            <flux:table.cell>
+                                <div class="flex gap-2">
+                                    <flux:button size="sm" variant="subtle" 
+                                    x-on:click="$tsui.open.slide('edit-academic-year'); $wire.dispatch('edit-academic-year', { uuid: '{{ $year->uuid }}' })" 
+                                    icon="pencil" />
+                                    <flux:button 
+                                        size="sm" 
+                                        variant="danger" 
+                                        icon="trash"
+                                        wire:click="confirmDelete({{ $year->id }})"
+                                    />
+                                </div>
+                            </flux:table.cell>
+                        </flux:table.row>
+                    </flux:table.rows>
+                @endforeach
+            </flux:table>
+        @else
+            <div class="p-6 text-center">
+                <flux:icon name="inbox" class="mx-auto h-12 w-12 text-gray-400" />
+                <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-white">{{ __('No Academic Years') }}</h3>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Get started by creating a new academic year.') }}</p>
+            </div>
+        @endif
+    </flux:card>
 
     <x-slide id="create-academic-year" title="{{ __('Create Academic Year') }}">
         <livewire:pages::app.academic.academic-years.create />
