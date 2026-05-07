@@ -91,7 +91,7 @@ class extends Component {
                                         size="sm" 
                                         variant="subtle" 
                                         x-on:click="$tsui.open.slide('edit-section'), $wire.dispatch('edit-section', { uuid: '{{ $section->uuid }}' })" 
-                                        icon="pencil" 
+                                        icon="square-pen" 
                                     />
                                     <flux:button 
                                         size="sm" 

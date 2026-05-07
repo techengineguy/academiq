@@ -159,7 +159,7 @@ class extends Component {
                                             <flux:button
                                                 size="sm"
                                                 variant="subtle"
-                                                icon="pencil"
+                                                icon="square-pen"
                                                 x-on:click="$tsui.open.slide('edit-payroll'), $wire.dispatch('edit-payroll', { id: {{ $payroll->id }} })"
                                             />
                                         </div>

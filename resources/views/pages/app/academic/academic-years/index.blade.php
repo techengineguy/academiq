@@ -92,7 +92,7 @@ class extends Component {
                                 <div class="flex gap-2">
                                     <flux:button size="sm" variant="subtle" 
                                     x-on:click="$tsui.open.slide('edit-academic-year'); $wire.dispatch('edit-academic-year', { uuid: '{{ $year->uuid }}' })" 
-                                    icon="pencil" />
+                                    icon="square-pen" />
                                     <flux:button 
                                         size="sm" 
                                         variant="danger" 
