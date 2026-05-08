@@ -116,6 +116,12 @@ class Institution extends Model
         return $this->hasMany(AdmissionApplication::class);
     }
 
+    // Alias for implicit nested route binding (parameter name: application)
+    public function applications()
+    {
+        return $this->hasMany(AdmissionApplication::class);
+    }
+
     public function documentTemplates()
     {
         return $this->hasMany(DocumentTemplate::class);

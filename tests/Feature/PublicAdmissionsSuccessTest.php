@@ -65,10 +65,10 @@ it('allows guests to view success page with application reference number', funct
     ]));
 
     $response->assertOk();
-    $response->assertSeeInHtml('Application Submitted');
-    $response->assertSeeInHtml('APP-ABC123'); // Application reference number
-    $response->assertSeeInHtml('John Doe');
-    $response->assertSeeInHtml('Pending Review');
+    $response->assertSee('Application Submitted');
+    $response->assertSee('APP-ABC123'); // Application reference number
+    $response->assertSee('John Doe');
+    $response->assertSee('Pending Review');
 });
 
 it('prevents access to success page with mismatched institution and application', function () {
