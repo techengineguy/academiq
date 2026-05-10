@@ -91,8 +91,8 @@ class extends Component {
                             <flux:table.cell>{{ $app->parent_email ?? '-' }}</flux:table.cell>
                             <flux:table.cell>{{ optional($app->application_date)->format('Y-m-d') ?? '-' }}</flux:table.cell>
                             <flux:table.cell>
-                                <flux:badge :color="$app->status == 'accepted' ? 'green' : ($app->status == 'rejected' ? 'red' : 'gray')">
-                                    {{ ucfirst($app->status) ?? __('Pending') }}
+                                <flux:badge :color="in_array($app->status, ['approved', 'admitted']) ? 'green' : ($app->status == 'rejected' ? 'red' : ($app->status == 'under_review' ? 'yellow' : 'gray'))">
+                                    {{ str($app->status)->replace('_', ' ')->title() }}
                                 </flux:badge>
                             </flux:table.cell>
                             <flux:table.cell>

@@ -35,7 +35,7 @@ new class extends Component {
     public $test_marks;
     public $interview_date;
     public $interview_remarks = '';
-    public $status = 'pending';
+    public $status = 'submitted';
 
     public function save()
     {
@@ -51,7 +51,7 @@ new class extends Component {
             'transfer_certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
             'student_photo' => 'nullable|image|max:5120',
             'test_marks' => 'nullable|numeric',
-            'status' => 'required|in:pending,accepted,rejected',
+            'status' => 'required|in:submitted,under_review,test_scheduled,interview_scheduled,approved,rejected,admitted',
         ]);
 
         $institution = Auth::user()->institution;
@@ -180,9 +180,13 @@ new class extends Component {
 
         <div class="grid grid-cols-2 gap-4">
             <flux:select label="{{ __('Status') }}" variant="listbox" wire:model="status">
-                <flux:select.option value="pending">{{ __('Pending') }}</flux:select.option>
-                <flux:select.option value="accepted">{{ __('Accepted') }}</flux:select.option>
+                <flux:select.option value="submitted">{{ __('Submitted') }}</flux:select.option>
+                <flux:select.option value="under_review">{{ __('Under Review') }}</flux:select.option>
+                <flux:select.option value="test_scheduled">{{ __('Test Scheduled') }}</flux:select.option>
+                <flux:select.option value="interview_scheduled">{{ __('Interview Scheduled') }}</flux:select.option>
+                <flux:select.option value="approved">{{ __('Approved') }}</flux:select.option>
                 <flux:select.option value="rejected">{{ __('Rejected') }}</flux:select.option>
+                <flux:select.option value="admitted">{{ __('Admitted') }}</flux:select.option>
             </flux:select>
             <div></div>
         </div>

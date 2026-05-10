@@ -45,7 +45,7 @@
                 </flux:sidebar.group>
 
                 <!-- Student Management -->
-                <flux:sidebar.group expandable :expanded="request()->routeIs('students.*', 'admission-applications.*', 'scholarships.*', 'promotions.*')" :heading="__('Students')" class="grid">
+                <flux:sidebar.group expandable :expanded="request()->routeIs('students.*', 'admission-applications.*', 'scholarships.*', 'scholarship-awards.*', 'promotions.*')" :heading="__('Students')" class="grid">
                     <flux:sidebar.item icon="users" :href="route('students.index')" :current="request()->routeIs('students.*')" wire:navigate>
                         {{ __('Students') }}
                     </flux:sidebar.item>
@@ -54,6 +54,9 @@
                     </flux:sidebar.item>
                     <flux:sidebar.item icon="trophy" :href="route('scholarships.index')" :current="request()->routeIs('scholarships.*')" wire:navigate>
                         {{ __('Scholarships') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="star" :href="route('scholarship-awards.index')" :current="request()->routeIs('scholarship-awards.*')" wire:navigate>
+                        {{ __('Award Scholarships') }}
                     </flux:sidebar.item>
                     <flux:sidebar.item icon="arrow-up-right" :href="route('promotions.index')" :current="request()->routeIs('promotions.*')" wire:navigate>
                         {{ __('Promotions') }}

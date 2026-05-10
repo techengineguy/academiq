@@ -1,6 +1,7 @@
 ﻿<?php
 
 use Livewire\Component;
+use Livewire\Attributes\On;
 use App\Models\AdmissionApplication;
 use App\Models\ClassModel;
 use App\Models\AcademicYear;
@@ -14,8 +15,7 @@ use Illuminate\Support\Facades\Storage;
 new class extends Component {
     use Interactions, WithFileUploads;
 
-    public $uuid;
-    public $application;
+    public ?AdmissionApplication $app = null;
 
     public $academic_year_id = '';
     public $class_id = '';
@@ -38,40 +38,32 @@ new class extends Component {
     public $test_marks;
     public $interview_date;
     public $interview_remarks = '';
-    public $status = 'pending';
+    public $status = '';
 
-    public function mount($uuid = null)
-    {
-        $this->uuid = $uuid;
-    }
-
+    
     #[On('edit-admission')]
-    public function loadApplication($payload)
+    public function loadApplication(string $uuid)
     {
-        $uuid = $payload['uuid'] ?? null;
-        if (! $uuid) return;
+        $this->app = AdmissionApplication::where('tenant_id', Auth::user()->tenant_id)->where('uuid', $uuid)->firstOrFail();
 
-        $app = AdmissionApplication::where('tenant_id', Auth::user()->tenant_id)->where('uuid', $uuid)->firstOrFail();
-
-        $this->application = $app;
-        $this->academic_year_id = $app->academic_year_id;
-        $this->class_id = $app->class_id;
-        $this->application_number = $app->application_number;
-        $this->application_date = optional($app->application_date)->format('Y-m-d');
-        $this->student_name = $app->student_name;
-        $this->date_of_birth = optional($app->date_of_birth)->format('Y-m-d');
-        $this->gender = $app->gender;
-        $this->father_name = $app->father_name;
-        $this->mother_name = $app->mother_name;
-        $this->parent_phone = $app->parent_phone;
-        $this->parent_email = $app->parent_email;
-        $this->address = $app->address;
-        $this->previous_school = $app->previous_school;
-        $this->test_date = optional($app->test_date)->format('Y-m-d');
-        $this->test_marks = $app->test_marks;
-        $this->interview_date = optional($app->interview_date)->format('Y-m-d');
-        $this->interview_remarks = $app->interview_remarks;
-        $this->status = $app->status;
+        $this->academic_year_id = $this->app->academic_year_id;
+        $this->class_id = $this->app->class_id;
+        $this->application_number = $this->app->application_number;
+        $this->application_date = optional($this->app->application_date)->format('Y-m-d');
+        $this->student_name = $this->app->student_name;
+        $this->date_of_birth = optional($this->app->date_of_birth)->format('Y-m-d');
+        $this->gender = $this->app->gender;
+        $this->father_name = $this->app->father_name;
+        $this->mother_name = $this->app->mother_name;
+        $this->parent_phone = $this->app->parent_phone;
+        $this->parent_email = $this->app->parent_email;
+        $this->address = $this->app->address;
+        $this->previous_school = $this->app->previous_school;
+        $this->test_date = optional($this->app->test_date)->format('Y-m-d');
+        $this->test_marks = $this->app->test_marks;
+        $this->interview_date = optional($this->app->interview_date)->format('Y-m-d');
+        $this->interview_remarks = $this->app->interview_remarks;
+        $this->status = $this->app->status;
     }
 
     public function update()
@@ -87,30 +79,27 @@ new class extends Component {
             'transfer_certificate' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
             'student_photo' => 'nullable|image|max:5120',
             'test_marks' => 'nullable|numeric',
-            'status' => 'required|in:pending,accepted,rejected',
+            'status' => 'required|in:submitted,under_review,test_scheduled,interview_scheduled,approved,rejected,admitted',
         ]);
 
-        if (! $this->application) return;
-
-        $app = AdmissionApplication::findOrFail($this->application->id);
 
         if ($this->birth_certificate) {
-            $app->birth_certificate = $this->birth_certificate->store('admissions', 'public');
+            $this->app->birth_certificate = $this->birth_certificate->store('admissions', 'public');
         }
 
         if ($this->previous_marksheet) {
-            $app->previous_marksheet = $this->previous_marksheet->store('admissions', 'public');
+            $this->app->previous_marksheet = $this->previous_marksheet->store('admissions', 'public');
         }
 
         if ($this->transfer_certificate) {
-            $app->transfer_certificate = $this->transfer_certificate->store('admissions', 'public');
+            $this->app->transfer_certificate = $this->transfer_certificate->store('admissions', 'public');
         }
 
         if ($this->student_photo) {
-            $app->student_photo = $this->student_photo->store('admissions', 'public');
+            $this->app->student_photo = $this->student_photo->store('admissions', 'public');
         }
 
-        $app->update([
+        $this->app->update([
             'academic_year_id' => $this->academic_year_id ?: null,
             'class_id' => $this->class_id ?: null,
             'application_number' => $this->application_number,
@@ -207,9 +196,13 @@ new class extends Component {
 
         <div class="grid grid-cols-2 gap-4">
             <flux:select label="{{ __('Status') }}" variant="listbox" wire:model="status">
-                <flux:select.option value="pending">{{ __('Pending') }}</flux:select.option>
-                <flux:select.option value="accepted">{{ __('Accepted') }}</flux:select.option>
+                <flux:select.option value="submitted">{{ __('Submitted') }}</flux:select.option>
+                <flux:select.option value="under_review">{{ __('Under Review') }}</flux:select.option>
+                <flux:select.option value="test_scheduled">{{ __('Test Scheduled') }}</flux:select.option>
+                <flux:select.option value="interview_scheduled">{{ __('Interview Scheduled') }}</flux:select.option>
+                <flux:select.option value="approved">{{ __('Approved') }}</flux:select.option>
                 <flux:select.option value="rejected">{{ __('Rejected') }}</flux:select.option>
+                <flux:select.option value="admitted">{{ __('Admitted') }}</flux:select.option>
             </flux:select>
             <div></div>
         </div>

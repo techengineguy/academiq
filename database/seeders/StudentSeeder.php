@@ -34,8 +34,8 @@ class StudentSeeder extends Seeder
 
             $studentCounter = 1;
             foreach ($sections as $section) {
-                // Create 3 students per section for faster demo seeding
-                for ($i = 1; $i <= 3; $i++) {
+                // Create 2 students per section for faster demo seeding
+                for ($i = 1; $i <= 2; $i++) {
                     // Create student user
                     $studentUser = User::create([
                         'tenant_id' => $institution->uuid,
@@ -45,7 +45,7 @@ class StudentSeeder extends Seeder
                         'email' => 'student' . $studentCounter . '@' . strtolower(str_replace(' ', '', $institution->name)) . '.edu',
                         'password' => Hash::make('password'),
                         'role' => 'student',
-                        'first_name' => 'Student',
+                        'first_name' => 'Student' . $studentCounter,
                         'last_name' => 'Number ' . $studentCounter,
                         'phone' => '98' . rand(10000000, 99999999),
                         'gender' => collect(['male', 'female'])->random(),
@@ -64,6 +64,9 @@ class StudentSeeder extends Seeder
                         'institution_id' => $institution->id,
                         'uuid' => Str::uuid(),
                         'user_id' => $studentUser->id,
+                        'first_name' => 'Student' . $studentCounter,
+                        'last_name' => 'Number ' . $studentCounter,
+                        'email' => $studentUser->email,
                         'section_id' => $section->id,
                         'class_id' => $section->class_id,
                         'academic_year_id' => $currentAcademicYear->id,
