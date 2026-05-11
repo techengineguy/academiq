@@ -24,16 +24,55 @@ class extends Component
 
     public $filterClass = '';
 
-    public $selectedStudents = [];
+    public array $selectedStudents = [];
+
+    public bool $selectAll = false;
 
     public $promotionIdToDelete = null;
 
-    // Stores the UUID passed to the edit slide
     public $editPromotionUuid = null;
 
     public function updatedFilterClass(): void
     {
         $this->resetPage();
+        $this->selectedStudents = [];
+        $this->selectAll = false;
+    }
+
+    public function updatedFilterAcademicYear(): void
+    {
+        $this->resetPage();
+        $this->selectedStudents = [];
+        $this->selectAll = false;
+    }
+
+    /**
+     * Fires whenever the select-all checkbox changes.
+     * Selects or deselects every student on the current page.
+     */
+    public function updatedSelectAll(bool $value): void
+    {
+        $this->selectedStudents = $value
+            ? $this->students->pluck('id')->toArray()
+            : [];
+    }
+
+    public function updatedSelectedStudents(): void
+    {
+        $this->selectAll = count($this->selectedStudents) === $this->students->count();
+    }
+
+    public function toggleStudentSelection($studentId): void
+    {
+        if (in_array($studentId, $this->selectedStudents)) {
+            $this->selectedStudents = array_values(
+                array_diff($this->selectedStudents, [$studentId])
+            );
+        } else {
+            $this->selectedStudents[] = $studentId;
+        }
+
+        $this->selectAll = count($this->selectedStudents) === $this->students->count();
     }
 
     #[Computed]
@@ -48,6 +87,10 @@ class extends Component
     #[Computed]
     public function students()
     {
+        if (! $this->filterAcademicYear || ! $this->filterClass) {
+            return Student::whereRaw('1 = 0')->paginate(15);
+        }
+        
         $query = Student::where('tenant_id', Auth::user()->tenant_id)
             ->with(['class', 'section', 'academicYear']);
 
@@ -75,24 +118,6 @@ class extends Component
             ->with(['student', 'fromClass', 'toClass', 'fromAcademicYear', 'toAcademicYear', 'processedBy'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
-    }
-
-    public function toggleStudentSelection($studentId): void
-    {
-        if (in_array($studentId, $this->selectedStudents)) {
-            $this->selectedStudents = array_diff($this->selectedStudents, [$studentId]);
-        } else {
-            $this->selectedStudents[] = $studentId;
-        }
-    }
-
-    public function toggleAllStudents(): void
-    {
-        if (count($this->selectedStudents) === $this->students->count()) {
-            $this->selectedStudents = [];
-        } else {
-            $this->selectedStudents = $this->students->pluck('id')->toArray();
-        }
     }
 
     public function openEditSlide(string $uuid): void
@@ -139,6 +164,11 @@ class extends Component
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Student Promotions') }}</h1>
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Manage student class promotions and transfers.') }}</p>
         </div>
+        {{-- <div class="flex gap-2">
+            <flux:button class="button" x-on:click="$tsui.open.slide('create-promotion')" icon="plus">
+                {{ __('New Promotion') }}
+            </flux:button>
+        </div> --}}
     </div>
 
     <flux:tab.group>
@@ -181,18 +211,12 @@ class extends Component
             @if ($this->students->count())
                 <div class="mb-4 flex items-center justify-between">
                     <div class="flex items-center gap-2">
-                        <input
-                            type="checkbox"
-                            @if (count($this->selectedStudents) === $this->students->count()) checked @endif
-                            wire:click="toggleAllStudents()"
-                            class="rounded border-gray-300"
-                        />
+                        <flux:checkbox wire:model.live="selectAll" />
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
                             {{ count($this->selectedStudents) }} {{ __('selected') }}
                         </span>
                     </div>
                     @if (count($this->selectedStudents) > 0)
-                        {{-- wire:click alone opens the slide and passes IDs; no need for a separate bulkPromote() call --}}
                         <flux:button
                             variant="primary"
                             class="button"
@@ -204,42 +228,53 @@ class extends Component
                     @endif
                 </div>
 
-                <flux:table :paginate="$this->students">
-                    <flux:table.columns>
-                        <flux:table.column style="width: 50px;">
-                            <input
-                                type="checkbox"
-                                @if (count($this->selectedStudents) === $this->students->count()) checked @endif
-                                wire:click="toggleAllStudents()"
-                                class="rounded border-gray-300"
-                            />
-                        </flux:table.column>
-                        <flux:table.column>{{ __('Student Name') }}</flux:table.column>
-                        <flux:table.column>{{ __('Admission #') }}</flux:table.column>
-                        <flux:table.column>{{ __('Current Class') }}</flux:table.column>
-                        <flux:table.column>{{ __('Section') }}</flux:table.column>
-                        <flux:table.column>{{ __('Academic Year') }}</flux:table.column>
-                    </flux:table.columns>
-                    @foreach ($this->students as $student)
-                        <flux:table.rows>
-                            <flux:table.row :key="$student->id">
-                                <flux:table.cell>
-                                    <input
-                                        type="checkbox"
-                                        @if (in_array($student->id, $this->selectedStudents)) checked @endif
-                                        wire:click="toggleStudentSelection({{ $student->id }})"
-                                        class="rounded border-gray-300"
-                                    />
-                                </flux:table.cell>
-                                <flux:table.cell>{{ $student->first_name }} {{ $student->last_name }}</flux:table.cell>
-                                <flux:table.cell>{{ $student->admission_number ?? '-' }}</flux:table.cell>
-                                <flux:table.cell>{{ $student->class?->name ?? '-' }}</flux:table.cell>
-                                <flux:table.cell>{{ $student->section?->name ?? '-' }}</flux:table.cell>
-                                <flux:table.cell>{{ $student->academicYear?->name ?? '-' }}</flux:table.cell>
-                            </flux:table.row>
-                        </flux:table.rows>
-                    @endforeach
-                </flux:table>
+                <div class="relative min-h-[200px]"
+                     wire:loading.class="opacity-60 pointer-events-none"
+                     wire:target="filterAcademicYear, filterClass, selectAll, selectedStudents">
+
+                    <div wire:loading
+                         wire:target="filterAcademicYear, filterClass"
+                         class="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-white/70 dark:bg-zinc-900/70 backdrop-blur-sm">
+                        <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                            <svg class="h-4 w-4 animate-spin text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                            </svg>
+                            {{ __('Loading...') }}
+                        </div>
+                    </div>
+
+                    <flux:table :paginate="$this->students">
+                        <flux:table.columns>
+                            <flux:table.column style="width: 50px;">
+                                <flux:checkbox wire:model.live="selectAll" />
+                            </flux:table.column>
+                            <flux:table.column>{{ __('Student Name') }}</flux:table.column>
+                            <flux:table.column>{{ __('Admission #') }}</flux:table.column>
+                            <flux:table.column>{{ __('Current Class') }}</flux:table.column>
+                            <flux:table.column>{{ __('Section') }}</flux:table.column>
+                            <flux:table.column>{{ __('Academic Year') }}</flux:table.column>
+                        </flux:table.columns>
+
+                        @foreach ($this->students as $student)
+                            <flux:table.rows>
+                                <flux:table.row :key="$student->id">
+                                    <flux:table.cell>
+                                        <flux:checkbox
+                                            wire:model.live="selectedStudents"
+                                            value="{{ $student->id }}"
+                                        />
+                                    </flux:table.cell>
+                                    <flux:table.cell>{{ $student->first_name }} {{ $student->last_name }}</flux:table.cell>
+                                    <flux:table.cell>{{ $student->admission_number ?? '-' }}</flux:table.cell>
+                                    <flux:table.cell>{{ $student->class?->name ?? '-' }}</flux:table.cell>
+                                    <flux:table.cell>{{ $student->section?->name ?? '-' }}</flux:table.cell>
+                                    <flux:table.cell>{{ $student->academicYear?->name ?? '-' }}</flux:table.cell>
+                                </flux:table.row>
+                            </flux:table.rows>
+                        @endforeach
+                    </flux:table>
+                </div>
             @else
                 <div class="p-6 text-center">
                     <flux:icon name="inbox" class="mx-auto h-12 w-12 text-gray-400" />
@@ -248,58 +283,77 @@ class extends Component
                 </div>
             @endif
         </flux:card>
+
     @else
         <flux:card>
             @if ($this->promotionHistory->count())
-                <flux:table :paginate="$this->promotionHistory">
-                    <flux:table.columns>
-                        <flux:table.column>{{ __('Student') }}</flux:table.column>
-                        <flux:table.column>{{ __('From Class') }}</flux:table.column>
-                        <flux:table.column>{{ __('To Class') }}</flux:table.column>
-                        <flux:table.column>{{ __('Academic Year') }}</flux:table.column>
-                        <flux:table.column>{{ __('Status') }}</flux:table.column>
-                        <flux:table.column>{{ __('Processed By') }}</flux:table.column>
-                        <flux:table.column>{{ __('Actions') }}</flux:table.column>
-                    </flux:table.columns>
-                    @foreach ($this->promotionHistory as $promotion)
-                        <flux:table.rows>
-                            <flux:table.row :key="$promotion->id">
-                                <flux:table.cell>{{ $promotion->student?->first_name }} {{ $promotion->student?->last_name ?? '-' }}</flux:table.cell>
-                                <flux:table.cell>{{ $promotion->fromClass?->name ?? '-' }}</flux:table.cell>
-                                <flux:table.cell>{{ $promotion->toClass?->name ?? '-' }}</flux:table.cell>
-                                <flux:table.cell>{{ $promotion->fromAcademicYear?->name ?? '-' }}</flux:table.cell>
-                                <flux:table.cell>
-                                    <flux:badge :color="match($promotion->status) {
-                                        'promoted'    => 'green',
-                                        'detained'    => 'red',
-                                        'transferred' => 'blue',
-                                        default       => 'zinc',
-                                    }">
-                                        {{ str($promotion->status)->replace('_', ' ')->title() }}
-                                    </flux:badge>
-                                </flux:table.cell>
-                                <flux:table.cell>{{ $promotion->processedBy?->username ?? '-' }}</flux:table.cell>
-                                <flux:table.cell>
-                                    <div class="flex gap-2">
-                                        <flux:button
-                                            size="sm"
-                                            variant="ghost"
-                                            icon="pencil-square"
-                                            wire:click="openEditSlide('{{ $promotion->uuid }}')"
-                                            x-on:click="$tsui.open.slide('edit-promotion')"
-                                        />
-                                        <flux:button
-                                            size="sm"
-                                            variant="danger"
-                                            icon="trash"
-                                            wire:click="confirmDelete({{ $promotion->id }})"
-                                        />
-                                    </div>
-                                </flux:table.cell>
-                            </flux:table.row>
-                        </flux:table.rows>
-                    @endforeach
-                </flux:table>
+                <div class="relative min-h-[200px]"
+                     wire:loading.class="opacity-60 pointer-events-none"
+                     wire:target="delete, confirmDelete">
+
+                    <div wire:loading
+                         wire:target="delete"
+                         class="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-white/70 dark:bg-zinc-900/70 backdrop-blur-sm">
+                        <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                            <svg class="h-4 w-4 animate-spin text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                            </svg>
+                            {{ __('Loading...') }}
+                        </div>
+                    </div>
+
+                    <flux:table :paginate="$this->promotionHistory">
+                        <flux:table.columns>
+                            <flux:table.column>{{ __('Student') }}</flux:table.column>
+                            <flux:table.column>{{ __('From Class') }}</flux:table.column>
+                            <flux:table.column>{{ __('To Class') }}</flux:table.column>
+                            <flux:table.column>{{ __('Academic Year') }}</flux:table.column>
+                            <flux:table.column>{{ __('Status') }}</flux:table.column>
+                            <flux:table.column>{{ __('Processed By') }}</flux:table.column>
+                            <flux:table.column>{{ __('Actions') }}</flux:table.column>
+                        </flux:table.columns>
+
+                        @foreach ($this->promotionHistory as $promotion)
+                            <flux:table.rows>
+                                <flux:table.row :key="$promotion->id">
+                                    <flux:table.cell>{{ $promotion->student?->first_name }} {{ $promotion->student?->last_name ?? '-' }}</flux:table.cell>
+                                    <flux:table.cell>{{ $promotion->fromClass?->name ?? '-' }}</flux:table.cell>
+                                    <flux:table.cell>{{ $promotion->toClass?->name ?? '-' }}</flux:table.cell>
+                                    <flux:table.cell>{{ $promotion->fromAcademicYear?->name ?? '-' }}</flux:table.cell>
+                                    <flux:table.cell>
+                                        <flux:badge :color="match($promotion->status) {
+                                            'promoted'    => 'green',
+                                            'detained'    => 'red',
+                                            'transferred' => 'blue',
+                                            default       => 'zinc',
+                                        }">
+                                            {{ str($promotion->status)->replace('_', ' ')->title() }}
+                                        </flux:badge>
+                                    </flux:table.cell>
+                                    <flux:table.cell>{{ $promotion->processedBy?->username ?? '-' }}</flux:table.cell>
+                                    <flux:table.cell>
+                                        <div class="flex gap-2">
+                                            <flux:button
+                                                size="sm"
+                                                variant="subtle"
+                                                icon="square-pen"
+                                                wire:click="openEditSlide('{{ $promotion->uuid }}')"
+                                                x-on:click="$tsui.open.slide('edit-promotion')"
+                                            />
+                                            <flux:button
+                                                size="sm"
+                                                variant="danger"
+                                                icon="trash"
+                                                wire:click="confirmDelete({{ $promotion->id }})"
+                                            />
+                                        </div>
+                                    </flux:table.cell>
+                                </flux:table.row>
+                            </flux:table.rows>
+                        @endforeach
+                    </flux:table>
+                </div>
             @else
                 <div class="p-6 text-center">
                     <flux:icon name="inbox" class="mx-auto h-12 w-12 text-gray-400" />
