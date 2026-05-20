@@ -283,7 +283,7 @@ class extends Component {
                                 icon="trash"
                                 class="w-full"
                                 wire:click="removeAllowanceRow({{ $index }})"
-                                @disabled(count($allowances) === 1)
+                                :disabled="count($allowances) === 1"
                             />
                         </div>
                     </div>
@@ -322,7 +322,7 @@ class extends Component {
                                 icon="trash"
                                 class="w-full"
                                 wire:click="removeDeductionRow({{ $index }})"
-                                @disabled(count($deductions) === 1)
+                                :disabled="count($deductions) === 1"
                             />
                         </div>
                     </div>

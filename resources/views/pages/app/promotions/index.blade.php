@@ -228,7 +228,7 @@ class extends Component
                     @endif
                 </div>
 
-                <div class="relative min-h-[200px]"
+                <div class="relative min-h-50"
                      wire:loading.class="opacity-60 pointer-events-none"
                      wire:target="filterAcademicYear, filterClass, selectAll, selectedStudents">
 
@@ -287,7 +287,7 @@ class extends Component
     @else
         <flux:card>
             @if ($this->promotionHistory->count())
-                <div class="relative min-h-[200px]"
+                <div class="relative min-h-50"
                      wire:loading.class="opacity-60 pointer-events-none"
                      wire:target="delete, confirmDelete">
 
