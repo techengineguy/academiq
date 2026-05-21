@@ -4,11 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Institution;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class FeeType extends Model
 {
-    use SoftDeletes;
 
     protected $fillable = [
         'tenant_id',

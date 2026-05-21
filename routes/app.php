@@ -157,6 +157,7 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web'])->gr
 
     Route::livewire('results', 'pages::app.exams.results.index')->name('results.index');
     Route::livewire('results/create', 'pages::app.exams.results.create')->name('results.create');
+    Route::livewire('results/check', 'pages::app.exams.results.check')->name('results.check');
     Route::livewire('results/{id}/edit', 'pages::app.exams.results.edit')->name('results.edit');
 
     Route::livewire('grade-scales', 'pages::app.exams.grade-scales.index')->name('grade-scales.index');
@@ -246,4 +247,9 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web'])->gr
     Route::livewire('backups', 'pages::app.backups.index')->name('backups.index');
 
     Route::livewire('activity-logs', 'pages::app.activity-logs.index')->name('activity-logs.index');
+
+    // Roles & Permissions Routes
+    Route::livewire('roles', 'pages::app.roles.index')->name('roles.index');
+    Route::livewire('roles/create', 'pages::app.roles.create')->name('roles.create');
+    Route::livewire('roles/{id}/edit', 'pages::app.roles.edit')->name('roles.edit');
 });

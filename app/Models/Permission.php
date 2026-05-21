@@ -8,6 +8,7 @@ use App\Models\Role;
 class Permission extends Model
 {
     protected $fillable = [
+        'tenant_id',
         'uuid',
         'name',
         'slug',

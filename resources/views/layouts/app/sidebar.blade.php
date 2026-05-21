@@ -187,7 +187,10 @@
                 </flux:sidebar.group>
 
                 <!-- More -->
-                <flux:sidebar.group expandable :expanded="request()->routeIs('complaints.*', 'backups.*', 'activity-logs.*')" :heading="__('More')" class="grid">
+                <flux:sidebar.group expandable :expanded="request()->routeIs('complaints.*', 'backups.*', 'activity-logs.*', 'roles.*')" :heading="__('More')" class="grid">
+                    <flux:sidebar.item icon="shield-check" :href="route('roles.index')" :current="request()->routeIs('roles.*')" wire:navigate>
+                        {{ __('Roles & Permissions') }}
+                    </flux:sidebar.item>
                     <flux:sidebar.item icon="exclamation-circle" :href="route('complaints.index')" :current="request()->routeIs('complaints.*')" wire:navigate>
                         {{ __('Complaints') }}
                     </flux:sidebar.item>

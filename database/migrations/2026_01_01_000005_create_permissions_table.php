@@ -14,10 +14,12 @@ return new class extends Migration
             $table->foreign('tenant_id')->references('uuid')->on('institutions')->onDelete('cascade');
             $table->uuid('uuid')->unique();
             $table->string('name');
-            $table->string('slug')->unique();
+            $table->string('slug');
             $table->string('module'); // e.g., 'students', 'attendance', 'fees'
             $table->text('description')->nullable();
             $table->timestamps();
+
+            $table->unique(['slug', 'tenant_id']);
         });
     }
 

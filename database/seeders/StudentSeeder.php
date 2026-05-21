@@ -2,16 +2,16 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
-use App\Models\Student;
-use App\Models\User;
-use App\Models\Section;
 use App\Models\AcademicYear;
 use App\Models\Institution;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Hash;
+use App\Models\Role;
+use App\Models\Section;
+use App\Models\Student;
+use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class StudentSeeder extends Seeder
 {
@@ -23,16 +23,47 @@ class StudentSeeder extends Seeder
             $sections = Section::whereHas('class', function ($query) use ($institution) {
                 $query->where('tenant_id', $institution->uuid);
             })->get();
-            
+
             $currentAcademicYear = AcademicYear::where('tenant_id', $institution->uuid)
                 ->where('is_current', true)
                 ->first();
-            
-            if (!$currentAcademicYear) {
+
+            if (! $currentAcademicYear) {
                 $currentAcademicYear = AcademicYear::where('tenant_id', $institution->uuid)->first();
             }
 
+            // Get or create the student role for this institution
+            $studentRole = Role::firstOrCreate(
+                ['slug' => 'student', 'tenant_id' => $institution->uuid],
+                [
+                    'uuid' => Str::uuid(),
+                    'tenant_id' => $institution->uuid,
+                    'institution_id' => $institution->id,
+                    'name' => 'Student',
+                    'slug' => 'student',
+                    'description' => 'View own results, attendance, and fee status',
+                ]
+            );
+
+            // Assign view-only permissions to student role if not already assigned
+            if ($studentRole->permissions()->count() === 0) {
+                $viewPermissions = \App\Models\Permission::where('slug', 'like', 'view-%')
+                    ->whereIn('module', ['students', 'exams', 'attendance', 'fees', 'assignments'])
+                    ->pluck('id')
+                    ->all();
+
+                $pivotData = collect($viewPermissions)->mapWithKeys(fn (int $permId) => [
+                    $permId => [
+                        'tenant_id' => $institution->uuid,
+                        'uuid' => Str::uuid(),
+                    ],
+                ])->all();
+
+                $studentRole->permissions()->syncWithoutDetaching($pivotData);
+            }
+
             $studentCounter = 1;
+
             foreach ($sections as $section) {
                 // Create 2 students per section for faster demo seeding
                 for ($i = 1; $i <= 2; $i++) {
@@ -58,6 +89,14 @@ class StudentSeeder extends Seeder
                         'is_active' => true,
                     ]);
 
+                    // Assign student role
+                    $studentUser->roles()->syncWithoutDetaching([
+                        $studentRole->id => [
+                            'tenant_id' => $institution->uuid,
+                            'uuid' => Str::uuid(),
+                        ],
+                    ]);
+
                     // Create student record
                     Student::create([
                         'tenant_id' => $institution->uuid,
@@ -75,7 +114,7 @@ class StudentSeeder extends Seeder
                         'admission_date' => Carbon::now()->subYears(rand(1, 5)),
                         'status' => 'active',
                     ]);
-                    
+
                     $studentCounter++;
                 }
             }

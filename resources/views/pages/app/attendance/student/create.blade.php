@@ -4,7 +4,6 @@ use Livewire\Component;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Computed;
 use App\Models\Attendance;
-use App\Models\ClassModel;
 use App\Models\Section;
 use App\Models\Student;
 use Illuminate\Support\Facades\Auth;
@@ -15,8 +14,7 @@ use Flux\Flux;
 new #[Title('Mark Student Attendance')]
 class extends Component {
 
-    public string $class_id = '';
-    public string $section_id = '';
+    public string $class_section = '';
     public string $date = '';
     public array $rows = [];
     public bool $studentsLoaded = false;
@@ -27,35 +25,17 @@ class extends Component {
     }
 
     #[Computed]
-    public function classes()
+    public function classSections()
     {
-        return ClassModel::where('tenant_id', Auth::user()->tenant_id)
-            ->orderBy('name')
-            ->get();
-    }
-
-    #[Computed]
-    public function sections()
-    {
-        if ($this->class_id === '') {
-            return collect();
-        }
-
         return Section::where('tenant_id', Auth::user()->tenant_id)
-            ->where('class_id', $this->class_id)
+            ->with('class')
+            ->whereHas('class')
+            ->orderBy('class_id')
             ->orderBy('name')
             ->get();
     }
 
-    public function updatedClassId(): void
-    {
-        $this->section_id = '';
-        $this->rows = [];
-        $this->studentsLoaded = false;
-        unset($this->sections);
-    }
-
-    public function updatedSectionId(): void
+    public function updatedClassSection(): void
     {
         $this->rows = [];
         $this->studentsLoaded = false;
@@ -64,22 +44,23 @@ class extends Component {
     public function loadStudents(): void
     {
         $this->validate([
-            'class_id' => ['required', 'exists:classes,id'],
-            'section_id' => ['required', 'exists:sections,id'],
+            'class_section' => ['required'],
             'date' => ['required', 'date'],
         ]);
 
+        [$classId, $sectionId] = explode('-', $this->class_section);
+
         $students = Student::where('tenant_id', Auth::user()->tenant_id)
-            ->where('class_id', $this->class_id)
-            ->where('section_id', $this->section_id)
+            ->where('class_id', $classId)
+            ->where('section_id', $sectionId)
             ->where('status', 'active')
             ->with('user')
             ->orderBy('roll_number')
             ->get();
 
         $existingAttendances = Attendance::where('tenant_id', Auth::user()->tenant_id)
-            ->where('class_id', $this->class_id)
-            ->where('section_id', $this->section_id)
+            ->where('class_id', $classId)
+            ->where('section_id', $sectionId)
             ->whereDate('date', $this->date)
             ->pluck('status', 'student_id');
 
@@ -109,8 +90,7 @@ class extends Component {
     public function save(): void
     {
         $this->validate([
-            'class_id' => ['required', 'exists:classes,id'],
-            'section_id' => ['required', 'exists:sections,id'],
+            'class_section' => ['required'],
             'date' => ['required', 'date'],
             'rows' => ['required', 'array', 'min:1'],
             'rows.*.student_id' => ['required', 'exists:students,id'],
@@ -120,7 +100,9 @@ class extends Component {
             'rows.*.remarks' => ['nullable', 'string', 'max:500'],
         ]);
 
-        DB::transaction(function (): void {
+        [$classId, $sectionId] = explode('-', $this->class_section);
+
+        DB::transaction(function () use ($classId, $sectionId): void {
             foreach ($this->rows as $row) {
                 Attendance::updateOrCreate(
                     [
@@ -130,8 +112,8 @@ class extends Component {
                     ],
                     [
                         'uuid' => Str::uuid(),
-                        'class_id' => $this->class_id,
-                        'section_id' => $this->section_id,
+                        'class_id' => $classId,
+                        'section_id' => $sectionId,
                         'status' => $row['status'],
                         'check_in_time' => $row['check_in_time'] !== '' ? $row['check_in_time'] : null,
                         'check_out_time' => $row['check_out_time'] !== '' ? $row['check_out_time'] : null,
@@ -161,29 +143,18 @@ class extends Component {
     </div>
 
     <flux:card>
-        <div class="grid gap-4 sm:grid-cols-3">
+        <div class="grid gap-4 sm:grid-cols-2">
             <flux:select
-                label="{{ __('Class') }}"
+                label="{{ __('Class & Section') }}"
                 variant="listbox"
-                wire:model.live="class_id"
+                wire:model.live="class_section"
                 required
             >
-                <flux:select.option value="">{{ __('Select Class') }}</flux:select.option>
-                @foreach($this->classes as $class)
-                    <flux:select.option value="{{ $class->id }}">{{ $class->name }}</flux:select.option>
-                @endforeach
-            </flux:select>
-
-            <flux:select
-                label="{{ __('Section') }}"
-                variant="listbox"
-                wire:model.live="section_id"
-                :disabled="$class_id === ''"
-                required
-            >
-                <flux:select.option value="">{{ __('Select Section') }}</flux:select.option>
-                @foreach($this->sections as $section)
-                    <flux:select.option value="{{ $section->id }}">{{ $section->name }}</flux:select.option>
+                <flux:select.option value="">{{ __('Select Class & Section') }}</flux:select.option>
+                @foreach($this->classSections as $section)
+                    <flux:select.option value="{{ $section->class_id }}-{{ $section->id }}">
+                        {{ $section->class?->name }}-{{ $section->name }}
+                    </flux:select.option>
                 @endforeach
             </flux:select>
 
@@ -196,7 +167,7 @@ class extends Component {
                 variant="primary"
                 class="button"
                 icon="users"
-                :disabled="$class_id === '' || $section_id === '' || $date === ''"
+                :disabled="$class_section === '' || $date === ''"
             >
                 {{ __('Load Students') }}
             </flux:button>
