@@ -26,6 +26,11 @@ class extends Component {
             ->with(['feeInvoice', 'student.user', 'receivedBy'])
             ->orderByDesc('payment_date');
 
+        // Students can only see their own payments
+        if (Auth::user()->role === 'student') {
+            $query->where('student_id', Auth::user()->student?->id);
+        }
+
         if ($this->filterMethod !== '') {
             $query->where('payment_method', $this->filterMethod);
         }
@@ -107,9 +112,11 @@ class extends Component {
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Record and track fee payments from students.') }}</p>
         </div>
 
+        @hasPermission('record-payments')
         <flux:button class="button" x-on:click="$tsui.open.slide('create-fee-payment')" icon="plus">
             {{ __('Record Payment') }}
         </flux:button>
+        @endhasPermission
     </div>
 
     <div class="grid gap-4 sm:grid-cols-2">

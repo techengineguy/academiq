@@ -46,6 +46,11 @@ class extends Component {
             ->orderByDesc('date')
             ->orderByDesc('created_at');
 
+        // Students can only see their own attendance
+        if (Auth::user()->role === 'student') {
+            $query->where('student_id', Auth::user()->student?->id);
+        }
+
         if ($this->filterClassSection !== '') {
             [$classId, $sectionId] = explode('-', $this->filterClassSection);
             $query->where('class_id', $classId)->where('section_id', $sectionId);
@@ -156,9 +161,11 @@ class extends Component {
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Track and manage daily student attendance records.') }}</p>
         </div>
 
+        @hasPermission('mark-attendance')
         <flux:button class="button" href="{{ route('attendance.create') }}" wire:navigate icon="plus">
             {{ __('Mark Attendance') }}
         </flux:button>
+        @endhasPermission
     </div>
 
     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

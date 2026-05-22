@@ -11,7 +11,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->alias([
+            'permission' => \App\Http\Middleware\CheckPermission::class,
+            'redirect.students' => \App\Http\Middleware\RedirectStudents::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

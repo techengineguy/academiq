@@ -29,6 +29,11 @@ class extends Component {
             ->with(['examSchedule.exam', 'examSchedule.subject', 'examSchedule.class', 'student.user', 'enteredBy'])
             ->orderByDesc('created_at');
 
+        // Students can only see their own results
+        if (Auth::user()->role === 'student') {
+            $query->where('student_id', Auth::user()->student?->id);
+        }
+
         if ($this->filterSchedule !== '') {
             $query->where('exam_schedule_id', $this->filterSchedule);
         } elseif ($this->filterExam !== '') {

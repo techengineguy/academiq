@@ -4,10 +4,13 @@ namespace App\Providers;
 
 use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use App\Models\User;
+use App\Observers\UserObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,6 +23,9 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
         $this->registerMacros();
+        $this->registerBladeDirectives();
+
+        User::observe(UserObserver::class);
     }
 
     protected function registerMacros(): void
@@ -46,5 +52,38 @@ class AppServiceProvider extends ServiceProvider
                 ->uncompromised()
             : null,
         );
+    }
+
+    protected function registerBladeDirectives(): void
+    {
+        Blade::if('hasPermission', function (string ...$permissions): bool {
+            $user = auth()->user();
+
+            if (! $user) {
+                return false;
+            }
+
+            if ($user->isAdmin()) {
+                return true;
+            }
+
+            return $user->hasAnyPermission($permissions);
+        });
+
+        Blade::if('hasRole', function (string ...$roles): bool {
+            $user = auth()->user();
+
+            if (! $user) {
+                return false;
+            }
+
+            foreach ($roles as $role) {
+                if ($user->hasRole($role)) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
     }
 }

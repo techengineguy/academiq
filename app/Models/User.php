@@ -10,6 +10,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use App\Models\Permission;
 
 #[Fillable([
     'tenant_id',
@@ -84,6 +85,56 @@ class User extends Authenticatable implements MustVerifyEmail
     public function roles()
     {
         return $this->belongsToMany(Role::class, 'user_roles');
+    }
+
+    /**
+     * Check if the user has a specific permission through any of their roles.
+     */
+    public function hasPermission(string $slug): bool
+    {
+        return $this->roles()
+            ->whereHas('permissions', fn ($q) => $q->where('slug', $slug))
+            ->exists();
+    }
+
+    /**
+     * Check if the user has any of the given permissions.
+     */
+    public function hasAnyPermission(array $slugs): bool
+    {
+        return $this->roles()
+            ->whereHas('permissions', fn ($q) => $q->whereIn('slug', $slugs))
+            ->exists();
+    }
+
+    /**
+     * Check if the user has all of the given permissions.
+     */
+    public function hasAllPermissions(array $slugs): bool
+    {
+        $permissionCount = Permission::whereIn('slug', $slugs)->count();
+
+        $userPermissionCount = Permission::whereIn('slug', $slugs)
+            ->whereHas('roles', fn ($q) => $q->whereIn('roles.id', $this->roles()->pluck('roles.id')))
+            ->count();
+
+        return $permissionCount === $userPermissionCount;
+    }
+
+    /**
+     * Check if the user has a specific role.
+     */
+    public function hasRole(string $slug): bool
+    {
+        return $this->roles()->where('slug', $slug)->exists();
+    }
+
+    /**
+     * Check if the user is an admin (has all permissions).
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin' || $this->hasRole('administrator');
     }
 
     public function student()

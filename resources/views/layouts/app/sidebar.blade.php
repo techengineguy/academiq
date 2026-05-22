@@ -17,6 +17,7 @@
                 </flux:sidebar.item>
 
                 <!-- Academic Management -->
+                @hasPermission('view-classes')
                 <flux:sidebar.group expandable :expanded="request()->routeIs('academic-years.*', 'classes.*', 'sections.*', 'subjects.*', 'timetables.*', 'time-slots.*', 'lesson-plans.*', 'academic.trash')" :heading="__('Academic')" class="grid">
                     <flux:sidebar.item icon="calendar" :href="route('academic-years.index')" :current="request()->routeIs('academic-years.*')" wire:navigate>
                         {{ __('Academic Years') }}
@@ -43,12 +44,15 @@
                         {{ __('Trash') }}
                     </flux:sidebar.item>
                 </flux:sidebar.group>
+                @endhasPermission
 
                 <!-- Student Management -->
+                @hasPermission('view-students')
                 <flux:sidebar.group expandable :expanded="request()->routeIs('students.*', 'admission-applications.*', 'scholarships.*', 'scholarship-awards.*', 'promotions.*')" :heading="__('Students')" class="grid">
                     <flux:sidebar.item icon="users" :href="route('students.index')" :current="request()->routeIs('students.*')" wire:navigate>
                         {{ __('Students') }}
                     </flux:sidebar.item>
+                    @hasPermission('create-students')
                     <flux:sidebar.item icon="user-plus" :href="route('admission-applications.index')" :current="request()->routeIs('admission-applications.*')" wire:navigate>
                         {{ __('Admissions') }}
                     </flux:sidebar.item>
@@ -61,9 +65,12 @@
                     <flux:sidebar.item icon="arrow-up-right" :href="route('promotions.index')" :current="request()->routeIs('promotions.*')" wire:navigate>
                         {{ __('Promotions') }}
                     </flux:sidebar.item>
+                    @endhasPermission
                 </flux:sidebar.group>
+                @endhasPermission
 
                 <!-- Staff Management -->
+                @hasPermission('view-staff')
                 <flux:sidebar.group expandable :expanded="request()->routeIs('teachers.*', 'staffs.*', 'payroll.*', 'staff.trash')" :heading="__('Staff')" class="grid">
                     <flux:sidebar.item icon="academic-cap" :href="route('teachers.index')" :current="request()->routeIs('teachers.*')" wire:navigate>
                         {{ __('Teachers') }}
@@ -78,41 +85,53 @@
                         {{ __('Staff Trash') }}
                     </flux:sidebar.item>
                 </flux:sidebar.group>
+                @endhasPermission
 
                 <!-- Attendance -->
+                @hasPermission('view-attendance')
                 <flux:sidebar.group expandable :expanded="request()->routeIs('attendance.*', 'staff-attendance.*')" :heading="__('Attendance')" class="grid">
                     <flux:sidebar.item icon="clipboard-document-check" :href="route('attendance.index')" :current="request()->routeIs('attendance.*')" wire:navigate>
                         {{ __('Student Attendance') }}
                     </flux:sidebar.item>
+                    @hasPermission('mark-attendance')
                     <flux:sidebar.item icon="check-circle" :href="route('staff-attendance.index')" :current="request()->routeIs('staff-attendance.*')" wire:navigate>
                         {{ __('Staff Attendance') }}
                     </flux:sidebar.item>
+                    @endhasPermission
                 </flux:sidebar.group>
+                @endhasPermission
 
                 <!-- Exams & Results -->
+                @hasPermission('view-exams')
                 <flux:sidebar.group expandable :expanded="request()->routeIs('exams.*', 'exam-schedules.*', 'results.*', 'grade-scales.*')" :heading="__('Exams')" class="grid">
+                    @hasPermission('create-exams')
                     <flux:sidebar.item icon="pencil-square" :href="route('exams.index')" :current="request()->routeIs('exams.*')" wire:navigate>
                         {{ __('Exams') }}
                     </flux:sidebar.item>
                     <flux:sidebar.item icon="calendar-days" :href="route('exam-schedules.index')" :current="request()->routeIs('exam-schedules.*')" wire:navigate>
                         {{ __('Schedules') }}
                     </flux:sidebar.item>
-                    <flux:sidebar.item icon="chart-bar" :href="route('results.index')" :current="request()->routeIs('results.*')" wire:navigate>
-                        {{ __('Results') }}
-                    </flux:sidebar.item>
                     <flux:sidebar.item icon="scale" :href="route('grade-scales.index')" :current="request()->routeIs('grade-scales.*')" wire:navigate>
                         {{ __('Grade Scales') }}
                     </flux:sidebar.item>
+                    @endhasPermission
+                    <flux:sidebar.item icon="chart-bar" :href="route('results.check')" :current="request()->routeIs('results.*')" wire:navigate>
+                        {{ __('Results') }}
+                    </flux:sidebar.item>
                 </flux:sidebar.group>
+                @endhasPermission
 
                 <!-- Fee Management -->
+                @hasPermission('view-fees')
                 <flux:sidebar.group expandable :expanded="request()->routeIs('fee-types.*', 'fee-structures.*', 'fee-invoices.*', 'fee-payments.*')" :heading="__('Fees')" class="grid">
+                    @hasPermission('create-invoices')
                     <flux:sidebar.item icon="tag" :href="route('fee-types.index')" :current="request()->routeIs('fee-types.*')" wire:navigate>
                         {{ __('Fee Types') }}
                     </flux:sidebar.item>
                     <flux:sidebar.item icon="table-cells" :href="route('fee-structures.index')" :current="request()->routeIs('fee-structures.*')" wire:navigate>
                         {{ __('Fee Structure') }}
                     </flux:sidebar.item>
+                    @endhasPermission
                     <flux:sidebar.item icon="receipt-percent" :href="route('fee-invoices.index')" :current="request()->routeIs('fee-invoices.*')" wire:navigate>
                         {{ __('Invoices') }}
                     </flux:sidebar.item>
@@ -120,18 +139,24 @@
                         {{ __('Payments') }}
                     </flux:sidebar.item>
                 </flux:sidebar.group>
+                @endhasPermission
 
                 <!-- Assignments -->
+                @hasPermission('view-assignments')
                 <flux:sidebar.group expandable :expanded="request()->routeIs('assignments.*', 'submissions.*')" :heading="__('Assignments')" class="grid">
                     <flux:sidebar.item icon="document-plus" :href="route('assignments.index')" :current="request()->routeIs('assignments.*')" wire:navigate>
                         {{ __('Assignments') }}
                     </flux:sidebar.item>
+                    @hasPermission('grade-submissions')
                     <flux:sidebar.item icon="document-check" :href="route('submissions.index')" :current="request()->routeIs('submissions.*')" wire:navigate>
                         {{ __('Submissions') }}
                     </flux:sidebar.item>
+                    @endhasPermission
                 </flux:sidebar.group>
+                @endhasPermission
 
                 <!-- Leave Management -->
+                @hasPermission('view-leave')
                 <flux:sidebar.group expandable :expanded="request()->routeIs('leave-types.*', 'leave-applications.*')" :heading="__('Leave')" class="grid">
                     <flux:sidebar.item icon="document-text" :href="route('leave-types.index')" :current="request()->routeIs('leave-types.*')" wire:navigate>
                         {{ __('Leave Types') }}
@@ -140,8 +165,10 @@
                         {{ __('Applications') }}
                     </flux:sidebar.item>
                 </flux:sidebar.group>
+                @endhasPermission
 
                 <!-- Hostel Management -->
+                @hasPermission('view-hostel')
                 <flux:sidebar.group expandable :expanded="request()->routeIs('hostel-buildings.*', 'hostel-rooms.*', 'hostel-allocations.*', 'hostel-visitors.*')" :heading="__('Hostel')" class="grid">
                     <flux:sidebar.item icon="building-office" :href="route('hostel-buildings.index')" :current="request()->routeIs('hostel-buildings.*')" wire:navigate>
                         {{ __('Buildings') }}
@@ -156,8 +183,10 @@
                         {{ __('Visitors') }}
                     </flux:sidebar.item>
                 </flux:sidebar.group>
+                @endhasPermission
 
                 <!-- Communications -->
+                @hasPermission('view-announcements')
                 <flux:sidebar.group expandable :expanded="request()->routeIs('announcements.*', 'events.*', 'messages.*', 'notifications.*')" :heading="__('Communications')" class="grid">
                     <flux:sidebar.item icon="megaphone" :href="route('announcements.index')" :current="request()->routeIs('announcements.*')" wire:navigate>
                         {{ __('Announcements') }}
@@ -172,8 +201,10 @@
                         {{ __('Notifications') }}
                     </flux:sidebar.item>
                 </flux:sidebar.group>
+                @endhasPermission
 
                 <!-- Documents -->
+                @hasPermission('view-documents')
                 <flux:sidebar.group expandable :expanded="request()->routeIs('certificates.*', 'id-cards.*', 'document-templates.*')" :heading="__('Documents')" class="grid">
                     <flux:sidebar.item icon="document-duplicate" :href="route('certificates.index')" :current="request()->routeIs('certificates.*')" wire:navigate>
                         {{ __('Certificates') }}
@@ -185,8 +216,10 @@
                         {{ __('Templates') }}
                     </flux:sidebar.item>
                 </flux:sidebar.group>
+                @endhasPermission
 
                 <!-- More -->
+                @hasPermission('manage-roles')
                 <flux:sidebar.group expandable :expanded="request()->routeIs('complaints.*', 'backups.*', 'activity-logs.*', 'roles.*')" :heading="__('More')" class="grid">
                     <flux:sidebar.item icon="shield-check" :href="route('roles.index')" :current="request()->routeIs('roles.*')" wire:navigate>
                         {{ __('Roles & Permissions') }}
@@ -201,6 +234,7 @@
                         {{ __('Activity Logs') }}
                     </flux:sidebar.item>
                 </flux:sidebar.group>
+                @endhasPermission
             </flux:sidebar.nav>
 
             <flux:spacer />

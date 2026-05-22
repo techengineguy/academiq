@@ -13,7 +13,7 @@ use Laravel\Fortify\Http\Controllers\TwoFactorQrCodeController;
 use Laravel\Fortify\Http\Controllers\TwoFactorSecretKeyController;
 
 // App Domain Routes - Protected pages (require authentication)
-Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web'])->group(function () {
+Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web', 'redirect.students'])->group(function () {
     Route::livewire('dashboard', 'pages::app.dashboard.index')->name('dashboard');
 
     // Profile Information
@@ -252,4 +252,26 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web'])->gr
     Route::livewire('roles', 'pages::app.roles.index')->name('roles.index');
     Route::livewire('roles/create', 'pages::app.roles.create')->name('roles.create');
     Route::livewire('roles/{id}/edit', 'pages::app.roles.edit')->name('roles.edit');
+});
+
+// Student Portal Routes
+Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web'])->prefix('student')->group(function () {
+    Route::livewire('/', 'pages::student.dashboard')->name('student.dashboard');
+    Route::livewire('/attendance', 'pages::student.attendance')->name('student.attendance');
+    Route::livewire('/results', 'pages::student.results')->name('student.results');
+    Route::livewire('/fees', 'pages::student.fees')->name('student.fees');
+    Route::livewire('/assignments', 'pages::student.assignments')->name('student.assignments');
+    Route::livewire('/timetable', 'pages::student.timetable')->name('student.timetable');
+});
+
+// Teacher Portal Routes
+Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web'])->prefix('teacher')->group(function () {
+    Route::livewire('/', 'pages::teacher.dashboard')->name('teacher.dashboard');
+    Route::livewire('/my-classes', 'pages::teacher.my-classes')->name('teacher.my-classes');
+    Route::livewire('/attendance', 'pages::teacher.attendance')->name('teacher.attendance');
+    Route::livewire('/assignments', 'pages::teacher.assignments')->name('teacher.assignments');
+    Route::livewire('/results', 'pages::teacher.results')->name('teacher.results');
+    Route::livewire('/lesson-plans', 'pages::teacher.lesson-plans')->name('teacher.lesson-plans');
+    Route::livewire('/timetable', 'pages::teacher.timetable')->name('teacher.timetable');
+    Route::livewire('/leave', 'pages::teacher.leave')->name('teacher.leave');
 });

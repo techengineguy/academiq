@@ -16,9 +16,11 @@ return new class extends Migration
             $table->unsignedBigInteger('institution_id');
             $table->foreign('institution_id')->references('id')->on('institutions')->onDelete('cascade');
             $table->string('name');
-            $table->string('slug')->unique();
+            $table->string('slug');
             $table->text('description')->nullable();
             $table->timestamps();
+
+            $table->unique(['slug', 'tenant_id']);
         });
     }
 

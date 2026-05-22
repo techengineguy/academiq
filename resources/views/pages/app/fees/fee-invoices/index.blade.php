@@ -26,6 +26,11 @@ class extends Component {
             ->with(['student.user', 'student.class'])
             ->orderByDesc('invoice_date');
 
+        // Students can only see their own invoices
+        if (Auth::user()->role === 'student') {
+            $query->where('student_id', Auth::user()->student?->id);
+        }
+
         if ($this->filterStatus !== '') {
             $query->where('status', $this->filterStatus);
         }
@@ -102,9 +107,11 @@ class extends Component {
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Generate and manage student fee invoices.') }}</p>
         </div>
 
+        @hasPermission('create-invoices')
         <flux:button class="button" x-on:click="$tsui.open.slide('create-fee-invoice')" icon="plus">
             {{ __('New Invoice') }}
         </flux:button>
+        @endhasPermission
     </div>
 
     <div class="grid gap-4 sm:grid-cols-3">
