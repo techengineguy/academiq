@@ -13,7 +13,7 @@ use Laravel\Fortify\Http\Controllers\TwoFactorQrCodeController;
 use Laravel\Fortify\Http\Controllers\TwoFactorSecretKeyController;
 
 // App Domain Routes - Protected pages (require authentication)
-Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web', 'redirect.students'])->group(function () {
+Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web', 'redirect.users'])->group(function () {
     Route::livewire('dashboard', 'pages::app.dashboard.index')->name('dashboard');
 
     // Profile Information

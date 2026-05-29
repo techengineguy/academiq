@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class RedirectStudents
+class RedirectUsers
 {
     /**
      * Redirect student and teacher users to their respective portals.
