@@ -312,7 +312,7 @@ class extends Component {
 
         <div class="lg:col-span-3">
             <div class="mb-6">
-                <x-calendar/>
+                <flux:calendar selectable-header size="xs" />
             </div>
 
             <div class="bg-white dark:bg-zinc-800 rounded-2xl border border-zinc-200 dark:border-zinc-700 p-5">
