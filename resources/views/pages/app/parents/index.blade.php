@@ -24,7 +24,7 @@ class extends Component {
             ->with(['user', 'students.user'])
             ->withCount('students')
             ->orderByDesc('created_at')
-            ->paginate(15);
+            ->paginate(10);
     }
 
     #[Computed]
@@ -38,7 +38,7 @@ class extends Component {
         $this->parentIdToDelete = $id;
 
         $this->dialog()
-            ->question(__('Delete this parent? Their account and child links will be removed.'))
+            ->question(__('Are you sure you want to delete this parent? Their user account will also be removed.'))
             ->confirm(__('Delete'), method: 'delete')
             ->cancel(__('Cancel'))
             ->send();
@@ -54,9 +54,13 @@ class extends Component {
         $parent = StudentParent::where('tenant_id', Auth::user()->tenant_id)
             ->findOrFail($this->parentIdToDelete);
 
-        // Detach students and delete user account too
-        $parent->students()->detach();
+        // Delete the linked user
         $parent->user?->delete();
+
+        // Detach students
+        $parent->students()->detach();
+
+        // Soft delete the parent record
         $parent->delete();
 
         $this->parentIdToDelete = null;
@@ -66,19 +70,24 @@ class extends Component {
     }
 };
 ?>
-<div class="space-y-6 py-4">
+<div class="space-y-6">
     <x-dialog />
 
     <div class="flex items-start justify-between">
         <div>
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Parents') }}</h1>
-            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Register and link parents to their children.') }}</p>
+            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Manage parent records and link them to students.') }}</p>
         </div>
 
         <flux:button class="button" href="{{ route('parents.create') }}" wire:navigate icon="plus">
             {{ __('New Parent') }}
         </flux:button>
     </div>
+
+    <flux:card>
+        <p class="text-sm text-gray-500">{{ __('Total Parents') }}</p>
+        <p class="mt-2 text-2xl font-bold text-gray-900 dark:text-white">{{ number_format($this->totalParents) }}</p>
+    </flux:card>
 
     <flux:card>
         @if($this->parents->count())
@@ -88,31 +97,39 @@ class extends Component {
                     <flux:table.column>{{ __('Email') }}</flux:table.column>
                     <flux:table.column>{{ __('Phone') }}</flux:table.column>
                     <flux:table.column>{{ __('Children') }}</flux:table.column>
+                    <flux:table.column>{{ __('Father / Mother / Guardian') }}</flux:table.column>
                     <flux:table.column>{{ __('Actions') }}</flux:table.column>
                 </flux:table.columns>
                 @foreach($this->parents as $parent)
                     <flux:table.rows>
                         <flux:table.row :key="$parent->id">
                             <flux:table.cell>
-                                <div class="flex flex-col">
+                                <div class="flex items-center gap-2">
+                                    <flux:avatar :name="($parent->user?->first_name ?? '') . ' ' . ($parent->user?->last_name ?? '')" size="sm" />
                                     <span class="font-medium text-gray-900 dark:text-white">
                                         {{ $parent->user?->first_name }} {{ $parent->user?->last_name }}
                                     </span>
-                                    <span class="text-xs text-gray-500">{{ $parent->guardian_relation ?? __('Guardian') }}</span>
                                 </div>
                             </flux:table.cell>
                             <flux:table.cell>{{ $parent->user?->email ?? '-' }}</flux:table.cell>
-                            <flux:table.cell>{{ $parent->father_phone ?? $parent->mother_phone ?? $parent->guardian_phone ?? '-' }}</flux:table.cell>
+                            <flux:table.cell>{{ $parent->user?->phone ?? $parent->father_phone ?? $parent->mother_phone ?? '-' }}</flux:table.cell>
                             <flux:table.cell>
-                                <div class="flex items-center gap-2">
+                                @if($parent->students_count)
                                     <flux:badge color="blue">{{ $parent->students_count }}</flux:badge>
-                                    @if($parent->students->count())
-                                        <span class="text-xs text-gray-500 truncate max-w-[200px]">
-                                            {{ $parent->students->take(2)->map(fn ($s) => $s->user?->first_name . ' ' . $s->user?->last_name)->join(', ') }}
-                                            @if($parent->students->count() > 2)
-                                                +{{ $parent->students->count() - 2 }}
-                                            @endif
-                                        </span>
+                                @else
+                                    <flux:badge color="gray">0</flux:badge>
+                                @endif
+                            </flux:table.cell>
+                            <flux:table.cell>
+                                <div class="flex flex-col text-xs">
+                                    @if($parent->father_name)
+                                        <span><strong>{{ __('F') }}:</strong> {{ $parent->father_name }}</span>
+                                    @endif
+                                    @if($parent->mother_name)
+                                        <span><strong>{{ __('M') }}:</strong> {{ $parent->mother_name }}</span>
+                                    @endif
+                                    @if($parent->guardian_name)
+                                        <span><strong>{{ __('G') }}:</strong> {{ $parent->guardian_name }}</span>
                                     @endif
                                 </div>
                             </flux:table.cell>
@@ -130,7 +147,7 @@ class extends Component {
             <div class="p-6 text-center">
                 <flux:icon name="inbox" class="mx-auto h-12 w-12 text-gray-400" />
                 <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-white">{{ __('No Parents') }}</h3>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Register the first parent to grant access to the parent portal.') }}</p>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('Register the first parent to link them with students.') }}</p>
             </div>
         @endif
     </flux:card>

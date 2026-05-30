@@ -114,6 +114,11 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web', 'red
     Route::livewire('parents/create', 'pages::app.parents.create')->name('parents.create');
     Route::livewire('parents/{id}/edit', 'pages::app.parents.edit')->name('parents.edit');
 
+    // Parent Management Routes
+    Route::livewire('parents', 'pages::app.parents.index')->name('parents.index');
+    Route::livewire('parents/create', 'pages::app.parents.create')->name('parents.create');
+    Route::livewire('parents/{id}/edit', 'pages::app.parents.edit')->name('parents.edit');
+
     Route::livewire('admission-applications', 'pages::app.admissions.index')->name('admission-applications.index');
     Route::livewire('admission-applications/create', 'pages::app.admissions.create')->name('admission-applications.create');
     Route::livewire('admission-applications/{id}/edit', 'pages::app.admissions.edit')->name('admission-applications.edit');

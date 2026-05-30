@@ -3,8 +3,8 @@
 use Livewire\Component;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Computed;
-use App\Models\Student;
 use App\Models\StudentParent;
+use App\Models\Student;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -15,28 +15,26 @@ use Flux\Flux;
 new #[Title('Register Parent')]
 class extends Component {
 
-    // User account fields
+    // User fields
     public string $first_name = '';
     public string $last_name = '';
     public string $email = '';
-    public string $username = '';
     public string $phone = '';
-    public string $password = '';
-
-    // Parent details
-    public string $primary_relation = 'father';
+    public string $address = '';
 
     // Father details
     public string $father_name = '';
     public string $father_phone = '';
     public string $father_email = '';
     public string $father_occupation = '';
+    public string $father_annual_income = '';
 
     // Mother details
     public string $mother_name = '';
     public string $mother_phone = '';
     public string $mother_email = '';
     public string $mother_occupation = '';
+    public string $mother_annual_income = '';
 
     // Guardian details
     public string $guardian_name = '';
@@ -46,11 +44,14 @@ class extends Component {
 
     // Children to link
     public array $student_ids = [];
+    public array $relations = []; // [student_id => 'father|mother|guardian']
+    public string $primary_student_id = '';
 
     #[Computed]
     public function students()
     {
         return Student::where('tenant_id', Auth::user()->tenant_id)
+            ->where('status', 'active')
             ->with(['user', 'class'])
             ->orderBy('roll_number')
             ->get();
@@ -62,43 +63,45 @@ class extends Component {
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'unique:users,email'],
-            'username' => ['nullable', 'string', 'max:255', 'unique:users,username'],
             'phone' => ['nullable', 'string', 'max:50'],
-            'password' => ['required', 'string', 'min:6'],
-            'primary_relation' => ['required', 'in:father,mother,guardian'],
+            'address' => ['nullable', 'string'],
             'father_name' => ['nullable', 'string', 'max:255'],
             'father_phone' => ['nullable', 'string', 'max:50'],
             'father_email' => ['nullable', 'email'],
             'father_occupation' => ['nullable', 'string', 'max:255'],
+            'father_annual_income' => ['nullable', 'numeric'],
             'mother_name' => ['nullable', 'string', 'max:255'],
             'mother_phone' => ['nullable', 'string', 'max:50'],
             'mother_email' => ['nullable', 'email'],
             'mother_occupation' => ['nullable', 'string', 'max:255'],
+            'mother_annual_income' => ['nullable', 'numeric'],
             'guardian_name' => ['nullable', 'string', 'max:255'],
             'guardian_phone' => ['nullable', 'string', 'max:50'],
             'guardian_email' => ['nullable', 'email'],
             'guardian_relation' => ['nullable', 'string', 'max:100'],
             'student_ids' => ['array'],
             'student_ids.*' => ['exists:students,id'],
+            'relations' => ['array'],
         ]);
 
         DB::transaction(function () use ($validated): void {
-            // Create user account
+            // Create the user account
             $user = User::create([
                 'tenant_id' => Auth::user()->tenant_id,
                 'uuid' => Str::uuid(),
                 'institution_id' => Auth::user()->institution_id,
-                'username' => $validated['username'] ?: Str::slug($validated['first_name'] . '-' . $validated['last_name']) . '-' . random_int(100, 999),
+                'username' => Str::slug($validated['first_name'] . '-' . $validated['last_name']) . '-' . Str::random(4),
+                'email' => $validated['email'],
+                'password' => Hash::make('password'),
+                'role' => 'parent',
                 'first_name' => $validated['first_name'],
                 'last_name' => $validated['last_name'],
-                'email' => $validated['email'],
                 'phone' => $validated['phone'] ?: null,
-                'password' => Hash::make($validated['password']),
-                'role' => 'parent',
+                'address' => $validated['address'] ?: null,
                 'is_active' => true,
             ]);
 
-            // Create parent record
+            // Create the parent record
             $parent = StudentParent::create([
                 'tenant_id' => Auth::user()->tenant_id,
                 'uuid' => Str::uuid(),
@@ -107,41 +110,44 @@ class extends Component {
                 'father_phone' => $validated['father_phone'] ?: null,
                 'father_email' => $validated['father_email'] ?: null,
                 'father_occupation' => $validated['father_occupation'] ?: null,
+                'father_annual_income' => $validated['father_annual_income'] ?: null,
                 'mother_name' => $validated['mother_name'] ?: null,
                 'mother_phone' => $validated['mother_phone'] ?: null,
                 'mother_email' => $validated['mother_email'] ?: null,
                 'mother_occupation' => $validated['mother_occupation'] ?: null,
+                'mother_annual_income' => $validated['mother_annual_income'] ?: null,
                 'guardian_name' => $validated['guardian_name'] ?: null,
                 'guardian_phone' => $validated['guardian_phone'] ?: null,
                 'guardian_email' => $validated['guardian_email'] ?: null,
                 'guardian_relation' => $validated['guardian_relation'] ?: null,
             ]);
 
-            // Link children with the relation type
+            // Link children
             if (! empty($validated['student_ids'])) {
-                $pivotData = collect($validated['student_ids'])->mapWithKeys(fn ($studentId) => [
-                    $studentId => [
+                $pivotData = [];
+                foreach ($validated['student_ids'] as $studentId) {
+                    $pivotData[$studentId] = [
                         'tenant_id' => Auth::user()->tenant_id,
                         'uuid' => Str::uuid(),
-                        'relation' => $validated['primary_relation'],
-                        'is_primary' => true,
-                    ],
-                ])->all();
+                        'relation' => $this->relations[$studentId] ?? 'father',
+                        'is_primary' => (string) $studentId === $this->primary_student_id,
+                    ];
+                }
                 $parent->students()->attach($pivotData);
             }
         });
 
-        Flux::toast(variant: 'success', text: __('Parent registered successfully.'));
+        Flux::toast(variant: 'success', text: __('Parent registered successfully. Default password is "password".'));
 
         $this->redirect(route('parents.index'), navigate: true);
     }
 };
 ?>
-<div class="space-y-6 py-4">
+<div class="space-y-6">
     <div class="flex items-start justify-between">
         <div>
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Register Parent') }}</h1>
-            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Create a parent account and link them to their children.') }}</p>
+            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Create a parent account and link them to students.') }}</p>
         </div>
 
         <flux:button variant="subtle" href="{{ route('parents.index') }}" wire:navigate icon="arrow-left">
@@ -150,80 +156,97 @@ class extends Component {
     </div>
 
     <flux:card>
-        <form wire:submit="save" class="space-y-6">
+        <form wire:submit="save" class="space-y-8">
             <div>
                 <h2 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">{{ __('Account Information') }}</h2>
-                <div class="grid grid-cols-2 gap-4">
-                    <flux:input label="{{ __('First Name') }}" wire:model="first_name" required />
-                    <flux:input label="{{ __('Last Name') }}" wire:model="last_name" required />
-                </div>
-
-                <div class="grid grid-cols-2 gap-4 mt-4">
-                    <flux:input label="{{ __('Email') }}" type="email" wire:model="email" required />
-                    <flux:input label="{{ __('Phone') }}" wire:model="phone" />
-                </div>
-
-                <div class="grid grid-cols-2 gap-4 mt-4">
-                    <flux:input label="{{ __('Username') }}" wire:model="username" placeholder="{{ __('Auto-generated if blank') }}" />
-                    <flux:input label="{{ __('Password') }}" type="password" wire:model="password" required />
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <flux:input label="{{ __('First Name') }}" wire:model="first_name" required />
+                        <flux:input label="{{ __('Last Name') }}" wire:model="last_name" required />
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <flux:input label="{{ __('Email') }}" type="email" wire:model="email" required />
+                        <flux:input label="{{ __('Phone') }}" wire:model="phone" />
+                    </div>
+                    <flux:textarea label="{{ __('Address') }}" wire:model="address" rows="2" />
                 </div>
             </div>
 
             <div>
-                <h2 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">{{ __('Father Details') }}</h2>
-                <div class="grid grid-cols-2 gap-4">
-                    <flux:input label="{{ __('Father Name') }}" wire:model="father_name" />
-                    <flux:input label="{{ __('Father Phone') }}" wire:model="father_phone" />
-                </div>
-                <div class="grid grid-cols-2 gap-4 mt-4">
-                    <flux:input label="{{ __('Father Email') }}" type="email" wire:model="father_email" />
-                    <flux:input label="{{ __('Father Occupation') }}" wire:model="father_occupation" />
-                </div>
-            </div>
-
-            <div>
-                <h2 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">{{ __('Mother Details') }}</h2>
-                <div class="grid grid-cols-2 gap-4">
-                    <flux:input label="{{ __('Mother Name') }}" wire:model="mother_name" />
-                    <flux:input label="{{ __('Mother Phone') }}" wire:model="mother_phone" />
-                </div>
-                <div class="grid grid-cols-2 gap-4 mt-4">
-                    <flux:input label="{{ __('Mother Email') }}" type="email" wire:model="mother_email" />
-                    <flux:input label="{{ __('Mother Occupation') }}" wire:model="mother_occupation" />
+                <h2 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">{{ __('Father Information') }}</h2>
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <flux:input label="{{ __("Father's Name") }}" wire:model="father_name" />
+                        <flux:input label="{{ __("Father's Phone") }}" wire:model="father_phone" />
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <flux:input label="{{ __("Father's Email") }}" type="email" wire:model="father_email" />
+                        <flux:input label="{{ __('Occupation') }}" wire:model="father_occupation" />
+                    </div>
+                    <flux:input label="{{ __('Annual Income') }}" type="text" inputmode="decimal" wire:model="father_annual_income" />
                 </div>
             </div>
 
             <div>
-                <h2 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">{{ __('Guardian Details') }} <span class="text-xs font-normal text-gray-500">({{ __('Optional') }})</span></h2>
-                <div class="grid grid-cols-2 gap-4">
-                    <flux:input label="{{ __('Guardian Name') }}" wire:model="guardian_name" />
-                    <flux:input label="{{ __('Guardian Relation') }}" wire:model="guardian_relation" placeholder="{{ __('e.g., Uncle, Grandfather') }}" />
-                </div>
-                <div class="grid grid-cols-2 gap-4 mt-4">
-                    <flux:input label="{{ __('Guardian Phone') }}" wire:model="guardian_phone" />
-                    <flux:input label="{{ __('Guardian Email') }}" type="email" wire:model="guardian_email" />
+                <h2 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">{{ __('Mother Information') }}</h2>
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <flux:input label="{{ __("Mother's Name") }}" wire:model="mother_name" />
+                        <flux:input label="{{ __("Mother's Phone") }}" wire:model="mother_phone" />
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <flux:input label="{{ __("Mother's Email") }}" type="email" wire:model="mother_email" />
+                        <flux:input label="{{ __('Occupation') }}" wire:model="mother_occupation" />
+                    </div>
+                    <flux:input label="{{ __('Annual Income') }}" type="text" inputmode="decimal" wire:model="mother_annual_income" />
                 </div>
             </div>
 
             <div>
-                <h2 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">{{ __('Link to Children') }}</h2>
+                <h2 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">{{ __('Guardian Information (Optional)') }}</h2>
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <flux:input label="{{ __("Guardian's Name") }}" wire:model="guardian_name" />
+                        <flux:input label="{{ __("Guardian's Phone") }}" wire:model="guardian_phone" />
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <flux:input label="{{ __("Guardian's Email") }}" type="email" wire:model="guardian_email" />
+                        <flux:input label="{{ __('Relation to Student') }}" wire:model="guardian_relation" placeholder="{{ __('e.g., Uncle, Aunt') }}" />
+                    </div>
+                </div>
+            </div>
 
-                <flux:select label="{{ __('Primary Relation') }}" variant="listbox" wire:model="primary_relation" required>
-                    <flux:select.option value="father">{{ __('Father') }}</flux:select.option>
-                    <flux:select.option value="mother">{{ __('Mother') }}</flux:select.option>
-                    <flux:select.option value="guardian">{{ __('Guardian') }}</flux:select.option>
-                </flux:select>
+            <div>
+                <h2 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">{{ __('Link Children') }}</h2>
+                <p class="text-xs text-gray-500 mb-3">{{ __('Select students to link this parent to. Mark one as primary contact.') }}</p>
 
-                <div class="mt-4 max-h-72 overflow-y-auto rounded-lg border border-gray-200 dark:border-zinc-700 p-4 space-y-2">
-                    @forelse($this->students as $student)
-                        <flux:checkbox
-                            label="{{ $student->user?->first_name }} {{ $student->user?->last_name }} - {{ $student->class?->name ?? '-' }} ({{ $student->admission_number }})"
-                            value="{{ $student->id }}"
-                            wire:model="student_ids"
-                        />
-                    @empty
-                        <p class="text-sm text-gray-500 text-center py-2">{{ __('No students available') }}</p>
-                    @endforelse
+                <div class="max-h-64 overflow-y-auto rounded-lg border border-gray-200 dark:border-zinc-700 p-4 space-y-3">
+                    @foreach($this->students as $student)
+                        <div class="flex items-center gap-3 p-2 rounded hover:bg-gray-50 dark:hover:bg-zinc-800">
+                            <flux:checkbox
+                                value="{{ $student->id }}"
+                                wire:model.live="student_ids"
+                                label="{{ $student->user?->first_name }} {{ $student->user?->last_name }} ({{ $student->class?->name ?? '-' }})"
+                            />
+                            @if(in_array($student->id, $student_ids) || in_array((string) $student->id, $student_ids))
+                                <div class="flex items-center gap-2 ml-auto">
+                                    <select wire:model="relations.{{ $student->id }}" class="text-xs rounded border-gray-300 dark:border-zinc-600 dark:bg-zinc-800">
+                                        <option value="father">{{ __('Father') }}</option>
+                                        <option value="mother">{{ __('Mother') }}</option>
+                                        <option value="guardian">{{ __('Guardian') }}</option>
+                                    </select>
+                                    <label class="flex items-center gap-1 text-xs">
+                                        <input type="radio" wire:model="primary_student_id" value="{{ $student->id }}" />
+                                        {{ __('Primary') }}
+                                    </label>
+                                </div>
+                            @endif
+                        </div>
+                    @endforeach
+
+                    @if($this->students->isEmpty())
+                        <p class="text-sm text-gray-400 text-center py-4">{{ __('No active students to link.') }}</p>
+                    @endif
                 </div>
             </div>
 
