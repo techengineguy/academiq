@@ -42,6 +42,14 @@
                 <flux:sidebar.item icon="hand-raised" :href="route('teacher.leave')" :current="request()->routeIs('teacher.leave')" wire:navigate>
                     {{ __('Leave') }}
                 </flux:sidebar.item>
+
+                <flux:sidebar.item icon="megaphone" :href="route('teacher.announcements')" :current="request()->routeIs('teacher.announcements')" wire:navigate>
+                    {{ __('Announcements') }}
+                </flux:sidebar.item>
+
+                <flux:sidebar.item icon="bell" :href="route('teacher.notifications')" :current="request()->routeIs('teacher.notifications')" wire:navigate>
+                    {{ __('Notifications') }}
+                </flux:sidebar.item>
             </flux:sidebar.nav>
 
             <flux:spacer />
@@ -56,7 +64,10 @@
             </flux:text>
             <flux:spacer />
             <flux:navbar class="me-4">
-                <flux:navbar.item icon="bell" href="#" label="Notifications" />
+                @php
+                    $unreadCount = \App\Models\Notification::where('user_id', auth()->id())->where('is_read', false)->count();
+                @endphp
+                <flux:navbar.item icon="bell" :href="route('teacher.notifications')" wire:navigate label="Notifications" :badge="$unreadCount > 0 ? $unreadCount : null" />
                 <flux:button x-data x-on:click="$flux.dark = ! $flux.dark" icon="moon" variant="subtle" aria-label="Toggle dark mode" />
             </flux:navbar>
             <flux:dropdown position="top" align="end">

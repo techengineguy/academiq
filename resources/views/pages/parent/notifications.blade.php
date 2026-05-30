@@ -2,13 +2,16 @@
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Computed;
 use Livewire\WithPagination;
 use App\Models\Notification;
 use Illuminate\Support\Facades\Auth;
 use Flux\Flux;
 
-new #[Title('Notifications')]
+new
+#[Title('Notifications')]
+#[Layout('layouts.parent')]
 class extends Component {
     use WithPagination;
 
@@ -43,33 +46,16 @@ class extends Component {
 
     public function markAsRead(int $id): void
     {
-        Notification::where('tenant_id', Auth::user()->tenant_id)
-            ->where('user_id', Auth::id())
-            ->where('id', $id)
+        Notification::where('user_id', Auth::id())->where('id', $id)
             ->update(['is_read' => true, 'read_at' => now()]);
-
         unset($this->notifications, $this->stats);
     }
 
     public function markAllAsRead(): void
     {
-        Notification::where('tenant_id', Auth::user()->tenant_id)
-            ->where('user_id', Auth::id())
-            ->where('is_read', false)
+        Notification::where('user_id', Auth::id())->where('is_read', false)
             ->update(['is_read' => true, 'read_at' => now()]);
-
         Flux::toast(variant: 'success', text: __('All notifications marked as read.'));
-        unset($this->notifications, $this->stats);
-    }
-
-    public function deleteNotification(int $id): void
-    {
-        Notification::where('tenant_id', Auth::user()->tenant_id)
-            ->where('user_id', Auth::id())
-            ->where('id', $id)
-            ->delete();
-
-        Flux::toast(variant: 'success', text: __('Notification deleted.'));
         unset($this->notifications, $this->stats);
     }
 
@@ -80,17 +66,15 @@ class extends Component {
     }
 };
 ?>
-<div class="space-y-6">
+<div>
+<div class="space-y-6 py-4">
     <div class="flex items-start justify-between">
         <div>
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Notifications') }}</h1>
-            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Your notification history.') }}</p>
+            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Stay up to date with school activity.') }}</p>
         </div>
-
         @if($this->stats['unread'] > 0)
-            <flux:button variant="subtle" wire:click="markAllAsRead" icon="check">
-                {{ __('Mark All Read') }}
-            </flux:button>
+            <flux:button variant="subtle" wire:click="markAllAsRead" icon="check">{{ __('Mark All Read') }}</flux:button>
         @endif
     </div>
 
@@ -107,15 +91,9 @@ class extends Component {
 
     <flux:card>
         <div class="mb-4 flex gap-2">
-            <flux:button :variant="$filterStatus === 'all' ? 'primary' : 'subtle'" wire:click="selectFilter('all')" :class="$filterStatus === 'all' ? 'button' : ''">
-                {{ __('All') }}
-            </flux:button>
-            <flux:button :variant="$filterStatus === 'unread' ? 'primary' : 'subtle'" wire:click="selectFilter('unread')" :class="$filterStatus === 'unread' ? 'button' : ''">
-                {{ __('Unread') }}
-            </flux:button>
-            <flux:button :variant="$filterStatus === 'read' ? 'primary' : 'subtle'" wire:click="selectFilter('read')" :class="$filterStatus === 'read' ? 'button' : ''">
-                {{ __('Read') }}
-            </flux:button>
+            <flux:button :variant="$filterStatus === 'all' ? 'primary' : 'subtle'" wire:click="selectFilter('all')" :class="$filterStatus === 'all' ? 'button' : ''">{{ __('All') }}</flux:button>
+            <flux:button :variant="$filterStatus === 'unread' ? 'primary' : 'subtle'" wire:click="selectFilter('unread')" :class="$filterStatus === 'unread' ? 'button' : ''">{{ __('Unread') }}</flux:button>
+            <flux:button :variant="$filterStatus === 'read' ? 'primary' : 'subtle'" wire:click="selectFilter('read')" :class="$filterStatus === 'read' ? 'button' : ''">{{ __('Read') }}</flux:button>
         </div>
 
         @if($this->notifications->count())
@@ -130,10 +108,7 @@ class extends Component {
                                 default => 'text-blue-600 bg-blue-100 dark:bg-blue-900/30',
                             };
                             $iconName = match($notification->type ?? 'info') {
-                                'success' => 'check-circle',
-                                'warning' => 'exclamation-triangle',
-                                'error' => 'x-circle',
-                                default => 'information-circle',
+                                'success' => 'check-circle', 'warning' => 'exclamation-triangle', 'error' => 'x-circle', default => 'information-circle',
                             };
                         @endphp
                         <div class="p-2 rounded-lg {{ $iconColor }} shrink-0">
@@ -147,25 +122,15 @@ class extends Component {
                                 @endif
                             </div>
                             <p class="text-sm text-gray-600 dark:text-gray-400">{{ $notification->message }}</p>
-                            <div class="flex items-center gap-3 mt-1">
-                                <span class="text-xs text-gray-400">{{ $notification->created_at?->diffForHumans() }}</span>
-                                @if($notification->action_url)
-                                    <a href="{{ $notification->action_url }}" class="text-xs text-blue-600 hover:underline">{{ __('View') }}</a>
-                                @endif
-                            </div>
+                            <span class="text-xs text-gray-400">{{ $notification->created_at?->diffForHumans() }}</span>
                         </div>
-                        <div class="flex gap-1 shrink-0">
-                            @if(! $notification->is_read)
-                                <flux:button size="sm" variant="subtle" icon="check" wire:click="markAsRead({{ $notification->id }})" />
-                            @endif
-                            <flux:button size="sm" variant="danger" icon="trash" wire:click="deleteNotification({{ $notification->id }})" />
-                        </div>
+                        @if(! $notification->is_read)
+                            <flux:button size="sm" variant="subtle" icon="check" wire:click="markAsRead({{ $notification->id }})" />
+                        @endif
                     </div>
                 @endforeach
             </div>
-            <div class="mt-4">
-                {{ $this->notifications->links() }}
-            </div>
+            <div class="mt-4">{{ $this->notifications->links() }}</div>
         @else
             <div class="p-6 text-center">
                 <flux:icon name="bell" class="mx-auto h-12 w-12 text-gray-400" />
@@ -173,4 +138,5 @@ class extends Component {
             </div>
         @endif
     </flux:card>
+</div>
 </div>

@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use App\Models\Announcement;
 use App\Models\User;
+use App\Observers\AnnouncementObserver;
 use App\Observers\UserObserver;
 
 class AppServiceProvider extends ServiceProvider
@@ -26,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
         $this->registerBladeDirectives();
 
         User::observe(UserObserver::class);
+        Announcement::observe(AnnouncementObserver::class);
     }
 
     protected function registerMacros(): void

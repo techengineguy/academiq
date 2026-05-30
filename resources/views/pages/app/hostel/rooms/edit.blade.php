@@ -2,17 +2,125 @@
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
+use Livewire\Attributes\Computed;
+use Livewire\Attributes\On;
+use App\Models\HostelRoom;
+use App\Models\HostelBuilding;
+use Illuminate\Support\Facades\Auth;
+use Flux\Flux;
 
-new #[Title('Edit Rooms')] 
+new #[Title('Edit Room')]
 class extends Component {
-    public $id;
 
-    public function mount($id = null)
+    public ?HostelRoom $room = null;
+
+    public string $hostel_building_id = '';
+    public string $room_number = '';
+    public string $floor = '';
+    public string $capacity = '';
+    public string $room_type = '';
+    public string $rent_amount = '';
+    public string $facilities = '';
+    public string $status = 'available';
+
+    public function mount(?int $id = null): void
     {
-        if($id) $this->id = $id;
+        if ($id) {
+            $this->loadRoom($id);
+        }
+    }
+
+    #[On('edit-room')]
+    public function loadRoom(int $id): void
+    {
+        $this->room = HostelRoom::whereHas('hostelBuilding', fn ($q) => $q->where('tenant_id', Auth::user()->tenant_id))
+            ->findOrFail($id);
+
+        $this->hostel_building_id = (string) $this->room->hostel_building_id;
+        $this->room_number = $this->room->room_number;
+        $this->floor = (string) ($this->room->floor ?? '');
+        $this->capacity = (string) $this->room->capacity;
+        $this->room_type = (string) ($this->room->room_type ?? '');
+        $this->rent_amount = (string) $this->room->rent_amount;
+        $this->facilities = (string) ($this->room->facilities ?? '');
+        $this->status = $this->room->status;
+    }
+
+    #[Computed]
+    public function buildings()
+    {
+        return HostelBuilding::where('tenant_id', Auth::user()->tenant_id)
+            ->orderBy('name')
+            ->get();
+    }
+
+    public function update(): void
+    {
+        $validated = $this->validate([
+            'hostel_building_id' => ['required', 'exists:hostel_buildings,id'],
+            'room_number' => ['required', 'string', 'max:50'],
+            'floor' => ['nullable', 'integer', 'min:0'],
+            'capacity' => ['required', 'integer', 'min:1'],
+            'room_type' => ['nullable', 'string', 'max:100'],
+            'rent_amount' => ['nullable', 'numeric', 'min:0'],
+            'facilities' => ['nullable', 'string'],
+            'status' => ['required', 'in:available,occupied,maintenance'],
+        ]);
+
+        $this->room->update([
+            'hostel_building_id' => $validated['hostel_building_id'],
+            'room_number' => $validated['room_number'],
+            'floor' => $validated['floor'] ?: null,
+            'capacity' => $validated['capacity'],
+            'room_type' => $validated['room_type'] ?: null,
+            'rent_amount' => $validated['rent_amount'] ?: 0,
+            'facilities' => $validated['facilities'] ?: null,
+            'status' => $validated['status'],
+        ]);
+
+        Flux::toast(variant: 'success', text: __('Room updated successfully.'));
+
+        $this->redirect(route('hostel-rooms.index'), navigate: true);
     }
 };
 ?>
+<div>
+    @if($this->room)
+        <form wire:submit="update" class="space-y-6">
+            <flux:select label="{{ __('Building') }}" variant="listbox" wire:model="hostel_building_id" required>
+                <flux:select.option value="">{{ __('Select Building') }}</flux:select.option>
+                @foreach($this->buildings as $building)
+                    <flux:select.option value="{{ $building->id }}">{{ $building->name }}</flux:select.option>
+                @endforeach
+            </flux:select>
 
-<div><h1 class="text-2xl font-bold">Edit Hostel Room</h1><p class="mt-4 text-gray-600">{{ __('Edit hostel room form') }}</p></div>
+            <div class="grid grid-cols-2 gap-4">
+                <flux:input label="{{ __('Room Number') }}" wire:model="room_number" required />
+                <flux:input label="{{ __('Floor') }}" type="number" wire:model="floor" min="0" />
+            </div>
 
+            <div class="grid grid-cols-2 gap-4">
+                <flux:input label="{{ __('Capacity') }}" type="number" wire:model="capacity" min="1" required />
+                <flux:input label="{{ __('Room Type') }}" wire:model="room_type" />
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <flux:input label="{{ __('Rent Amount') }}" type="text" inputmode="decimal" wire:model="rent_amount" />
+                <flux:select label="{{ __('Status') }}" variant="listbox" wire:model="status" required>
+                    <flux:select.option value="available">{{ __('Available') }}</flux:select.option>
+                    <flux:select.option value="occupied">{{ __('Occupied') }}</flux:select.option>
+                    <flux:select.option value="maintenance">{{ __('Maintenance') }}</flux:select.option>
+                </flux:select>
+            </div>
+
+            <flux:textarea label="{{ __('Facilities') }}" wire:model="facilities" rows="3" />
+
+            <div class="flex gap-3 pt-2">
+                <flux:button type="submit" variant="primary" class="button">{{ __('Update') }}</flux:button>
+                <flux:button type="button" variant="subtle" x-on:click="$tsui.close.slide('edit-room')">{{ __('Cancel') }}</flux:button>
+            </div>
+        </form>
+    @else
+        <div class="flex h-32 items-center justify-center text-sm text-zinc-400">{{ __('Loading...') }}</div>
+    @endif
+</div>

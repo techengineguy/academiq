@@ -48,9 +48,12 @@
 
                 <!-- Student Management -->
                 @hasPermission('view-students')
-                <flux:sidebar.group expandable :expanded="request()->routeIs('students.*', 'admission-applications.*', 'scholarships.*', 'scholarship-awards.*', 'promotions.*')" :heading="__('Students')" class="grid">
+                <flux:sidebar.group expandable :expanded="request()->routeIs('students.*', 'parents.*', 'admission-applications.*', 'scholarships.*', 'scholarship-awards.*', 'promotions.*')" :heading="__('Students')" class="grid">
                     <flux:sidebar.item icon="users" :href="route('students.index')" :current="request()->routeIs('students.*')" wire:navigate>
                         {{ __('Students') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="user-group" :href="route('parents.index')" :current="request()->routeIs('parents.*')" wire:navigate>
+                        {{ __('Parents') }}
                     </flux:sidebar.item>
                     @hasPermission('create-students')
                     <flux:sidebar.item icon="user-plus" :href="route('admission-applications.index')" :current="request()->routeIs('admission-applications.*')" wire:navigate>

@@ -1,14 +1,17 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Computed;
 use App\Models\Message;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Flux\Flux;
 
-new #[Title('Message')]
+new
+#[Title('Message')]
+#[Layout('layouts.parent')]
 class extends Component {
 
     public int $id;
@@ -18,8 +21,13 @@ class extends Component {
     {
         $this->id = $id;
 
-        // Mark as read if user is the receiver
         $message = Message::where('tenant_id', Auth::user()->tenant_id)->findOrFail($id);
+
+        // Authorization: only allow viewing if user is sender or receiver
+        if ($message->sender_id !== Auth::id() && $message->receiver_id !== Auth::id()) {
+            abort(403);
+        }
+
         if ($message->receiver_id === Auth::id() && ! $message->is_read) {
             $message->update(['is_read' => true, 'read_at' => now()]);
         }
@@ -52,22 +60,13 @@ class extends Component {
         ]);
 
         $this->replyBody = '';
-
         Flux::toast(variant: 'success', text: __('Reply sent.'));
         unset($this->message);
     }
-
-    public function delete(): void
-    {
-        $this->message->delete();
-
-        Flux::toast(variant: 'success', text: __('Message deleted.'));
-
-        $this->redirect(route('messages.index'), navigate: true);
-    }
 };
 ?>
-<div class="space-y-6">
+<div>
+<div class="space-y-6 py-4">
     <div class="flex items-start justify-between">
         <div>
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $this->message->subject }}</h1>
@@ -76,15 +75,7 @@ class extends Component {
                 &middot; {{ $this->message->created_at?->format('M d, Y H:i') }}
             </p>
         </div>
-
-        <div class="flex gap-2">
-            <flux:button variant="subtle" href="{{ route('messages.index') }}" wire:navigate icon="arrow-left">
-                {{ __('Back') }}
-            </flux:button>
-            <flux:button variant="danger" wire:click="delete" icon="trash">
-                {{ __('Delete') }}
-            </flux:button>
-        </div>
+        <flux:button variant="subtle" href="{{ route('parent.messages') }}" wire:navigate icon="arrow-left">{{ __('Back') }}</flux:button>
     </div>
 
     <flux:card>
@@ -99,7 +90,6 @@ class extends Component {
                 </p>
             </div>
         </div>
-
         <div class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{{ $this->message->body }}</div>
     </flux:card>
 
@@ -111,9 +101,7 @@ class extends Component {
                     <div class="flex items-center gap-3 mb-3 pb-3 border-b border-gray-200 dark:border-zinc-700">
                         <flux:avatar :name="($reply->sender?->first_name ?? '') . ' ' . ($reply->sender?->last_name ?? '')" size="sm" />
                         <div>
-                            <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                {{ $reply->sender?->first_name }} {{ $reply->sender?->last_name }}
-                            </p>
+                            <p class="text-sm font-medium">{{ $reply->sender?->first_name }} {{ $reply->sender?->last_name }}</p>
                             <p class="text-xs text-gray-500">{{ $reply->created_at?->format('M d, Y H:i') }}</p>
                         </div>
                     </div>
@@ -129,4 +117,5 @@ class extends Component {
             <flux:button type="submit" variant="primary" class="button" icon="paper-airplane">{{ __('Send Reply') }}</flux:button>
         </form>
     </flux:card>
+</div>
 </div>

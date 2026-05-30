@@ -6,40 +6,56 @@
     <body class="min-h-screen bg-zinc-50 dark:bg-zinc-900">
         <flux:sidebar sticky collapsible="mobile" class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
             <flux:sidebar.header class="flex items-center justify-center gap-2 shrink-0">
-                <x-app-logo :sidebar="true" href="{{ route('student.dashboard') }}" wire:navigate />
+                <x-app-logo :sidebar="true" href="{{ route('parent.dashboard') }}" wire:navigate />
                 <flux:sidebar.collapse class="lg:hidden" />
             </flux:sidebar.header>
 
             <flux:sidebar.nav>
-                <flux:sidebar.item icon="layout-grid" :href="route('student.dashboard')" :current="request()->routeIs('student.dashboard')" wire:navigate>
+                <flux:sidebar.item icon="layout-grid" :href="route('parent.dashboard')" :current="request()->routeIs('parent.dashboard')" wire:navigate>
                     {{ __('Dashboard') }}
                 </flux:sidebar.item>
 
-                <flux:sidebar.item icon="clipboard-document-check" :href="route('student.attendance')" :current="request()->routeIs('student.attendance')" wire:navigate>
-                    {{ __('My Attendance') }}
+                <flux:sidebar.item icon="users" :href="route('parent.children')" :current="request()->routeIs('parent.children')" wire:navigate>
+                    {{ __('My Children') }}
                 </flux:sidebar.item>
 
-                <flux:sidebar.item icon="chart-bar" :href="route('student.results')" :current="request()->routeIs('student.results')" wire:navigate>
-                    {{ __('My Results') }}
+                <flux:sidebar.item icon="clipboard-document-check" :href="route('parent.attendance')" :current="request()->routeIs('parent.attendance')" wire:navigate>
+                    {{ __('Attendance') }}
                 </flux:sidebar.item>
 
-                <flux:sidebar.item icon="receipt-percent" :href="route('student.fees')" :current="request()->routeIs('student.fees')" wire:navigate>
-                    {{ __('My Fees') }}
+                <flux:sidebar.item icon="chart-bar" :href="route('parent.results')" :current="request()->routeIs('parent.results')" wire:navigate>
+                    {{ __('Results') }}
                 </flux:sidebar.item>
 
-                <flux:sidebar.item icon="document-text" :href="route('student.assignments')" :current="request()->routeIs('student.assignments')" wire:navigate>
+                <flux:sidebar.item icon="document-text" :href="route('parent.assignments')" :current="request()->routeIs('parent.assignments')" wire:navigate>
                     {{ __('Assignments') }}
                 </flux:sidebar.item>
 
-                <flux:sidebar.item icon="calendar-days" :href="route('student.timetable')" :current="request()->routeIs('student.timetable')" wire:navigate>
+                <flux:sidebar.item icon="calendar-days" :href="route('parent.timetable')" :current="request()->routeIs('parent.timetable')" wire:navigate>
                     {{ __('Timetable') }}
                 </flux:sidebar.item>
 
-                <flux:sidebar.item icon="megaphone" :href="route('student.announcements')" :current="request()->routeIs('student.announcements')" wire:navigate>
+                <flux:sidebar.item icon="receipt-percent" :href="route('parent.fees')" :current="request()->routeIs('parent.fees')" wire:navigate>
+                    {{ __('Fees') }}
+                </flux:sidebar.item>
+
+                <flux:sidebar.item icon="hand-raised" :href="route('parent.leave')" :current="request()->routeIs('parent.leave')" wire:navigate>
+                    {{ __('Apply for Leave') }}
+                </flux:sidebar.item>
+
+                <flux:sidebar.item icon="envelope" :href="route('parent.messages')" :current="request()->routeIs('parent.messages*')" wire:navigate>
+                    {{ __('Messages') }}
+                </flux:sidebar.item>
+
+                <flux:sidebar.item icon="megaphone" :href="route('parent.announcements')" :current="request()->routeIs('parent.announcements')" wire:navigate>
                     {{ __('Announcements') }}
                 </flux:sidebar.item>
 
-                <flux:sidebar.item icon="bell" :href="route('student.notifications')" :current="request()->routeIs('student.notifications')" wire:navigate>
+                <flux:sidebar.item icon="calendar" :href="route('parent.events')" :current="request()->routeIs('parent.events')" wire:navigate>
+                    {{ __('Events') }}
+                </flux:sidebar.item>
+
+                <flux:sidebar.item icon="bell" :href="route('parent.notifications')" :current="request()->routeIs('parent.notifications')" wire:navigate>
                     {{ __('Notifications') }}
                 </flux:sidebar.item>
             </flux:sidebar.nav>
@@ -59,14 +75,11 @@
                 @php
                     $unreadCount = \App\Models\Notification::where('user_id', auth()->id())->where('is_read', false)->count();
                 @endphp
-                <flux:navbar.item icon="bell" :href="route('student.notifications')" wire:navigate label="Notifications" :badge="$unreadCount > 0 ? $unreadCount : null" />
+                <flux:navbar.item icon="bell" :href="route('parent.notifications')" wire:navigate label="Notifications" :badge="$unreadCount > 0 ? $unreadCount : null" />
                 <flux:button x-data x-on:click="$flux.dark = ! $flux.dark" icon="moon" variant="subtle" aria-label="Toggle dark mode" />
             </flux:navbar>
             <flux:dropdown position="top" align="end">
-                <flux:profile
-                    :initials="auth()->user()->initials()"
-                    icon-trailing="chevron-down"
-                />
+                <flux:profile :initials="auth()->user()->initials()" icon-trailing="chevron-down" />
                 <flux:menu>
                     <flux:menu.radio.group>
                         <div class="p-0 text-sm font-normal">
@@ -79,9 +92,7 @@
                             </div>
                         </div>
                     </flux:menu.radio.group>
-
                     <flux:menu.separator />
-
                     <form method="POST" action="{{ route('logout') }}" class="w-full">
                         @csrf
                         <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full cursor-pointer">

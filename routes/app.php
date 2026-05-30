@@ -109,6 +109,11 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web', 'red
     Route::livewire('students/create', 'pages::app.students.create')->name('students.create');
     Route::livewire('students/{id}/edit', 'pages::app.students.edit')->name('students.edit');
 
+    // Parent Management Routes
+    Route::livewire('parents', 'pages::app.parents.index')->name('parents.index');
+    Route::livewire('parents/create', 'pages::app.parents.create')->name('parents.create');
+    Route::livewire('parents/{id}/edit', 'pages::app.parents.edit')->name('parents.edit');
+
     Route::livewire('admission-applications', 'pages::app.admissions.index')->name('admission-applications.index');
     Route::livewire('admission-applications/create', 'pages::app.admissions.create')->name('admission-applications.create');
     Route::livewire('admission-applications/{id}/edit', 'pages::app.admissions.edit')->name('admission-applications.edit');
@@ -262,6 +267,8 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web'])->pr
     Route::livewire('/fees', 'pages::student.fees')->name('student.fees');
     Route::livewire('/assignments', 'pages::student.assignments')->name('student.assignments');
     Route::livewire('/timetable', 'pages::student.timetable')->name('student.timetable');
+    Route::livewire('/announcements', 'pages::student.announcements')->name('student.announcements');
+    Route::livewire('/notifications', 'pages::student.notifications')->name('student.notifications');
 });
 
 // Teacher Portal Routes
@@ -274,4 +281,24 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web'])->pr
     Route::livewire('/lesson-plans', 'pages::teacher.lesson-plans')->name('teacher.lesson-plans');
     Route::livewire('/timetable', 'pages::teacher.timetable')->name('teacher.timetable');
     Route::livewire('/leave', 'pages::teacher.leave')->name('teacher.leave');
+    Route::livewire('/announcements', 'pages::teacher.announcements')->name('teacher.announcements');
+    Route::livewire('/notifications', 'pages::teacher.notifications')->name('teacher.notifications');
+});
+
+// Parent Portal Routes
+Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web'])->prefix('parent')->group(function () {
+    Route::livewire('/', 'pages::parent.dashboard')->name('parent.dashboard');
+    Route::livewire('/children', 'pages::parent.children')->name('parent.children');
+    Route::livewire('/attendance', 'pages::parent.attendance')->name('parent.attendance');
+    Route::livewire('/results', 'pages::parent.results')->name('parent.results');
+    Route::livewire('/assignments', 'pages::parent.assignments')->name('parent.assignments');
+    Route::livewire('/timetable', 'pages::parent.timetable')->name('parent.timetable');
+    Route::livewire('/fees', 'pages::parent.fees')->name('parent.fees');
+    Route::livewire('/leave', 'pages::parent.leave')->name('parent.leave');
+    Route::livewire('/messages', 'pages::parent.messages.index')->name('parent.messages');
+    Route::livewire('/messages/create', 'pages::parent.messages.create')->name('parent.messages.create');
+    Route::livewire('/messages/{id}', 'pages::parent.messages.show')->name('parent.messages.show');
+    Route::livewire('/announcements', 'pages::parent.announcements')->name('parent.announcements');
+    Route::livewire('/events', 'pages::parent.events')->name('parent.events');
+    Route::livewire('/notifications', 'pages::parent.notifications')->name('parent.notifications');
 });

@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 class RedirectUsers
 {
     /**
-     * Redirect student and teacher users to their respective portals.
+     * Redirect non-admin users to their respective portals.
      * Applied to admin routes to prevent them from accessing the admin panel.
      */
     public function handle(Request $request, Closure $next): Response
@@ -20,19 +20,16 @@ class RedirectUsers
             return $next($request);
         }
 
-        // Allow profile and logout routes
-        if ($request->routeIs('student.*', 'teacher.*', 'logout', 'profile.*')) {
+        // Allow profile, logout, and portal routes
+        if ($request->routeIs('student.*', 'teacher.*', 'parent.*', 'logout', 'profile.*')) {
             return $next($request);
         }
 
-        if ($user->role === 'student') {
-            return redirect()->route('student.dashboard');
-        }
-
-        if ($user->role === 'teacher') {
-            return redirect()->route('teacher.dashboard');
-        }
-
-        return $next($request);
+        return match ($user->role) {
+            'student' => redirect()->route('student.dashboard'),
+            'teacher' => redirect()->route('teacher.dashboard'),
+            'parent' => redirect()->route('parent.dashboard'),
+            default => $next($request),
+        };
     }
 }

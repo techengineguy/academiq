@@ -1,16 +1,22 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Computed;
+use App\Concerns\ScopesToParentChildren;
+use App\Models\ClassSubject;
 use App\Models\Message;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Flux\Flux;
 
-new #[Title('Compose Message')]
+new
+#[Title('Compose Message')]
+#[Layout('layouts.parent')]
 class extends Component {
+    use ScopesToParentChildren;
 
     public string $receiver_id = '';
     public string $subject = '';
@@ -19,11 +25,21 @@ class extends Component {
     #[Computed]
     public function recipients()
     {
+        // Show teachers assigned to parent's children's classes + admins
+        $classIds = $this->parentChildren()->pluck('class_id')->unique();
+
+        $teacherIds = ClassSubject::where('tenant_id', Auth::user()->tenant_id)
+            ->whereIn('class_id', $classIds)
+            ->pluck('teacher_id')
+            ->unique();
+
         return User::where('tenant_id', Auth::user()->tenant_id)
-            ->where('id', '!=', Auth::id())
             ->where('is_active', true)
+            ->where(function ($q) use ($teacherIds) {
+                $q->whereIn('id', $teacherIds)->orWhere('role', 'admin');
+            })
+            ->orderBy('role')
             ->orderBy('first_name')
-            ->orderBy('last_name')
             ->get();
     }
 
@@ -47,20 +63,18 @@ class extends Component {
 
         Flux::toast(variant: 'success', text: __('Message sent successfully.'));
 
-        $this->redirect(route('messages.index'), navigate: true);
+        $this->redirect(route('parent.messages'), navigate: true);
     }
 };
 ?>
-<div class="space-y-6">
+<div>
+<div class="space-y-6 py-4">
     <div class="flex items-start justify-between">
         <div>
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Compose Message') }}</h1>
-            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Send a message to another user.') }}</p>
+            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Message a teacher or school admin.') }}</p>
         </div>
-
-        <flux:button variant="subtle" href="{{ route('messages.index') }}" wire:navigate icon="arrow-left">
-            {{ __('Back') }}
-        </flux:button>
+        <flux:button variant="subtle" href="{{ route('parent.messages') }}" wire:navigate icon="arrow-left">{{ __('Back') }}</flux:button>
     </div>
 
     <flux:card>
@@ -75,13 +89,13 @@ class extends Component {
             </flux:select>
 
             <flux:input label="{{ __('Subject') }}" wire:model="subject" required />
-
             <flux:textarea label="{{ __('Message') }}" wire:model="body" rows="8" required />
 
             <div class="flex gap-3 pt-2">
                 <flux:button type="submit" variant="primary" class="button" icon="paper-airplane">{{ __('Send') }}</flux:button>
-                <flux:button variant="subtle" href="{{ route('messages.index') }}" wire:navigate>{{ __('Cancel') }}</flux:button>
+                <flux:button variant="subtle" href="{{ route('parent.messages') }}" wire:navigate>{{ __('Cancel') }}</flux:button>
             </div>
         </form>
     </flux:card>
+</div>
 </div>
