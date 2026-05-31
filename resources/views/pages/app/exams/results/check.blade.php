@@ -105,7 +105,7 @@ class extends Component {
     }
 };
 ?>
-<div class="space-y-6">
+<div class="space-y-6 py-4">
     <div class="flex items-start justify-between">
         <div>
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Check Results') }}</h1>
@@ -119,14 +119,14 @@ class extends Component {
 
     <flux:card>
         <div class="grid gap-4 sm:grid-cols-2">
-            <flux:select label="{{ __('Exam') }}" variant="listbox" wire:model.live="exam_id" required>
+            <flux:select label="{{ __('Exam') }}" variant="listbox" wire:model.live="exam_id" searchable required>
                 <flux:select.option value="">{{ __('Select Exam') }}</flux:select.option>
                 @foreach($this->exams as $exam)
                     <flux:select.option value="{{ $exam->id }}">{{ $exam->name }}</flux:select.option>
                 @endforeach
             </flux:select>
 
-            <flux:select label="{{ __('Student') }}" variant="listbox" wire:model.live="student_id" required>
+            <flux:select label="{{ __('Student') }}" variant="listbox" wire:model.live="student_id" searchable required>
                 <flux:select.option value="">{{ __('Select Student') }}</flux:select.option>
                 @foreach($this->students as $student)
                     <flux:select.option value="{{ $student->id }}">

@@ -75,7 +75,7 @@ new class extends Component {
 
             <div class="grid grid-cols-2 gap-4">
                 <flux:input label="{{ __('Capacity') }}" type="number" wire:model="capacity" required />
-                <flux:select label="{{ __('Class Teacher') }}" variant="listbox" wire:model="class_teacher_id">
+                <flux:select label="{{ __('Class Teacher') }}" variant="listbox" wire:model="class_teacher_id" searchable>
                     <flux:select.option value="">{{ __('Select Teacher') }}</flux:select.option>
                     @forelse(App\Models\User::where('tenant_id', Auth::user()->tenant_id)->where('role', 'teacher')->get() as $teacher)
                         <flux:select.option value="{{ $teacher->id }}">{{ $teacher->first_name }} {{ $teacher->last_name }}</flux:select.option>

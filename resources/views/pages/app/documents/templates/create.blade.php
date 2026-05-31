@@ -58,10 +58,10 @@ class extends Component {
         <div>
             <p class="text-xs text-gray-500 mb-2">
                 {{ __('Use variables like') }}
-                <code class="bg-zinc-100 dark:bg-zinc-700 px-1 rounded">{{ '{{student_name}}' }}</code>,
-                <code class="bg-zinc-100 dark:bg-zinc-700 px-1 rounded">{{ '{{class_name}}' }}</code>,
-                <code class="bg-zinc-100 dark:bg-zinc-700 px-1 rounded">{{ '{{issue_date}}' }}</code>,
-                <code class="bg-zinc-100 dark:bg-zinc-700 px-1 rounded">{{ '{{school_name}}' }}</code>
+                <code class="bg-zinc-100 dark:bg-zinc-700 px-1 rounded">@{{ student_name }}</code>,
+                <code class="bg-zinc-100 dark:bg-zinc-700 px-1 rounded">@{{ class_name }}</code>,
+                <code class="bg-zinc-100 dark:bg-zinc-700 px-1 rounded">@{{ issue_date }}</code>,
+                <code class="bg-zinc-100 dark:bg-zinc-700 px-1 rounded">@{{ school_name }}</code>
             </p>
             <flux:textarea label="{{ __('Content / HTML') }}" wire:model="content" rows="12" required />
         </div>

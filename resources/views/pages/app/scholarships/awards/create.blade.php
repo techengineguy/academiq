@@ -76,7 +76,7 @@ new class extends Component
     <x-dialog/>
     <form wire:submit="save" class="space-y-6">
         <div class="grid grid-cols-2 gap-4">
-            <flux:select label="{{ __('Student') }}" variant="listbox" wire:model="student_id" required>
+            <flux:select label="{{ __('Student') }}" variant="listbox" wire:model="student_id" searchable required>
                 <flux:select.option value="">{{ __('Select Student') }}</flux:select.option>
                 @forelse(Student::where('tenant_id', Auth::user()->tenant_id)->orderBy('first_name')->get() as $student)
                     <flux:select.option value="{{ $student->id }}">{{ $student->first_name }} {{ $student->last_name }}</flux:select.option>

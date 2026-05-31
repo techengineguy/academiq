@@ -160,7 +160,7 @@ class extends Component {
                     @endforeach
                 </flux:select>
 
-                <flux:select label="{{ __('Teacher') }}" variant="listbox" wire:model="teacher_id" required>
+                <flux:select label="{{ __('Teacher') }}" variant="listbox" wire:model="teacher_id" searchable required>
                     <flux:select.option value="">{{ __('Select Teacher') }}</flux:select.option>
                     @foreach($this->teachers as $teacher)
                         <flux:select.option value="{{ $teacher->id }}">{{ $teacher->first_name }} {{ $teacher->last_name }}</flux:select.option>

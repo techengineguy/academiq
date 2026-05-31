@@ -103,7 +103,7 @@ new class extends Component {
     @if($this->lessonPlan)
         <form wire:submit="update" class="space-y-6">
             <div class="grid grid-cols-2 gap-4">
-                <flux:select label="{{ __('Teacher') }}" variant="listbox" wire:model="teacher_id" required>
+                <flux:select label="{{ __('Teacher') }}" variant="listbox" wire:model="teacher_id" searchable required>
                     <flux:select.option value="">{{ __('Select Teacher') }}</flux:select.option>
                     @forelse(User::where('tenant_id', Auth::user()->tenant_id)->where('role', 'teacher')->get() as $teacher)
                         <flux:select.option value="{{ $teacher->id }}">{{ $teacher->first_name }} {{ $teacher->last_name }}</flux:select.option>

@@ -220,7 +220,7 @@ class extends Component {
 
     <form wire:submit="save" class="space-y-6">
         <div class="grid grid-cols-2 gap-4">
-            <flux:select label="{{ __('Employee') }}" variant="listbox" wire:model.live="user_id" required>
+            <flux:select label="{{ __('Employee') }}" variant="listbox" wire:model.live="user_id" searchable required>
                 <flux:select.option value="">{{ __('Select Employee') }}</flux:select.option>
                 @forelse($this->employees as $employee)
                     <flux:select.option value="{{ $employee->id }}">

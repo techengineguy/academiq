@@ -82,7 +82,7 @@ class extends Component {
 ?>
 <div>
     <form wire:submit="save" class="space-y-6">
-        <flux:select label="{{ __('Employee') }}" variant="listbox" wire:model="user_id" required>
+        <flux:select label="{{ __('Employee') }}" variant="listbox" wire:model="user_id" searchable required>
             <flux:select.option value="">{{ __('Select Employee') }}</flux:select.option>
             @foreach($this->employees as $employee)
                 <flux:select.option value="{{ $employee->id }}">

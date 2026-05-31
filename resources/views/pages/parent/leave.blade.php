@@ -154,7 +154,7 @@ class extends Component {
 
     <x-slide id="apply-leave" title="{{ __('Apply for Leave') }}" size="lg">
         <form wire:submit="apply" class="space-y-6">
-            <flux:select label="{{ __('Child') }}" variant="listbox" wire:model="student_id" required>
+            <flux:select label="{{ __('Child') }}" variant="listbox" wire:model="student_id" searchable required>
                 <flux:select.option value="">{{ __('Select Child') }}</flux:select.option>
                 @foreach($this->children as $child)
                     <flux:select.option value="{{ $child->id }}">
