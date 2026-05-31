@@ -47,8 +47,20 @@
                     {{ __('Announcements') }}
                 </flux:sidebar.item>
 
+                <flux:sidebar.item icon="calendar" :href="route('teacher.events')" :current="request()->routeIs('teacher.events')" wire:navigate>
+                    {{ __('Events') }}
+                </flux:sidebar.item>
+
+                <flux:sidebar.item icon="envelope" :href="route('teacher.messages')" :current="request()->routeIs('teacher.messages*')" wire:navigate>
+                    {{ __('Messages') }}
+                </flux:sidebar.item>
+
                 <flux:sidebar.item icon="bell" :href="route('teacher.notifications')" :current="request()->routeIs('teacher.notifications')" wire:navigate>
                     {{ __('Notifications') }}
+                </flux:sidebar.item>
+
+                <flux:sidebar.item icon="identification" :href="route('teacher.documents')" :current="request()->routeIs('teacher.documents')" wire:navigate>
+                    {{ __('My Documents') }}
                 </flux:sidebar.item>
             </flux:sidebar.nav>
 
@@ -65,9 +77,15 @@
             <flux:spacer />
             <flux:navbar class="me-4">
                 @php
-                    $unreadCount = \App\Models\Notification::where('user_id', auth()->id())->where('is_read', false)->count();
+                    $unreadNotifications = \App\Models\Notification::where('user_id', auth()->id())->where('is_read', false)->count();
+                    $unreadMessages = \App\Models\Message::where('tenant_id', auth()->user()->tenant_id)->where('receiver_id', auth()->id())->where('is_read', false)->whereNull('parent_message_id')->count();
+                    $urgentAnnouncements = \App\Models\Announcement::where('tenant_id', auth()->user()->tenant_id)->where('status', 'published')->whereIn('target_audience', ['all', 'teachers'])->where('is_urgent', true)->where(function($q) { $q->whereNull('expiry_date')->orWhere('expiry_date', '>=', now()); })->count();
+                    $upcomingEvents = \App\Models\Event::where('tenant_id', auth()->user()->tenant_id)->where('status', 'upcoming')->where('start_date', '>=', now())->count();
                 @endphp
-                <flux:navbar.item icon="bell" :href="route('teacher.notifications')" wire:navigate label="Notifications" :badge="$unreadCount > 0 ? $unreadCount : null" />
+                <flux:navbar.item icon="envelope" :href="route('teacher.messages')" wire:navigate label="Messages" :badge="$unreadMessages > 0 ? $unreadMessages : null" />
+                <flux:navbar.item icon="megaphone" :href="route('teacher.announcements')" wire:navigate label="Announcements" :badge="$urgentAnnouncements > 0 ? $urgentAnnouncements : null" />
+                <flux:navbar.item icon="calendar-days" :href="route('teacher.events')" wire:navigate label="Events" :badge="$upcomingEvents > 0 ? $upcomingEvents : null" />
+                <flux:navbar.item icon="bell" :href="route('teacher.notifications')" wire:navigate label="Notifications" :badge="$unreadNotifications > 0 ? $unreadNotifications : null" />
                 <flux:button x-data x-on:click="$flux.dark = ! $flux.dark" icon="moon" variant="subtle" aria-label="Toggle dark mode" />
             </flux:navbar>
             <flux:dropdown position="top" align="end">

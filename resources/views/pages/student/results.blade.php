@@ -71,12 +71,21 @@ class extends Component {
         <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('View your exam results and performance.') }}</p>
     </div>
 
-    <div class="mb-4">
-        <flux:select variant="listbox" wire:model.live="filterExam" placeholder="{{ __('All Exams') }}">
-            <flux:select.option value="">{{ __('All Exams') }}</flux:select.option>
-            @foreach($this->exams as $exam)
-                <flux:select.option value="{{ $exam->id }}">{{ $exam->name }}</flux:select.option>
-            @endforeach
+    <div class="mb-4 flex items-end gap-3">
+        <div class="flex-1">
+            <flux:select variant="listbox" wire:model.live="filterExam" placeholder="{{ __('All Exams') }}">
+                <flux:select.option value="">{{ __('All Exams') }}</flux:select.option>
+                @foreach($this->exams as $exam)
+                    <flux:select.option value="{{ $exam->id }}">{{ $exam->name }}</flux:select.option>
+                @endforeach
+            </flux:select>
+        </div>
+        @if($filterExam !== '' && $this->results->count())
+            <flux:button variant="subtle" icon="arrow-down-tray" :href="route('results.download', [Auth::user()->student?->id, $filterExam])" target="_blank">
+                {{ __('Download') }}
+            </flux:button>
+        @endif
+    </div>
         </flux:select>
     </div>
 

@@ -2,13 +2,15 @@
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Computed;
 use Livewire\WithPagination;
 use App\Models\Message;
 use Illuminate\Support\Facades\Auth;
-use Flux\Flux;
 
-new #[Title('Messages')]
+new
+#[Title('Messages')]
+#[Layout('layouts.student')]
 class extends Component {
     use WithPagination;
 
@@ -37,8 +39,8 @@ class extends Component {
     {
         return [
             'inbox' => Message::where('tenant_id', Auth::user()->tenant_id)->where('receiver_id', Auth::id())->whereNull('parent_message_id')->count(),
-            'sent' => Message::where('tenant_id', Auth::user()->tenant_id)->where('sender_id', Auth::id())->whereNull('parent_message_id')->count(),
             'unread' => Message::where('tenant_id', Auth::user()->tenant_id)->where('receiver_id', Auth::id())->where('is_read', false)->whereNull('parent_message_id')->count(),
+            'sent' => Message::where('tenant_id', Auth::user()->tenant_id)->where('sender_id', Auth::id())->whereNull('parent_message_id')->count(),
         ];
     }
 
@@ -49,14 +51,14 @@ class extends Component {
     }
 };
 ?>
+<div>
 <div class="space-y-6 py-4">
     <div class="flex items-start justify-between">
         <div>
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Messages') }}</h1>
-            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Send and receive messages with other users.') }}</p>
+            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Messages from your teachers and school.') }}</p>
         </div>
-
-        <flux:button class="button" href="{{ route('messages.create') }}" wire:navigate icon="plus">
+        <flux:button class="button" href="{{ route('student.messages.create') }}" wire:navigate icon="plus">
             {{ __('Compose') }}
         </flux:button>
     </div>
@@ -78,25 +80,16 @@ class extends Component {
 
     <flux:card>
         <div class="mb-4 flex gap-2">
-            <flux:button :variant="$folder === 'inbox' ? 'primary' : 'subtle'" wire:click="selectFolder('inbox')" :class="$folder === 'inbox' ? 'button' : ''" icon="inbox">
-                {{ __('Inbox') }}
-            </flux:button>
-            <flux:button :variant="$folder === 'unread' ? 'primary' : 'subtle'" wire:click="selectFolder('unread')" :class="$folder === 'unread' ? 'button' : ''" icon="envelope">
-                {{ __('Unread') }}
-            </flux:button>
-            <flux:button :variant="$folder === 'sent' ? 'primary' : 'subtle'" wire:click="selectFolder('sent')" :class="$folder === 'sent' ? 'button' : ''" icon="paper-airplane">
-                {{ __('Sent') }}
-            </flux:button>
+            <flux:button :variant="$folder === 'inbox' ? 'primary' : 'subtle'" wire:click="selectFolder('inbox')" :class="$folder === 'inbox' ? 'button' : ''" icon="inbox">{{ __('Inbox') }}</flux:button>
+            <flux:button :variant="$folder === 'unread' ? 'primary' : 'subtle'" wire:click="selectFolder('unread')" :class="$folder === 'unread' ? 'button' : ''" icon="envelope">{{ __('Unread') }}</flux:button>
+            <flux:button :variant="$folder === 'sent' ? 'primary' : 'subtle'" wire:click="selectFolder('sent')" :class="$folder === 'sent' ? 'button' : ''" icon="paper-airplane">{{ __('Sent') }}</flux:button>
         </div>
 
         @if($this->messages->count())
             <div class="space-y-2">
                 @foreach($this->messages as $message)
-                    <a
-                        href="{{ route('messages.show', $message->id) }}"
-                        wire:navigate
-                        class="flex items-center justify-between p-4 rounded-lg border border-gray-200 dark:border-zinc-700 hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors {{ ! $message->is_read && $folder === 'inbox' ? 'bg-blue-50 dark:bg-blue-900/10' : '' }}"
-                    >
+                    <a href="{{ route('student.messages.show', $message->id) }}" wire:navigate
+                        class="flex items-center justify-between p-4 rounded-lg border border-gray-200 dark:border-zinc-700 hover:bg-gray-50 dark:hover:bg-zinc-800 {{ ! $message->is_read && $folder === 'inbox' ? 'bg-blue-50 dark:bg-blue-900/10' : '' }}">
                         <div class="flex items-center gap-3 flex-1 min-w-0">
                             @if($folder === 'sent')
                                 <flux:avatar :name="($message->receiver?->first_name ?? '') . ' ' . ($message->receiver?->last_name ?? '')" size="sm" />
@@ -107,13 +100,9 @@ class extends Component {
                                 <div class="flex items-center gap-2">
                                     @if($folder === 'sent')
                                         <span class="text-xs text-gray-500">{{ __('To') }}:</span>
-                                        <span class="text-sm font-medium text-gray-900 dark:text-white">
-                                            {{ $message->receiver?->first_name }} {{ $message->receiver?->last_name }}
-                                        </span>
+                                        <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $message->receiver?->first_name }} {{ $message->receiver?->last_name }}</span>
                                     @else
-                                        <span class="text-sm font-medium text-gray-900 dark:text-white">
-                                            {{ $message->sender?->first_name }} {{ $message->sender?->last_name }}
-                                        </span>
+                                        <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $message->sender?->first_name }} {{ $message->sender?->last_name }}</span>
                                     @endif
                                     @if(! $message->is_read && $folder === 'inbox')
                                         <flux:badge color="blue" size="sm">{{ __('New') }}</flux:badge>
@@ -127,9 +116,7 @@ class extends Component {
                     </a>
                 @endforeach
             </div>
-            <div class="mt-4">
-                {{ $this->messages->links() }}
-            </div>
+            <div class="mt-4">{{ $this->messages->links() }}</div>
         @else
             <div class="p-6 text-center">
                 <flux:icon name="envelope" class="mx-auto h-12 w-12 text-gray-400" />
@@ -137,4 +124,5 @@ class extends Component {
             </div>
         @endif
     </flux:card>
+</div>
 </div>

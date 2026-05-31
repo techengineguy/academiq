@@ -151,6 +151,16 @@ class extends Component {
 
     @if($resultsLoaded)
         @if(count($results) > 0)
+            <div class="flex justify-end mb-2">
+                <flux:button
+                    variant="subtle"
+                    icon="arrow-down-tray"
+                    :href="route('results.download', [$student_id, $exam_id])"
+                    target="_blank"
+                >
+                    {{ __('Download Result Sheet') }}
+                </flux:button>
+            </div>
             <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                 <flux:card>
                     <p class="text-sm text-gray-500">{{ __('Overall') }}</p>

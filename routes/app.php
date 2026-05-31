@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DocumentController;
 use Laravel\Fortify\Features;
 use Laravel\Fortify\Http\Controllers\ConfirmablePasswordController;
 use Laravel\Fortify\Http\Controllers\ConfirmedPasswordStatusController;
@@ -242,9 +243,13 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web', 'red
     Route::livewire('certificates', 'pages::app.documents.certificates.index')->name('certificates.index');
     Route::livewire('certificates/create', 'pages::app.documents.certificates.create')->name('certificates.create');
     Route::livewire('certificates/{id}/edit', 'pages::app.documents.certificates.edit')->name('certificates.edit');
+    Route::get('certificates/{id}/download', [DocumentController::class, 'downloadCertificate'])->name('certificates.download');
 
     Route::livewire('id-cards', 'pages::app.documents.id-cards.index')->name('id-cards.index');
     Route::livewire('id-cards/create', 'pages::app.documents.id-cards.create')->name('id-cards.create');
+    Route::get('id-cards/{id}/download', [DocumentController::class, 'downloadIdCard'])->name('id-cards.download');
+
+    Route::get('results/{studentId}/{examId}/download', [DocumentController::class, 'downloadResultSheet'])->name('results.download');
 
     Route::livewire('document-templates', 'pages::app.documents.templates.index')->name('document-templates.index');
     Route::livewire('document-templates/create', 'pages::app.documents.templates.create')->name('document-templates.create');
@@ -274,6 +279,11 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web'])->pr
     Route::livewire('/timetable', 'pages::student.timetable')->name('student.timetable');
     Route::livewire('/announcements', 'pages::student.announcements')->name('student.announcements');
     Route::livewire('/notifications', 'pages::student.notifications')->name('student.notifications');
+    Route::livewire('/documents', 'pages::student.documents')->name('student.documents');
+    Route::livewire('/events', 'pages::student.events')->name('student.events');
+    Route::livewire('/messages', 'pages::student.messages.index')->name('student.messages');
+    Route::livewire('/messages/create', 'pages::student.messages.create')->name('student.messages.create');
+    Route::livewire('/messages/{id}', 'pages::student.messages.show')->name('student.messages.show');
 });
 
 // Teacher Portal Routes
@@ -288,6 +298,11 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web'])->pr
     Route::livewire('/leave', 'pages::teacher.leave')->name('teacher.leave');
     Route::livewire('/announcements', 'pages::teacher.announcements')->name('teacher.announcements');
     Route::livewire('/notifications', 'pages::teacher.notifications')->name('teacher.notifications');
+    Route::livewire('/documents', 'pages::teacher.documents')->name('teacher.documents');
+    Route::livewire('/events', 'pages::teacher.events')->name('teacher.events');
+    Route::livewire('/messages', 'pages::teacher.messages.index')->name('teacher.messages');
+    Route::livewire('/messages/create', 'pages::teacher.messages.create')->name('teacher.messages.create');
+    Route::livewire('/messages/{id}', 'pages::teacher.messages.show')->name('teacher.messages.show');
 });
 
 // Parent Portal Routes

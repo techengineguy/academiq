@@ -1,7 +1,8 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
+use Livewire\Attributes\Layout;
 use Livewire\Attributes\Computed;
 use App\Models\Message;
 use App\Models\User;
@@ -9,7 +10,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Flux\Flux;
 
-new #[Title('Compose Message')]
+new
+#[Title('Compose Message')]
+#[Layout('layouts.teacher')]
 class extends Component {
 
     public array $receiver_ids = [];
@@ -22,8 +25,9 @@ class extends Component {
         return User::where('tenant_id', Auth::user()->tenant_id)
             ->where('id', '!=', Auth::id())
             ->where('is_active', true)
+            ->whereIn('role', ['admin', 'teacher', 'staff', 'student', 'parent'])
+            ->orderBy('role')
             ->orderBy('first_name')
-            ->orderBy('last_name')
             ->get();
     }
 
@@ -33,7 +37,6 @@ class extends Component {
         if (empty($this->receiver_ids)) {
             return collect();
         }
-
         return User::whereIn('id', $this->receiver_ids)->get();
     }
 
@@ -63,74 +66,47 @@ class extends Component {
             ]);
         }
 
-        $count = count($validated['receiver_ids']);
-
-        Flux::toast(
-            variant: 'success',
-            text: $count === 1 ? __('Message sent successfully.') : __('Message sent to :count recipients.', ['count' => $count])
-        );
-
-        $this->redirect(route('messages.index'), navigate: true);
+        Flux::toast(variant: 'success', text: __('Message sent successfully.'));
+        $this->redirect(route('teacher.messages'), navigate: true);
     }
 };
 ?>
-<div class="space-y-6">
+<div>
+<div class="space-y-6 py-4">
     <div class="flex items-start justify-between">
         <div>
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Compose Message') }}</h1>
-            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Send a message to one or more users.') }}</p>
         </div>
-
-        <flux:button variant="subtle" href="{{ route('messages.index') }}" wire:navigate icon="arrow-left">
-            {{ __('Back') }}
-        </flux:button>
+        <flux:button variant="subtle" href="{{ route('teacher.messages') }}" wire:navigate icon="arrow-left">{{ __('Back') }}</flux:button>
     </div>
-
     <flux:card>
         <form wire:submit="save" class="space-y-6">
             <div>
-                <flux:select
-                    label="{{ __('To') }}"
-                    variant="listbox"
-                    wire:model.live="receiver_ids"
-                    multiple
-                    searchable
-                    required
-                >
+                <flux:select label="{{ __('To') }}" variant="listbox" wire:model.live="receiver_ids" multiple searchable required>
                     @foreach($this->recipients as $user)
                         <flux:select.option value="{{ $user->id }}">
                             {{ $user->first_name }} {{ $user->last_name }} ({{ ucfirst($user->role) }})
                         </flux:select.option>
                     @endforeach
                 </flux:select>
-
                 @if($this->selectedRecipients->count())
                     <div class="mt-2 flex flex-wrap gap-2">
                         @foreach($this->selectedRecipients as $recipient)
                             <span class="inline-flex items-center gap-1 rounded-full bg-indigo-100 dark:bg-indigo-900/30 px-3 py-1 text-xs font-medium text-indigo-700 dark:text-indigo-300">
                                 {{ $recipient->first_name }} {{ $recipient->last_name }}
-                                <button type="button" wire:click="removeRecipient({{ $recipient->id }})" class="ml-1 hover:text-indigo-900 dark:hover:text-indigo-100">
-                                    &times;
-                                </button>
+                                <button type="button" wire:click="removeRecipient({{ $recipient->id }})" class="ml-1 hover:text-indigo-900">&times;</button>
                             </span>
                         @endforeach
                     </div>
                 @endif
             </div>
-
             <flux:input label="{{ __('Subject') }}" wire:model="subject" required />
-
             <flux:textarea label="{{ __('Message') }}" wire:model="body" rows="8" required />
-
             <div class="flex gap-3 pt-2">
-                <flux:button type="submit" variant="primary" class="button" icon="paper-airplane">
-                    {{ __('Send') }}
-                    @if(count($receiver_ids) > 1)
-                        <flux:badge color="white" class="ml-1">{{ count($receiver_ids) }}</flux:badge>
-                    @endif
-                </flux:button>
-                <flux:button variant="subtle" href="{{ route('messages.index') }}" wire:navigate>{{ __('Cancel') }}</flux:button>
+                <flux:button type="submit" variant="primary" class="button" icon="paper-airplane">{{ __('Send') }}</flux:button>
+                <flux:button variant="subtle" href="{{ route('teacher.messages') }}" wire:navigate>{{ __('Cancel') }}</flux:button>
             </div>
         </form>
     </flux:card>
+</div>
 </div>

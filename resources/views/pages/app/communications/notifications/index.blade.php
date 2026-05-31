@@ -80,7 +80,7 @@ class extends Component {
     }
 };
 ?>
-<div class="space-y-6">
+<div class="space-y-6 py-4">
     <div class="flex items-start justify-between">
         <div>
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Notifications') }}</h1>

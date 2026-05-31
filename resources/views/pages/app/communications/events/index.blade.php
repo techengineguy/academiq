@@ -78,7 +78,7 @@ class extends Component {
     }
 };
 ?>
-<div class="space-y-6">
+<div class="space-y-6 py-4">
     <x-dialog />
 
     <div class="flex items-start justify-between">
@@ -111,8 +111,6 @@ class extends Component {
                 <flux:select.option value="completed">{{ __('Completed') }}</flux:select.option>
                 <flux:select.option value="cancelled">{{ __('Cancelled') }}</flux:select.option>
             </flux:select>
-
-            <div></div>
 
             <flux:button variant="subtle" wire:click="clearFilters" icon="x-mark" class="w-fit">
                 {{ __('Clear') }}
