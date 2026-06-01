@@ -2,6 +2,11 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth">
 <head>
     @include('partials.head')
+    {{-- Force light mode on the welcome/marketing page --}}
+    <script>
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('flux-appearance', 'light');
+    </script>
     <style>
         @keyframes fadeUp { from { opacity:0; transform:translateY(28px) } to { opacity:1; transform:translateY(0) } }
         @keyframes fadeDown { from { opacity:0; transform:translateY(-14px) } to { opacity:1; transform:translateY(0) } }
@@ -79,7 +84,9 @@
         }
     </style>
 </head>
-<body class="min-h-screen antialiased bg-white text-zinc-900 overflow-x-hidden">
+<body class="min-h-screen antialiased bg-white text-zinc-900 overflow-x-hidden"
+    x-data
+    x-init="document.documentElement.classList.remove('dark'); $flux.appearance = 'light'">
 
 {{-- HEADER --}}
 <flux:header sticky container class="z-50 bg-gradient-to-r from-indigo-50/90 via-white to-zinc-50 border-zinc-200">
