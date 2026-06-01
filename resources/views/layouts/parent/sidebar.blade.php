@@ -58,6 +58,10 @@
                 <flux:sidebar.item icon="bell" :href="route('parent.notifications')" :current="request()->routeIs('parent.notifications')" wire:navigate>
                     {{ __('Notifications') }}
                 </flux:sidebar.item>
+
+                <flux:sidebar.item icon="exclamation-circle" :href="route('parent.complaints')" :current="request()->routeIs('parent.complaints')" wire:navigate>
+                    {{ __('Complaints') }}
+                </flux:sidebar.item>
             </flux:sidebar.nav>
 
             <flux:spacer />

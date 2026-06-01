@@ -223,15 +223,12 @@
 
                 <!-- More -->
                 @hasPermission('manage-roles')
-                <flux:sidebar.group expandable :expanded="request()->routeIs('complaints.*', 'backups.*', 'activity-logs.*', 'roles.*')" :heading="__('More')" class="grid">
+                <flux:sidebar.group expandable :expanded="request()->routeIs('complaints.*', 'activity-logs.*', 'roles.*')" :heading="__('More')" class="grid">
                     <flux:sidebar.item icon="shield-check" :href="route('roles.index')" :current="request()->routeIs('roles.*')" wire:navigate>
                         {{ __('Roles & Permissions') }}
                     </flux:sidebar.item>
                     <flux:sidebar.item icon="exclamation-circle" :href="route('complaints.index')" :current="request()->routeIs('complaints.*')" wire:navigate>
                         {{ __('Complaints') }}
-                    </flux:sidebar.item>
-                    <flux:sidebar.item icon="archive-box" :href="route('backups.index')" :current="request()->routeIs('backups.*')" wire:navigate>
-                        {{ __('Backups') }}
                     </flux:sidebar.item>
                     <flux:sidebar.item icon="clipboard-document-list" :href="route('activity-logs.index')" :current="request()->routeIs('activity-logs.*')" wire:navigate>
                         {{ __('Activity Logs') }}
@@ -265,8 +262,12 @@
             </flux:navbar> --}}
             <flux:spacer />
             <flux:navbar class="me-4">
+                @php
+                    $adminUnreadMessages = \App\Models\Message::where('tenant_id', auth()->user()->tenant_id)->where('receiver_id', auth()->id())->where('is_read', false)->whereNull('parent_message_id')->count();
+                @endphp
                 <flux:navbar.item icon="magnifying-glass" href="#" label="Search" />
-                <flux:navbar.item icon="bell" href="#" label="Notifications" />
+                <flux:navbar.item icon="envelope" :href="route('messages.index')" wire:navigate label="Messages" :badge="$adminUnreadMessages > 0 ? $adminUnreadMessages : null" />
+                <flux:navbar.item icon="bell" :href="route('notifications.index')" wire:navigate label="Notifications" />
                 <flux:navbar.item class="max-lg:hidden" icon="cog-6-tooth" href="#" label="Settings" />
                 <flux:button x-data x-on:click="$flux.dark = ! $flux.dark" icon="moon" variant="subtle" aria-label="Toggle dark mode" />
             </flux:navbar>

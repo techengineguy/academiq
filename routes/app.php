@@ -259,8 +259,6 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web', 'red
     Route::livewire('complaints', 'pages::app.complaints.index')->name('complaints.index');
     Route::livewire('complaints/{id}', 'pages::app.complaints.show')->name('complaints.show');
 
-    Route::livewire('backups', 'pages::app.backups.index')->name('backups.index');
-
     Route::livewire('activity-logs', 'pages::app.activity-logs.index')->name('activity-logs.index');
 
     // Roles & Permissions Routes
@@ -284,6 +282,7 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web'])->pr
     Route::livewire('/messages', 'pages::student.messages.index')->name('student.messages');
     Route::livewire('/messages/create', 'pages::student.messages.create')->name('student.messages.create');
     Route::livewire('/messages/{id}', 'pages::student.messages.show')->name('student.messages.show');
+    Route::livewire('/complaints', 'pages::student.complaints')->name('student.complaints');
 });
 
 // Teacher Portal Routes
@@ -303,6 +302,7 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web'])->pr
     Route::livewire('/messages', 'pages::teacher.messages.index')->name('teacher.messages');
     Route::livewire('/messages/create', 'pages::teacher.messages.create')->name('teacher.messages.create');
     Route::livewire('/messages/{id}', 'pages::teacher.messages.show')->name('teacher.messages.show');
+    Route::livewire('/complaints', 'pages::teacher.complaints')->name('teacher.complaints');
 });
 
 // Parent Portal Routes
@@ -321,4 +321,5 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web'])->pr
     Route::livewire('/announcements', 'pages::parent.announcements')->name('parent.announcements');
     Route::livewire('/events', 'pages::parent.events')->name('parent.events');
     Route::livewire('/notifications', 'pages::parent.notifications')->name('parent.notifications');
+    Route::livewire('/complaints', 'pages::parent.complaints')->name('parent.complaints');
 });

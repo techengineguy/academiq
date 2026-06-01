@@ -2,30 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Models\Activity;
 
-class ActivityLog extends Model
+/**
+ * Extends Spatie's Activity model for use throughout the application.
+ */
+class ActivityLog extends Activity
 {
-    protected $fillable = [
-        'tenant_id',
-        'uuid',
-        'user_id',
-        'action',
-        'module',
-        'description',
-        'old_values',
-        'new_values',
-        'ip_address',
-        'user_agent',
-    ];
-
-    protected $casts = [
-        'old_values' => 'json',
-        'new_values' => 'json',
-    ];
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
+    //
 }

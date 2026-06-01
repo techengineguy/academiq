@@ -28,6 +28,7 @@
         "livewire/flux-pro": "@dev",
         "livewire/livewire": "^4.1",
         "spatie/browsershot": "^5.4",
+        "spatie/laravel-activitylog": "^5.0",
         "tallstackui/tallstackui": "*"
     },
     "require-dev": {

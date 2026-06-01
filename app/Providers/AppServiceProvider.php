@@ -7,10 +7,12 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 use App\Models\Announcement;
 use App\Models\User;
+use App\Observers\ActivityObserver;
 use App\Observers\AnnouncementObserver;
 use App\Observers\UserObserver;
 
@@ -29,6 +31,12 @@ class AppServiceProvider extends ServiceProvider
 
         User::observe(UserObserver::class);
         Announcement::observe(AnnouncementObserver::class);
+
+        // Log auth events
+        $observer = new ActivityObserver();
+        Event::listen(\Illuminate\Auth\Events\Login::class, [$observer, 'handleLogin']);
+        Event::listen(\Illuminate\Auth\Events\Logout::class, [$observer, 'handleLogout']);
+        Event::listen(\Illuminate\Auth\Events\Failed::class, [$observer, 'handleFailed']);
     }
 
     protected function registerMacros(): void

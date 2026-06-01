@@ -62,6 +62,10 @@
                 <flux:sidebar.item icon="identification" :href="route('teacher.documents')" :current="request()->routeIs('teacher.documents')" wire:navigate>
                     {{ __('My Documents') }}
                 </flux:sidebar.item>
+
+                <flux:sidebar.item icon="exclamation-circle" :href="route('teacher.complaints')" :current="request()->routeIs('teacher.complaints')" wire:navigate>
+                    {{ __('Complaints') }}
+                </flux:sidebar.item>
             </flux:sidebar.nav>
 
             <flux:spacer />

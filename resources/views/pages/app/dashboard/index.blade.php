@@ -126,8 +126,11 @@ class extends Component {
     #[Computed]
     public function recentActivities()
     {
-        return ActivityLog::where('tenant_id', Auth::user()->tenant_id)
-            ->with('user')
+        $tenantUserIds = \App\Models\User::where('tenant_id', Auth::user()->tenant_id)
+            ->pluck('id');
+
+        return ActivityLog::whereIn('causer_id', $tenantUserIds)
+            ->with('causer')
             ->orderByDesc('created_at')
             ->limit(5)
             ->get();
@@ -330,8 +333,8 @@ class extends Component {
                                 <flux:icon name="clipboard-document-list" class="size-4" />
                             </div>
                             <div class="flex-1 min-w-0">
-                                <div class="text-sm font-medium text-zinc-900 dark:text-zinc-50 truncate">{{ $activity->action ?? $activity->description ?? '-' }}</div>
-                                <div class="text-xs text-zinc-500 dark:text-zinc-400">{{ $activity->user?->first_name }} {{ $activity->user?->last_name }}</div>
+                                <div class="text-sm font-medium text-zinc-900 dark:text-zinc-50 truncate">{{ $activity->description ?? '-' }}</div>
+                                <div class="text-xs text-zinc-500 dark:text-zinc-400">{{ $activity->causer?->first_name }} {{ $activity->causer?->last_name }}</div>
                                 <div class="text-xs text-zinc-400 mt-0.5">{{ $activity->created_at?->diffForHumans() }}</div>
                             </div>
                         </div>

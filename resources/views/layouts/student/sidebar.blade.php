@@ -54,6 +54,10 @@
                 <flux:sidebar.item icon="document-duplicate" :href="route('student.documents')" :current="request()->routeIs('student.documents')" wire:navigate>
                     {{ __('My Documents') }}
                 </flux:sidebar.item>
+
+                <flux:sidebar.item icon="exclamation-circle" :href="route('student.complaints')" :current="request()->routeIs('student.complaints')" wire:navigate>
+                    {{ __('Complaints') }}
+                </flux:sidebar.item>
             </flux:sidebar.nav>
 
             <flux:spacer />
