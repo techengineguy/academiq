@@ -21,7 +21,7 @@ class RedirectUsers
         }
 
         // Allow profile, logout, and portal routes
-        if ($request->routeIs('student.*', 'teacher.*', 'parent.*', 'logout', 'profile.*')) {
+        if ($request->routeIs('student.*', 'teacher.*', 'parent.*', 'accountant.*', 'logout', 'profile.*')) {
             return $next($request);
         }
 
@@ -29,6 +29,7 @@ class RedirectUsers
             'student' => redirect()->route('student.dashboard'),
             'teacher' => redirect()->route('teacher.dashboard'),
             'parent' => redirect()->route('parent.dashboard'),
+            'accountant' => redirect()->route('accountant.dashboard'),
             default => $next($request),
         };
     }

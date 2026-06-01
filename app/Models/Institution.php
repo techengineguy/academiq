@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Institution extends Model
 {
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'uuid',
@@ -135,5 +135,130 @@ class Institution extends Model
     public function academicCalendars()
     {
         return $this->hasMany(AcademicCalendar::class);
+    }
+
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    public function currentSubscription()
+    {
+        return $this->hasOne(Subscription::class)
+            ->whereIn('status', ['trial', 'active', 'past_due'])
+            ->where(function ($query) {
+                $query->where('ends_at', '>=', now())
+                    ->orWhere(function ($q) {
+                        $q->where('status', 'past_due')
+                            ->whereRaw('DATE_ADD(ends_at, INTERVAL grace_period_days DAY) >= ?', [now()]);
+                    });
+            })
+            ->latest();
+    }
+
+    public function hasUsedTrial(): bool
+    {
+        return $this->subscriptions()->whereNotNull('trial_ends_at')->exists();
+    }
+
+    public function hasActiveSubscription()
+    {
+        $subscription = $this->currentSubscription()->first();
+
+        return $subscription && $subscription->hasAccess();
+    }
+
+    public function isOnTrial()
+    {
+        $subscription = $this->currentSubscription()->first();
+
+        return $subscription && $subscription->isTrial();
+    }
+
+    public function trialDaysRemaining()
+    {
+        if (! $this->isOnTrial()) {
+            return 0;
+        }
+
+        $subscription = $this->currentSubscription()->first();
+
+        if (! $subscription || ! $subscription->trial_ends_at) {
+            return 0;
+        }
+
+        $daysRemaining = $subscription->trial_ends_at->diffInDays(now(), false);
+
+        // Return absolute value and round up for display
+        return abs(ceil($daysRemaining));
+    }
+
+    /**
+     * Check if the institution's active subscription plan includes a given feature.
+     *
+     * Feature names map to boolean columns on SubscriptionPlan:
+     *   hostel_management, exam_management, assignment_management,
+     *   advanced_reports, api_access, custom_branding, priority_support
+     */
+    public function hasFeature(string $feature): bool
+    {
+        $subscription = $this->currentSubscription()->with('plan')->first();
+
+        if (! $subscription || ! $subscription->plan) {
+            return false;
+        }
+
+        $column = 'has_'.$feature;
+
+        return (bool) ($subscription->plan->{$column} ?? false);
+    }
+
+    public function hasReachedStudentLimit(): bool
+    {
+        $subscription = $this->currentSubscription()->with('plan')->first();
+
+        if (! $subscription || ! $subscription->plan || $subscription->plan->isUnlimitedStudents()) {
+            return false;
+        }
+
+        return Student::where('institution_id', $this->id)->count() >= $subscription->plan->max_students;
+    }
+
+    public function hasReachedTeacherLimit(): bool
+    {
+        $subscription = $this->currentSubscription()->with('plan')->first();
+
+        if (! $subscription || ! $subscription->plan || $subscription->plan->isUnlimitedTeachers()) {
+            return false;
+        }
+
+        return Teacher::where('institution_id', $this->id)->count() >= $subscription->plan->max_teachers;
+    }
+
+    public function hasReachedStaffLimit(): bool
+    {
+        $subscription = $this->currentSubscription()->with('plan')->first();
+
+        if (! $subscription || ! $subscription->plan || $subscription->plan->isUnlimitedStaff()) {
+            return false;
+        }
+
+        return Staff::where('institution_id', $this->id)->count() >= $subscription->plan->max_staff;
+    }
+
+    public function planLimitFor(string $type): ?int
+    {
+        $subscription = $this->currentSubscription()->with('plan')->first();
+
+        if (! $subscription || ! $subscription->plan) {
+            return null;
+        }
+
+        return match ($type) {
+            'students' => $subscription->plan->max_students,
+            'teachers' => $subscription->plan->max_teachers,
+            'staff' => $subscription->plan->max_staff,
+            default => null,
+        };
     }
 }

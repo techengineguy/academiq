@@ -74,12 +74,15 @@
 
                 <!-- Staff Management -->
                 @hasPermission('view-staff')
-                <flux:sidebar.group expandable :expanded="request()->routeIs('teachers.*', 'staffs.*', 'payroll.*', 'staff.trash')" :heading="__('Staff')" class="grid">
+                <flux:sidebar.group expandable :expanded="request()->routeIs('teachers.*', 'staffs.*', 'accountants.*', 'payroll.*', 'staff.trash')" :heading="__('Staff')" class="grid">
                     <flux:sidebar.item icon="academic-cap" :href="route('teachers.index')" :current="request()->routeIs('teachers.*')" wire:navigate>
                         {{ __('Teachers') }}
                     </flux:sidebar.item>
                     <flux:sidebar.item icon="briefcase" :href="route('staffs.index')" :current="request()->routeIs('staffs.*')" wire:navigate>
                         {{ __('Staff') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="calculator" :href="route('accountants.index')" :current="request()->routeIs('accountants.*')" wire:navigate>
+                        {{ __('Accountants') }}
                     </flux:sidebar.item>
                     <flux:sidebar.item icon="credit-card" :href="route('payroll.index')" :current="request()->routeIs('payroll.*')" wire:navigate>
                         {{ __('Payroll') }}
@@ -105,6 +108,7 @@
                 @endhasPermission
 
                 <!-- Exams & Results -->
+                @hasFeature('exam_management')
                 @hasPermission('view-exams')
                 <flux:sidebar.group expandable :expanded="request()->routeIs('exams.*', 'exam-schedules.*', 'results.*', 'grade-scales.*')" :heading="__('Exams')" class="grid">
                     @hasPermission('create-exams')
@@ -123,6 +127,7 @@
                     </flux:sidebar.item>
                 </flux:sidebar.group>
                 @endhasPermission
+                @endhasFeature
 
                 <!-- Fee Management -->
                 @hasPermission('view-fees')
@@ -145,6 +150,7 @@
                 @endhasPermission
 
                 <!-- Assignments -->
+                @hasFeature('assignment_management')
                 @hasPermission('view-assignments')
                 <flux:sidebar.group expandable :expanded="request()->routeIs('assignments.*', 'submissions.*')" :heading="__('Assignments')" class="grid">
                     <flux:sidebar.item icon="document-plus" :href="route('assignments.index')" :current="request()->routeIs('assignments.*')" wire:navigate>
@@ -157,6 +163,7 @@
                     @endhasPermission
                 </flux:sidebar.group>
                 @endhasPermission
+                @endhasFeature
 
                 <!-- Leave Management -->
                 @hasPermission('view-leave')
@@ -171,6 +178,7 @@
                 @endhasPermission
 
                 <!-- Hostel Management -->
+                @hasFeature('hostel_management')
                 @hasPermission('view-hostel')
                 <flux:sidebar.group expandable :expanded="request()->routeIs('hostel-buildings.*', 'hostel-rooms.*', 'hostel-allocations.*', 'hostel-visitors.*')" :heading="__('Hostel')" class="grid">
                     <flux:sidebar.item icon="building-office" :href="route('hostel-buildings.index')" :current="request()->routeIs('hostel-buildings.*')" wire:navigate>
@@ -187,6 +195,7 @@
                     </flux:sidebar.item>
                 </flux:sidebar.group>
                 @endhasPermission
+                @endhasFeature
 
                 <!-- Communications -->
                 @hasPermission('view-announcements')
@@ -223,7 +232,7 @@
 
                 <!-- More -->
                 @hasPermission('manage-roles')
-                <flux:sidebar.group expandable :expanded="request()->routeIs('complaints.*', 'activity-logs.*', 'roles.*')" :heading="__('More')" class="grid">
+                <flux:sidebar.group expandable :expanded="request()->routeIs('complaints.*', 'activity-logs.*', 'roles.*', 'subscription.*')" :heading="__('More')" class="grid">
                     <flux:sidebar.item icon="shield-check" :href="route('roles.index')" :current="request()->routeIs('roles.*')" wire:navigate>
                         {{ __('Roles & Permissions') }}
                     </flux:sidebar.item>
@@ -232,6 +241,9 @@
                     </flux:sidebar.item>
                     <flux:sidebar.item icon="clipboard-document-list" :href="route('activity-logs.index')" :current="request()->routeIs('activity-logs.*')" wire:navigate>
                         {{ __('Activity Logs') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="credit-card" :href="route('subscription.manage')" :current="request()->routeIs('subscription.*')" wire:navigate>
+                        {{ __('Subscription') }}
                     </flux:sidebar.item>
                 </flux:sidebar.group>
                 @endhasPermission
@@ -244,6 +256,25 @@
        
         <flux:header container class="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700">
             <flux:sidebar.toggle class="lg:hidden" icon="bars-3" inset="left" />
+            
+            {{-- Trial Warning --}}
+            @if(auth()->user()->institution->isOnTrial())
+                @php
+                    $subscription = auth()->user()->institution->currentSubscription()->first();
+                    $daysRemaining = $subscription && $subscription->trial_ends_at 
+                        ? $subscription->trial_ends_at->diffInDays(now(), false) 
+                        : 0;
+                @endphp
+                @if($daysRemaining <= 3 && $daysRemaining > 0)
+                @php $roundedDays = ceil($daysRemaining); @endphp
+                <div class="flex items-center gap-2 px-3 py-1 bg-yellow-100 text-yellow-800 rounded-lg text-sm">
+                    <flux:icon name="exclamation-triangle" class="w-4 h-4" />
+                    <span>Trial expires in {{ $roundedDays }} day{{ $roundedDays != 1 ? 's' : '' }}!</span>
+                    <a href="{{ route('subscription.plans') }}" class="underline font-semibold">Upgrade now</a>
+                </div>
+                @endif
+            @endif
+            
             <flux:text class="text-base max-lg:hidden font-semibold capitalize" variant="strong">Good {{ now()->hour < 12 ? 'morning' : (now()->hour < 17 ? 'afternoon' : 'evening') }}, {{ auth()->user()->username }}!</flux:text>
             {{-- <flux:navbar class="-mb-px max-lg:hidden">
                 <flux:navbar.item icon="home" href="#" current>Home</flux:navbar.item>

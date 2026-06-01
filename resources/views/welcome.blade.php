@@ -441,6 +441,177 @@
 </section>
 
 {{-- ═══════════════════════════════════════════
+     PRICING
+═══════════════════════════════════════════ --}}
+<section class="py-28 px-6 bg-white" id="pricing">
+    <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-16 reveal">
+            <div class="inline-flex items-center gap-2.5 text-[.7rem] font-extrabold tracking-[.12em] uppercase text-indigo-600 mb-4">
+                <span class="block w-6 h-[1.5px] bg-indigo-600 rounded-full"></span> Pricing
+            </div>
+            <h2 class="text-[clamp(2rem,4vw,3.25rem)] font-bold tracking-tight leading-tight text-zinc-900 mb-4">
+                Simple, transparent <span class="shine">pricing</span>
+            </h2>
+            <p class="text-lg text-zinc-500 max-w-[500px] mx-auto leading-relaxed">Start with a 14-day free trial. No credit card required. Cancel anytime.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {{-- Starter Plan --}}
+            <div class="reveal bg-white border border-zinc-200 rounded-2xl p-8 hover:border-indigo-300 hover:shadow-xl transition-all duration-300">
+                <div class="text-center mb-6">
+                    <h3 class="text-xl font-bold text-zinc-900 mb-2">Starter</h3>
+                    <p class="text-zinc-600 text-sm mb-4">Perfect for small schools getting started</p>
+                    <div class="mb-4">
+                        <span class="text-4xl font-bold text-zinc-900">₦15,000</span>
+                        <span class="text-zinc-600">/month</span>
+                    </div>
+                </div>
+                
+                <ul class="space-y-3 mb-8">
+                    <li class="flex items-center gap-3">
+                        <flux:icon name="check-circle" class="w-5 h-5 text-emerald-500 shrink-0" />
+                        <span class="text-sm text-zinc-700">Up to 100 students</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <flux:icon name="check-circle" class="w-5 h-5 text-emerald-500 shrink-0" />
+                        <span class="text-sm text-zinc-700">Student management</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <flux:icon name="check-circle" class="w-5 h-5 text-emerald-500 shrink-0" />
+                        <span class="text-sm text-zinc-700">Basic attendance tracking</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <flux:icon name="check-circle" class="w-5 h-5 text-emerald-500 shrink-0" />
+                        <span class="text-sm text-zinc-700">Fee management</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <flux:icon name="check-circle" class="w-5 h-5 text-emerald-500 shrink-0" />
+                        <span class="text-sm text-zinc-700">Email support</span>
+                    </li>
+                </ul>
+                
+                <a href="{{ route('register') }}" class="block w-full text-center px-6 py-3 border border-zinc-300 text-zinc-700 font-semibold rounded-xl hover:border-indigo-400 hover:text-indigo-600 transition-all">
+                    Start Free Trial
+                </a>
+            </div>
+
+            {{-- Professional Plan --}}
+            <div class="reveal bg-white border-2 border-indigo-500 rounded-2xl p-8 relative shadow-xl shadow-indigo-500/20">
+                <div class="absolute -top-4 left-1/2 -translate-x-1/2">
+                    <span class="bg-indigo-600 text-white text-xs font-bold px-4 py-2 rounded-full">Most Popular</span>
+                </div>
+                
+                <div class="text-center mb-6">
+                    <h3 class="text-xl font-bold text-zinc-900 mb-2">Professional</h3>
+                    <p class="text-zinc-600 text-sm mb-4">Comprehensive solution for growing institutions</p>
+                    <div class="mb-4">
+                        <span class="text-4xl font-bold text-zinc-900">₦35,000</span>
+                        <span class="text-zinc-600">/month</span>
+                    </div>
+                </div>
+                
+                <ul class="space-y-3 mb-8">
+                    <li class="flex items-center gap-3">
+                        <flux:icon name="check-circle" class="w-5 h-5 text-emerald-500 shrink-0" />
+                        <span class="text-sm text-zinc-700">Up to 500 students</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <flux:icon name="check-circle" class="w-5 h-5 text-emerald-500 shrink-0" />
+                        <span class="text-sm text-zinc-700">Everything in Starter</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <flux:icon name="check-circle" class="w-5 h-5 text-emerald-500 shrink-0" />
+                        <span class="text-sm text-zinc-700">Exam & results management</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <flux:icon name="check-circle" class="w-5 h-5 text-emerald-500 shrink-0" />
+                        <span class="text-sm text-zinc-700">Hostel management</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <flux:icon name="check-circle" class="w-5 h-5 text-emerald-500 shrink-0" />
+                        <span class="text-sm text-zinc-700">Advanced reports</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <flux:icon name="check-circle" class="w-5 h-5 text-emerald-500 shrink-0" />
+                        <span class="text-sm text-zinc-700">Priority support</span>
+                    </li>
+                </ul>
+                
+                <a href="{{ route('register') }}" class="block w-full text-center px-6 py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-all">
+                    Start Free Trial
+                </a>
+            </div>
+
+            {{-- Enterprise Plan --}}
+            <div class="reveal bg-white border border-zinc-200 rounded-2xl p-8 hover:border-indigo-300 hover:shadow-xl transition-all duration-300">
+                <div class="text-center mb-6">
+                    <h3 class="text-xl font-bold text-zinc-900 mb-2">Enterprise</h3>
+                    <p class="text-zinc-600 text-sm mb-4">Complete solution for large institutions</p>
+                    <div class="mb-4">
+                        <span class="text-4xl font-bold text-zinc-900">₦75,000</span>
+                        <span class="text-zinc-600">/month</span>
+                    </div>
+                </div>
+                
+                <ul class="space-y-3 mb-8">
+                    <li class="flex items-center gap-3">
+                        <flux:icon name="check-circle" class="w-5 h-5 text-emerald-500 shrink-0" />
+                        <span class="text-sm text-zinc-700">Unlimited students & staff</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <flux:icon name="check-circle" class="w-5 h-5 text-emerald-500 shrink-0" />
+                        <span class="text-sm text-zinc-700">Everything in Professional</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <flux:icon name="check-circle" class="w-5 h-5 text-emerald-500 shrink-0" />
+                        <span class="text-sm text-zinc-700">API access</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <flux:icon name="check-circle" class="w-5 h-5 text-emerald-500 shrink-0" />
+                        <span class="text-sm text-zinc-700">Custom branding</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <flux:icon name="check-circle" class="w-5 h-5 text-emerald-500 shrink-0" />
+                        <span class="text-sm text-zinc-700">Multi-campus support</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <flux:icon name="check-circle" class="w-5 h-5 text-emerald-500 shrink-0" />
+                        <span class="text-sm text-zinc-700">Dedicated support</span>
+                    </li>
+                </ul>
+                
+                <a href="{{ route('register') }}" class="block w-full text-center px-6 py-3 border border-zinc-300 text-zinc-700 font-semibold rounded-xl hover:border-indigo-400 hover:text-indigo-600 transition-all">
+                    Start Free Trial
+                </a>
+            </div>
+        </div>
+
+        {{-- FAQ Section --}}
+        <div class="mt-20 text-center">
+            <h3 class="text-2xl font-bold text-zinc-900 mb-8">Frequently Asked Questions</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto text-left">
+                <div>
+                    <h4 class="font-semibold text-zinc-900 mb-2">Is there a free trial?</h4>
+                    <p class="text-zinc-600 text-sm">Yes! Every plan comes with a 14-day free trial. No credit card required.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-zinc-900 mb-2">Can I change plans later?</h4>
+                    <p class="text-zinc-600 text-sm">Absolutely. You can upgrade or downgrade your plan at any time from your dashboard.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-zinc-900 mb-2">What payment methods do you accept?</h4>
+                    <p class="text-zinc-600 text-sm">We accept all major credit cards, bank transfers, and mobile money payments.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-zinc-900 mb-2">Is my data secure?</h4>
+                    <p class="text-zinc-600 text-sm">Yes. We use bank-level encryption and your school's data is completely private and isolated.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{-- ═══════════════════════════════════════════
      SECURITY & AUDIT
 ═══════════════════════════════════════════ --}}
 <section class="py-28 px-6 bg-zinc-50 border-t border-b border-zinc-100">

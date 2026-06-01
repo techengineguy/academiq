@@ -2,7 +2,15 @@
 
 namespace App\Providers;
 
+use App\Models\Announcement;
+use App\Models\User;
+use App\Observers\ActivityObserver;
+use App\Observers\AnnouncementObserver;
+use App\Observers\UserObserver;
 use Carbon\CarbonImmutable;
+use Illuminate\Auth\Events\Failed;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Events\Logout;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Date;
@@ -10,11 +18,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
-use App\Models\Announcement;
-use App\Models\User;
-use App\Observers\ActivityObserver;
-use App\Observers\AnnouncementObserver;
-use App\Observers\UserObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -33,10 +36,10 @@ class AppServiceProvider extends ServiceProvider
         Announcement::observe(AnnouncementObserver::class);
 
         // Log auth events
-        $observer = new ActivityObserver();
-        Event::listen(\Illuminate\Auth\Events\Login::class, [$observer, 'handleLogin']);
-        Event::listen(\Illuminate\Auth\Events\Logout::class, [$observer, 'handleLogout']);
-        Event::listen(\Illuminate\Auth\Events\Failed::class, [$observer, 'handleFailed']);
+        $observer = new ActivityObserver;
+        Event::listen(Login::class, [$observer, 'handleLogin']);
+        Event::listen(Logout::class, [$observer, 'handleLogout']);
+        Event::listen(Failed::class, [$observer, 'handleFailed']);
     }
 
     protected function registerMacros(): void
@@ -44,6 +47,7 @@ class AppServiceProvider extends ServiceProvider
         Application::macro('domainUrl', function (string $domainName, string $path = ''): string {
             $domain = config("domain.{$domainName}");
             $scheme = $this->isProduction() ? 'https' : 'http';
+
             return $scheme.'://'.$domain.$path;
         });
     }
@@ -95,6 +99,16 @@ class AppServiceProvider extends ServiceProvider
             }
 
             return false;
+        });
+
+        Blade::if('hasFeature', function (string $feature): bool {
+            $user = auth()->user();
+
+            if (! $user || ! $user->institution) {
+                return false;
+            }
+
+            return $user->institution->hasFeature($feature);
         });
     }
 }

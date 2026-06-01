@@ -19,17 +19,21 @@
                     {{ __('My Attendance') }}
                 </flux:sidebar.item>
 
+                @hasFeature('exam_management')
                 <flux:sidebar.item icon="chart-bar" :href="route('student.results')" :current="request()->routeIs('student.results')" wire:navigate>
                     {{ __('My Results') }}
                 </flux:sidebar.item>
+                @endhasFeature
 
                 <flux:sidebar.item icon="receipt-percent" :href="route('student.fees')" :current="request()->routeIs('student.fees')" wire:navigate>
                     {{ __('My Fees') }}
                 </flux:sidebar.item>
 
+                @hasFeature('assignment_management')
                 <flux:sidebar.item icon="document-text" :href="route('student.assignments')" :current="request()->routeIs('student.assignments')" wire:navigate>
                     {{ __('Assignments') }}
                 </flux:sidebar.item>
+                @endhasFeature
 
                 <flux:sidebar.item icon="calendar-days" :href="route('student.timetable')" :current="request()->routeIs('student.timetable')" wire:navigate>
                     {{ __('Timetable') }}

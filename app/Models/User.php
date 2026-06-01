@@ -10,7 +10,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Laravel\Fortify\TwoFactorAuthenticatable;
-use App\Models\Permission;
 
 #[Fillable([
     'tenant_id',
@@ -68,14 +67,14 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function initials(): string
     {
-        return Str::of($this->first_name . ' ' . $this->last_name)
+        return Str::of($this->first_name.' '.$this->last_name)
             ->explode(' ')
             ->take(2)
             ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
     }
 
-     // Relations
+    // Relations
 
     public function institution()
     {
@@ -155,6 +154,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function parent()
     {
         return $this->hasOne(StudentParent::class);
+    }
+
+    public function accountant()
+    {
+        return $this->hasOne(Accountant::class);
     }
 
     public function attendancesMarked()

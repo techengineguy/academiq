@@ -50,6 +50,13 @@ new class extends Component {
 
         $institution = Auth::user()->institution;
 
+        if ($institution->hasReachedTeacherLimit()) {
+            $limit = $institution->planLimitFor('teachers');
+            $this->addError('first_name', "Your plan allows a maximum of {$limit} teachers. Please upgrade your subscription to add more.");
+
+            return;
+        }
+
         // Create user first
         $user = User::create([
             'tenant_id' => Auth::user()->tenant_id,

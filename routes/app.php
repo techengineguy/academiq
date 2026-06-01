@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DocumentController;
+use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 use Laravel\Fortify\Http\Controllers\ConfirmablePasswordController;
 use Laravel\Fortify\Http\Controllers\ConfirmedPasswordStatusController;
@@ -14,8 +14,20 @@ use Laravel\Fortify\Http\Controllers\TwoFactorQrCodeController;
 use Laravel\Fortify\Http\Controllers\TwoFactorSecretKeyController;
 
 // App Domain Routes - Protected pages (require authentication)
-Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web', 'redirect.users'])->group(function () {
+Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web', 'redirect.users', 'subscription'])->group(function () {
     Route::livewire('dashboard', 'pages::app.dashboard.index')->name('dashboard');
+
+    // Expired page — visible to all authenticated users so they see why they're blocked
+    Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web'])->group(function () {
+        Route::livewire('/subscription/expired', 'pages::subscription.expired');
+    });
+
+    // Subscription action pages — admin/accountant only
+    Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web', 'subscription.access'])->group(function () {
+        Route::livewire('/subscription/plans', 'pages::subscription.plans');
+        Route::livewire('/subscription/checkout', 'pages::subscription.checkout');
+        Route::livewire('/subscription/manage', 'pages::subscription.manage')->middleware('subscription');
+    });
 
     // Profile Information
     if (Features::enabled(Features::updateProfileInformation())) {
@@ -146,6 +158,8 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web', 'red
     Route::livewire('staff/create', 'pages::app.staff.staff.create')->name('staff.create');
     Route::livewire('staff/{id}/edit', 'pages::app.staff.staff.edit')->name('staff.edit');
 
+    Route::livewire('accountants', 'pages::app.staff.accountants.index')->name('accountants.index');
+
     Route::livewire('payroll', 'pages::app.staff.payroll.index')->name('payroll.index');
     Route::livewire('payroll/create', 'pages::app.staff.payroll.create')->name('payroll.create');
     Route::livewire('payroll/{id}/edit', 'pages::app.staff.payroll.edit')->name('payroll.edit');
@@ -157,23 +171,26 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web', 'red
     Route::livewire('staff-attendance', 'pages::app.attendance.staff.index')->name('staff-attendance.index');
     Route::livewire('staff-attendance/create', 'pages::app.attendance.staff.create')->name('staff-attendance.create');
 
-    // Exam & Results Routes
-    Route::livewire('exams', 'pages::app.exams.index')->name('exams.index');
-    Route::livewire('exams/create', 'pages::app.exams.create')->name('exams.create');
-    Route::livewire('exams/{id}/edit', 'pages::app.exams.edit')->name('exams.edit');
+    // Exam & Results Routes (requires exam_management feature)
+    Route::middleware('plan.feature:exam_management')->group(function () {
+        Route::livewire('exams', 'pages::app.exams.index')->name('exams.index');
+        Route::livewire('exams/create', 'pages::app.exams.create')->name('exams.create');
+        Route::livewire('exams/{id}/edit', 'pages::app.exams.edit')->name('exams.edit');
 
-    Route::livewire('exam-schedules', 'pages::app.exams.schedules.index')->name('exam-schedules.index');
-    Route::livewire('exam-schedules/create', 'pages::app.exams.schedules.create')->name('exam-schedules.create');
-    Route::livewire('exam-schedules/{id}/edit', 'pages::app.exams.schedules.edit')->name('exam-schedules.edit');
+        Route::livewire('exam-schedules', 'pages::app.exams.schedules.index')->name('exam-schedules.index');
+        Route::livewire('exam-schedules/create', 'pages::app.exams.schedules.create')->name('exam-schedules.create');
+        Route::livewire('exam-schedules/{id}/edit', 'pages::app.exams.schedules.edit')->name('exam-schedules.edit');
 
-    Route::livewire('results', 'pages::app.exams.results.index')->name('results.index');
-    Route::livewire('results/create', 'pages::app.exams.results.create')->name('results.create');
-    Route::livewire('results/check', 'pages::app.exams.results.check')->name('results.check');
-    Route::livewire('results/{id}/edit', 'pages::app.exams.results.edit')->name('results.edit');
+        Route::livewire('results', 'pages::app.exams.results.index')->name('results.index');
+        Route::livewire('results/create', 'pages::app.exams.results.create')->name('results.create');
+        Route::livewire('results/check', 'pages::app.exams.results.check')->name('results.check');
+        Route::livewire('results/{id}/edit', 'pages::app.exams.results.edit')->name('results.edit');
+        Route::get('results/{studentId}/{examId}/download', [DocumentController::class, 'downloadResultSheet'])->name('results.download');
 
-    Route::livewire('grade-scales', 'pages::app.exams.grade-scales.index')->name('grade-scales.index');
-    Route::livewire('grade-scales/create', 'pages::app.exams.grade-scales.create')->name('grade-scales.create');
-    Route::livewire('grade-scales/{id}/edit', 'pages::app.exams.grade-scales.edit')->name('grade-scales.edit');
+        Route::livewire('grade-scales', 'pages::app.exams.grade-scales.index')->name('grade-scales.index');
+        Route::livewire('grade-scales/create', 'pages::app.exams.grade-scales.create')->name('grade-scales.create');
+        Route::livewire('grade-scales/{id}/edit', 'pages::app.exams.grade-scales.edit')->name('grade-scales.edit');
+    });
 
     // Fee Management Routes
     Route::livewire('fee-types', 'pages::app.fees.fee-types.index')->name('fee-types.index');
@@ -191,13 +208,15 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web', 'red
     Route::livewire('fee-payments', 'pages::app.fees.fee-payments.index')->name('fee-payments.index');
     Route::livewire('fee-payments/create', 'pages::app.fees.fee-payments.create')->name('fee-payments.create');
 
-    // Assignment Routes
-    Route::livewire('assignments', 'pages::app.assignments.index')->name('assignments.index');
-    Route::livewire('assignments/create', 'pages::app.assignments.create')->name('assignments.create');
-    Route::livewire('assignments/{id}/edit', 'pages::app.assignments.edit')->name('assignments.edit');
+    // Assignment Routes (requires assignment_management feature)
+    Route::middleware('plan.feature:assignment_management')->group(function () {
+        Route::livewire('assignments', 'pages::app.assignments.index')->name('assignments.index');
+        Route::livewire('assignments/create', 'pages::app.assignments.create')->name('assignments.create');
+        Route::livewire('assignments/{id}/edit', 'pages::app.assignments.edit')->name('assignments.edit');
 
-    Route::livewire('submissions', 'pages::app.assignments.submissions.index')->name('submissions.index');
-    Route::livewire('submissions/{id}', 'pages::app.assignments.submissions.show')->name('submissions.show');
+        Route::livewire('submissions', 'pages::app.assignments.submissions.index')->name('submissions.index');
+        Route::livewire('submissions/{id}', 'pages::app.assignments.submissions.show')->name('submissions.show');
+    });
 
     // Leave Management Routes
     Route::livewire('leave-types', 'pages::app.leave.leave-types.index')->name('leave-types.index');
@@ -208,21 +227,23 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web', 'red
     Route::livewire('leave-applications/create', 'pages::app.leave.applications.create')->name('leave-applications.create');
     Route::livewire('leave-applications/{id}/edit', 'pages::app.leave.applications.edit')->name('leave-applications.edit');
 
-    // Hostel Management Routes
-    Route::livewire('hostel-buildings', 'pages::app.hostel.buildings.index')->name('hostel-buildings.index');
-    Route::livewire('hostel-buildings/create', 'pages::app.hostel.buildings.create')->name('hostel-buildings.create');
-    Route::livewire('hostel-buildings/{id}/edit', 'pages::app.hostel.buildings.edit')->name('hostel-buildings.edit');
+    // Hostel Management Routes (requires hostel_management feature)
+    Route::middleware('plan.feature:hostel_management')->group(function () {
+        Route::livewire('hostel-buildings', 'pages::app.hostel.buildings.index')->name('hostel-buildings.index');
+        Route::livewire('hostel-buildings/create', 'pages::app.hostel.buildings.create')->name('hostel-buildings.create');
+        Route::livewire('hostel-buildings/{id}/edit', 'pages::app.hostel.buildings.edit')->name('hostel-buildings.edit');
 
-    Route::livewire('hostel-rooms', 'pages::app.hostel.rooms.index')->name('hostel-rooms.index');
-    Route::livewire('hostel-rooms/create', 'pages::app.hostel.rooms.create')->name('hostel-rooms.create');
-    Route::livewire('hostel-rooms/{id}/edit', 'pages::app.hostel.rooms.edit')->name('hostel-rooms.edit');
+        Route::livewire('hostel-rooms', 'pages::app.hostel.rooms.index')->name('hostel-rooms.index');
+        Route::livewire('hostel-rooms/create', 'pages::app.hostel.rooms.create')->name('hostel-rooms.create');
+        Route::livewire('hostel-rooms/{id}/edit', 'pages::app.hostel.rooms.edit')->name('hostel-rooms.edit');
 
-    Route::livewire('hostel-allocations', 'pages::app.hostel.allocations.index')->name('hostel-allocations.index');
-    Route::livewire('hostel-allocations/create', 'pages::app.hostel.allocations.create')->name('hostel-allocations.create');
-    Route::livewire('hostel-allocations/{id}/edit', 'pages::app.hostel.allocations.edit')->name('hostel-allocations.edit');
+        Route::livewire('hostel-allocations', 'pages::app.hostel.allocations.index')->name('hostel-allocations.index');
+        Route::livewire('hostel-allocations/create', 'pages::app.hostel.allocations.create')->name('hostel-allocations.create');
+        Route::livewire('hostel-allocations/{id}/edit', 'pages::app.hostel.allocations.edit')->name('hostel-allocations.edit');
 
-    Route::livewire('hostel-visitors', 'pages::app.hostel.visitors.index')->name('hostel-visitors.index');
-    Route::livewire('hostel-visitors/create', 'pages::app.hostel.visitors.create')->name('hostel-visitors.create');
+        Route::livewire('hostel-visitors', 'pages::app.hostel.visitors.index')->name('hostel-visitors.index');
+        Route::livewire('hostel-visitors/create', 'pages::app.hostel.visitors.create')->name('hostel-visitors.create');
+    });
 
     // Communications Routes
     Route::livewire('announcements', 'pages::app.communications.announcements.index')->name('announcements.index');
@@ -249,8 +270,6 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web', 'red
     Route::livewire('id-cards/create', 'pages::app.documents.id-cards.create')->name('id-cards.create');
     Route::get('id-cards/{id}/download', [DocumentController::class, 'downloadIdCard'])->name('id-cards.download');
 
-    Route::get('results/{studentId}/{examId}/download', [DocumentController::class, 'downloadResultSheet'])->name('results.download');
-
     Route::livewire('document-templates', 'pages::app.documents.templates.index')->name('document-templates.index');
     Route::livewire('document-templates/create', 'pages::app.documents.templates.create')->name('document-templates.create');
     Route::livewire('document-templates/{id}/edit', 'pages::app.documents.templates.edit')->name('document-templates.edit');
@@ -268,12 +287,10 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web', 'red
 });
 
 // Student Portal Routes
-Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web'])->prefix('student')->group(function () {
+Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web', 'subscription'])->prefix('student')->group(function () {
     Route::livewire('/', 'pages::student.dashboard')->name('student.dashboard');
     Route::livewire('/attendance', 'pages::student.attendance')->name('student.attendance');
-    Route::livewire('/results', 'pages::student.results')->name('student.results');
     Route::livewire('/fees', 'pages::student.fees')->name('student.fees');
-    Route::livewire('/assignments', 'pages::student.assignments')->name('student.assignments');
     Route::livewire('/timetable', 'pages::student.timetable')->name('student.timetable');
     Route::livewire('/announcements', 'pages::student.announcements')->name('student.announcements');
     Route::livewire('/notifications', 'pages::student.notifications')->name('student.notifications');
@@ -283,15 +300,21 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web'])->pr
     Route::livewire('/messages/create', 'pages::student.messages.create')->name('student.messages.create');
     Route::livewire('/messages/{id}', 'pages::student.messages.show')->name('student.messages.show');
     Route::livewire('/complaints', 'pages::student.complaints')->name('student.complaints');
+
+    Route::middleware('plan.feature:exam_management')->group(function () {
+        Route::livewire('/results', 'pages::student.results')->name('student.results');
+    });
+
+    Route::middleware('plan.feature:assignment_management')->group(function () {
+        Route::livewire('/assignments', 'pages::student.assignments')->name('student.assignments');
+    });
 });
 
 // Teacher Portal Routes
-Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web'])->prefix('teacher')->group(function () {
+Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web', 'subscription'])->prefix('teacher')->group(function () {
     Route::livewire('/', 'pages::teacher.dashboard')->name('teacher.dashboard');
     Route::livewire('/my-classes', 'pages::teacher.my-classes')->name('teacher.my-classes');
     Route::livewire('/attendance', 'pages::teacher.attendance')->name('teacher.attendance');
-    Route::livewire('/assignments', 'pages::teacher.assignments')->name('teacher.assignments');
-    Route::livewire('/results', 'pages::teacher.results')->name('teacher.results');
     Route::livewire('/lesson-plans', 'pages::teacher.lesson-plans')->name('teacher.lesson-plans');
     Route::livewire('/timetable', 'pages::teacher.timetable')->name('teacher.timetable');
     Route::livewire('/leave', 'pages::teacher.leave')->name('teacher.leave');
@@ -303,15 +326,21 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web'])->pr
     Route::livewire('/messages/create', 'pages::teacher.messages.create')->name('teacher.messages.create');
     Route::livewire('/messages/{id}', 'pages::teacher.messages.show')->name('teacher.messages.show');
     Route::livewire('/complaints', 'pages::teacher.complaints')->name('teacher.complaints');
+
+    Route::middleware('plan.feature:exam_management')->group(function () {
+        Route::livewire('/results', 'pages::teacher.results')->name('teacher.results');
+    });
+
+    Route::middleware('plan.feature:assignment_management')->group(function () {
+        Route::livewire('/assignments', 'pages::teacher.assignments')->name('teacher.assignments');
+    });
 });
 
 // Parent Portal Routes
-Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web'])->prefix('parent')->group(function () {
+Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web', 'subscription'])->prefix('parent')->group(function () {
     Route::livewire('/', 'pages::parent.dashboard')->name('parent.dashboard');
     Route::livewire('/children', 'pages::parent.children')->name('parent.children');
     Route::livewire('/attendance', 'pages::parent.attendance')->name('parent.attendance');
-    Route::livewire('/results', 'pages::parent.results')->name('parent.results');
-    Route::livewire('/assignments', 'pages::parent.assignments')->name('parent.assignments');
     Route::livewire('/timetable', 'pages::parent.timetable')->name('parent.timetable');
     Route::livewire('/fees', 'pages::parent.fees')->name('parent.fees');
     Route::livewire('/leave', 'pages::parent.leave')->name('parent.leave');
@@ -322,4 +351,21 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web'])->pr
     Route::livewire('/events', 'pages::parent.events')->name('parent.events');
     Route::livewire('/notifications', 'pages::parent.notifications')->name('parent.notifications');
     Route::livewire('/complaints', 'pages::parent.complaints')->name('parent.complaints');
+
+    Route::middleware('plan.feature:exam_management')->group(function () {
+        Route::livewire('/results', 'pages::parent.results')->name('parent.results');
+    });
+
+    Route::middleware('plan.feature:assignment_management')->group(function () {
+        Route::livewire('/assignments', 'pages::parent.assignments')->name('parent.assignments');
+    });
+});
+
+// Accountant Portal Routes
+Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web', 'subscription'])->prefix('accountant')->group(function () {
+    Route::livewire('/', 'pages::accountant.dashboard')->name('accountant.dashboard');
+    Route::livewire('/fee-invoices', 'pages::accountant.fee-invoices')->name('accountant.fee-invoices');
+    Route::livewire('/fee-payments', 'pages::accountant.fee-payments')->name('accountant.fee-payments');
+    Route::livewire('/payroll', 'pages::accountant.payroll')->name('accountant.payroll');
+    Route::livewire('/reports', 'pages::accountant.reports')->name('accountant.reports');
 });

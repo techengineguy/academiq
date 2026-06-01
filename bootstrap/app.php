@@ -1,5 +1,10 @@
 <?php
 
+use App\Http\Middleware\CheckPermission;
+use App\Http\Middleware\CheckPlanFeature;
+use App\Http\Middleware\CheckSubscription;
+use App\Http\Middleware\RedirectUsers;
+use App\Http\Middleware\RequireSubscriptionAccess;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -12,8 +17,11 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'permission' => \App\Http\Middleware\CheckPermission::class,
-            'redirect.users' => \App\Http\Middleware\RedirectUsers::class,
+            'permission' => CheckPermission::class,
+            'redirect.users' => RedirectUsers::class,
+            'subscription' => CheckSubscription::class,
+            'plan.feature' => CheckPlanFeature::class,
+            'subscription.access' => RequireSubscriptionAccess::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

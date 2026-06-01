@@ -23,13 +23,17 @@
                     {{ __('Attendance') }}
                 </flux:sidebar.item>
 
+                @hasFeature('exam_management')
                 <flux:sidebar.item icon="chart-bar" :href="route('parent.results')" :current="request()->routeIs('parent.results')" wire:navigate>
                     {{ __('Results') }}
                 </flux:sidebar.item>
+                @endhasFeature
 
+                @hasFeature('assignment_management')
                 <flux:sidebar.item icon="document-text" :href="route('parent.assignments')" :current="request()->routeIs('parent.assignments')" wire:navigate>
                     {{ __('Assignments') }}
                 </flux:sidebar.item>
+                @endhasFeature
 
                 <flux:sidebar.item icon="calendar-days" :href="route('parent.timetable')" :current="request()->routeIs('parent.timetable')" wire:navigate>
                     {{ __('Timetable') }}
