@@ -21,7 +21,7 @@ class RedirectUsers
         }
 
         // Allow profile, logout, portal, and subscription routes
-        if ($request->routeIs('student.*', 'teacher.*', 'parent.*', 'accountant.*', 'subscription.*', 'logout', 'profile.*')) {
+        if ($request->routeIs('student.*', 'teacher.*', 'parent.*', 'accountant.*', 'subscription.*', 'logout', 'profile.*', 'owner.*')) {
             return $next($request);
         }
 
@@ -30,6 +30,7 @@ class RedirectUsers
             'teacher' => redirect()->route('teacher.dashboard'),
             'parent' => redirect()->route('parent.dashboard'),
             'accountant' => redirect()->route('accountant.dashboard'),
+            'super_admin' => redirect()->route('owner.dashboard'),
             default => $next($request),
         };
     }

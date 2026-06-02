@@ -17,6 +17,8 @@ return [
 
     'app' => env('APP_DOMAIN', 'app.localhost'),
 
+    'owner' => env('OWNER_DOMAIN', 'owner.localhost'),
+
     /*
     |--------------------------------------------------------------------------
     | Domain Aliases

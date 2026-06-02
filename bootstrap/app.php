@@ -4,6 +4,7 @@ use App\Http\Middleware\CheckPermission;
 use App\Http\Middleware\CheckPlanFeature;
 use App\Http\Middleware\CheckSubscription;
 use App\Http\Middleware\RedirectUsers;
+use App\Http\Middleware\RequireOwnerAccess;
 use App\Http\Middleware\RequireSubscriptionAccess;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -22,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'subscription' => CheckSubscription::class,
             'plan.feature' => CheckPlanFeature::class,
             'subscription.access' => RequireSubscriptionAccess::class,
+            'owner.access' => RequireOwnerAccess::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

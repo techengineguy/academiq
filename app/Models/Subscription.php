@@ -22,6 +22,10 @@ class Subscription extends Model
         'grace_period_days',
         'cancelled_at',
         'cancellation_reason',
+        'paystack_subscription_code',
+        'paystack_email_token',
+        'paystack_customer_code',
+        'paystack_reference',
     ];
 
     protected $casts = [

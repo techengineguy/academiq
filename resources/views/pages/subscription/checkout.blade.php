@@ -3,8 +3,10 @@
 use Livewire\Component;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Layout;
-use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Flux\Flux;
 
 new #[Title('Checkout')]
 #[Layout('layouts.guest')]
@@ -32,58 +34,57 @@ class extends Component {
             return;
         }
 
-        $institution = auth()->user()->institution;
-        $existing = $institution->currentSubscription()->first();
+        $planCode = $this->plan->paystackPlanCode($this->billingCycle);
 
-        $endsAt = $this->billingCycle === 'yearly' ? now()->addYear() : now()->addMonth();
-        $amount = $this->plan->priceForCycle($this->billingCycle);
+        if (! $planCode) {
+            Flux::toast(
+                variant: 'danger',
+                text: __('This plan is not yet configured for online payments. Please contact support.')
+            );
 
-        if ($existing) {
-            // Upgrade / renew existing subscription to the chosen plan
-            $existing->update([
-                'subscription_plan_id' => $this->plan->id,
-                'status' => 'active',
-                'starts_at' => now(),
-                'ends_at' => $endsAt,
-                'next_billing_date' => $endsAt,
-                'amount' => $amount,
-                'billing_cycle' => $this->billingCycle,
-                'plan_features' => $this->plan->features,
-                'cancelled_at' => null,
-                'cancellation_reason' => null,
-            ]);
-        } else {
-            // Create a fresh active subscription
-            Subscription::create([
-                'institution_id' => $institution->id,
-                'subscription_plan_id' => $this->plan->id,
-                'status' => 'active',
-                'starts_at' => now(),
-                'ends_at' => $endsAt,
-                'next_billing_date' => $endsAt,
-                'amount' => $amount,
-                'billing_cycle' => $this->billingCycle,
-                'plan_features' => $this->plan->features,
-            ]);
+            return;
         }
 
-        $dashboardRoute = match (auth()->user()->role) {
-            'student' => 'student.dashboard',
-            'teacher' => 'teacher.dashboard',
-            'parent' => 'parent.dashboard',
-            default => 'dashboard',
-        };
+        $amount = $this->plan->priceForCycle($this->billingCycle);
+        $amountInKobo = (int) round($amount * 100);
 
-        session()->flash('success', "You are now subscribed to the {$this->plan->name} plan.");
-        $this->redirect(route($dashboardRoute));
+        $response = Http::withToken(config('services.paystack.secret'))
+            ->post(config('services.paystack.base_url') . '/transaction/initialize', [
+                'email' => auth()->user()->email,
+                'amount' => $amountInKobo,
+                'plan' => $planCode,
+                'callback_url' => route('subscription.callback'),
+                'metadata' => [
+                    'institution_id' => auth()->user()->institution_id,
+                    'subscription_plan_id' => $this->plan->id,
+                    'billing_cycle' => $this->billingCycle,
+                    'user_id' => auth()->id(),
+                ],
+            ]);
+
+        if (! $response->successful() || ! $response->json('status')) {
+            Log::error('Paystack initialize failed', [
+                'response' => $response->json(),
+                'plan_id' => $this->plan->id,
+            ]);
+
+            Flux::toast(
+                variant: 'danger',
+                text: __('Payment initialization failed. Please try again.')
+            );
+
+            return;
+        }
+
+        $this->redirect($response->json('data.authorization_url'));
     }
 
     public function cancel(): void
     {
         $this->redirect(route('subscription.manage'));
     }
-}; ?>
-
+};
+?>
 <div class="max-w-lg mx-auto px-6 py-12">
     <div class="text-center mb-8">
         <h1 class="text-3xl font-bold text-zinc-900 dark:text-white mb-2">Confirm Subscription</h1>

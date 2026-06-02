@@ -30,6 +30,8 @@ class SubscriptionPlan extends Model
         'has_priority_support',
         'is_active',
         'sort_order',
+        'paystack_monthly_plan_code',
+        'paystack_yearly_plan_code',
     ];
 
     protected $casts = [
@@ -67,6 +69,13 @@ class SubscriptionPlan extends Model
     public function getFormattedPriceAttribute()
     {
         return '₦'.number_format($this->price, 2);
+    }
+
+    public function paystackPlanCode(string $cycle): ?string
+    {
+        return $cycle === 'yearly'
+            ? $this->paystack_yearly_plan_code
+            : $this->paystack_monthly_plan_code;
     }
 
     public function priceForCycle(string $cycle): float

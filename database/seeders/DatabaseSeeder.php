@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -15,6 +14,7 @@ class DatabaseSeeder extends Seeder
     {
         // Seed in dependency order
         $this->call([
+            OwnerUserSeeder::class,
             InstitutionSeeder::class,
             AcademicYearSeeder::class,
             PermissionSeeder::class,

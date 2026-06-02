@@ -369,3 +369,10 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web', 'sub
     Route::livewire('/payroll', 'pages::accountant.payroll.index')->name('accountant.payroll');
     Route::livewire('/reports', 'pages::accountant.reports')->name('accountant.reports');
 });
+
+// Owner Portal Routes
+Route::domain(config('domain.owner'))->middleware(['auth', 'verified', 'web', 'owner.access'])->group(function () {
+    Route::livewire('/', 'pages::owner.dashboard.index')->name('owner.dashboard');
+    Route::livewire('/institutions', 'pages::owner.institutions.index')->name('owner.institutions');
+    Route::livewire('/subscription-plans', 'pages::owner.subscription-plans.index')->name('owner.subscription-plans');
+});
