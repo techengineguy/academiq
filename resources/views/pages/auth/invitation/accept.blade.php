@@ -98,7 +98,7 @@ class extends Component {
     }
 };
 ?>
-<div class="flex flex-col gap-6 max-w-md mx-auto">
+<div class="flex flex-col gap-6 max-w-md mx-auto py-4">
     @if($this->isAccepted)
         <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-6 text-center">
             <flux:icon.check-circle class="w-12 h-12 text-green-500 mx-auto mb-3" />

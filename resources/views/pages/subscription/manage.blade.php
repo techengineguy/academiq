@@ -3,11 +3,22 @@
 use Livewire\Component;
 use Livewire\Attributes\Title;
 use App\Models\SubscriptionPlan;
+use Illuminate\View\View;
 
 new #[Title('Subscription Management')]
 class extends Component {
     public $showCancelModal = false;
     public $cancellationReason = '';
+
+    public function rendering(View $view): void
+    {
+        $layout = match (auth()->user()->role) {
+            'accountant' => 'layouts.accountant',
+            default => 'layouts.app',
+        };
+
+        $view->layout($layout);
+    }
 
     public function changePlan($planId)
     {

@@ -24,9 +24,9 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web', 'red
 
     // Subscription action pages — admin/accountant only
     Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web', 'subscription.access'])->group(function () {
-        Route::livewire('/subscription/plans', 'pages::subscription.plans');
-        Route::livewire('/subscription/checkout', 'pages::subscription.checkout');
-        Route::livewire('/subscription/manage', 'pages::subscription.manage')->middleware('subscription');
+        Route::livewire('/subscription/plans', 'pages::subscription.plans')->name('subscription.plans');
+        Route::livewire('/subscription/checkout', 'pages::subscription.checkout')->name('subscription.checkout');
+        Route::livewire('/subscription/manage', 'pages::subscription.manage')->name('subscription.manage')->middleware('subscription');
     });
 
     // Profile Information
@@ -364,8 +364,8 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web', 'sub
 // Accountant Portal Routes
 Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web', 'subscription'])->prefix('accountant')->group(function () {
     Route::livewire('/', 'pages::accountant.dashboard')->name('accountant.dashboard');
-    Route::livewire('/fee-invoices', 'pages::accountant.fee-invoices')->name('accountant.fee-invoices');
-    Route::livewire('/fee-payments', 'pages::accountant.fee-payments')->name('accountant.fee-payments');
-    Route::livewire('/payroll', 'pages::accountant.payroll')->name('accountant.payroll');
+    Route::livewire('/fee-invoices', 'pages::accountant.fee-invoices.index')->name('accountant.fee-invoices');
+    Route::livewire('/fee-payments', 'pages::accountant.fee-payments.index')->name('accountant.fee-payments');
+    Route::livewire('/payroll', 'pages::accountant.payroll.index')->name('accountant.payroll');
     Route::livewire('/reports', 'pages::accountant.reports')->name('accountant.reports');
 });

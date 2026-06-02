@@ -20,8 +20,8 @@ class RedirectUsers
             return $next($request);
         }
 
-        // Allow profile, logout, and portal routes
-        if ($request->routeIs('student.*', 'teacher.*', 'parent.*', 'accountant.*', 'logout', 'profile.*')) {
+        // Allow profile, logout, portal, and subscription routes
+        if ($request->routeIs('student.*', 'teacher.*', 'parent.*', 'accountant.*', 'subscription.*', 'logout', 'profile.*')) {
             return $next($request);
         }
 
