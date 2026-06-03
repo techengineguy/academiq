@@ -5,19 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
-use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Support\LogOptions;
+use App\Models\Concerns\BelongsToTenant;
 
 class Student extends Model
 {
     use SoftDeletes;
     use LogsActivity;
+    use BelongsToTenant;
 
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
             ->logOnly(['first_name', 'last_name', 'email', 'class_id', 'section_id', 'status', 'admission_number'])
             ->logOnlyDirty()
-            ->dontSubmitEmptyLogs()
+            ->dontLogEmptyChanges()
             ->setDescriptionForEvent(fn (string $eventName) => "Student {$eventName}");
     }
 

@@ -6,6 +6,7 @@ use App\Http\Middleware\CheckSubscription;
 use App\Http\Middleware\RedirectUsers;
 use App\Http\Middleware\RequireOwnerAccess;
 use App\Http\Middleware\RequireSubscriptionAccess;
+use App\Http\Middleware\RequiresTenant;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -24,6 +25,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'plan.feature' => CheckPlanFeature::class,
             'subscription.access' => RequireSubscriptionAccess::class,
             'owner.access' => RequireOwnerAccess::class,
+        ]);
+
+        $middleware->group('tenant', [
+            RequiresTenant::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

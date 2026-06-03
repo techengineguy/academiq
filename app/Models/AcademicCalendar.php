@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Concerns\BelongsToTenant;
 
 class AcademicCalendar extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'academic_calendar';
 
     protected $fillable = [

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Institution;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
-use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Support\LogOptions;
 
 class FeeInvoice extends Model
 {
@@ -18,7 +18,7 @@ class FeeInvoice extends Model
         return LogOptions::defaults()
             ->logOnly(['status', 'paid_amount', 'balance', 'total_amount'])
             ->logOnlyDirty()
-            ->dontSubmitEmptyLogs()
+            ->dontLogEmptyChanges()
             ->setDescriptionForEvent(fn (string $eventName) => "Fee invoice {$eventName}");
     }
 

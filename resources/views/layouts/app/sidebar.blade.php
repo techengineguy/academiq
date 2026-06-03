@@ -10,6 +10,10 @@
                 <flux:sidebar.collapse class="lg:hidden" />
             </flux:sidebar.header>
 
+            <div class="px-3 pb-2">
+                <livewire:pages::app.institutions.switcher />
+            </div>
+
             <flux:sidebar.nav>
                 <!-- Platform -->
                 <flux:sidebar.item icon="layout-grid" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>

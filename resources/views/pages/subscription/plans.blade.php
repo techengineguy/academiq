@@ -1,21 +1,33 @@
 <?php
 
-use Livewire\Component;
-use Livewire\Attributes\Title;
-use Livewire\Attributes\Layout;
-use App\Models\SubscriptionPlan;
+use App\Models\Institution;
 use App\Models\Subscription;
-use Illuminate\Support\Str;
+use App\Models\SubscriptionPlan;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
+use Livewire\Component;
 
 new #[Title('Choose Your Plan')]
 #[Layout('layouts.guest')]
-class extends Component {
+class extends Component
+{
     public $selectedPlan = null;
+
     public $billingCycle = 'monthly';
+
+    private function currentInstitution(): ?Institution
+    {
+        return Institution::find(session('active_institution_id'))
+            ?? auth()->user()?->institution;
+    }
 
     public function mount()
     {
-        $institution = auth()->user()->institution;
+        $institution = $this->currentInstitution();
+
+        if (! $institution) {
+            return redirect()->route('login');
+        }
 
         // If user already has an active subscription, redirect to manage
         if ($institution->hasActiveSubscription()) {
@@ -40,13 +52,14 @@ class extends Component {
 
     public function subscribe()
     {
-        if (!$this->selectedPlan) {
+        if (! $this->selectedPlan) {
             $this->addError('plan', 'Please select a subscription plan.');
+
             return;
         }
 
         $plan = SubscriptionPlan::find($this->selectedPlan);
-        $institution = auth()->user()->institution;
+        $institution = $this->currentInstitution();
 
         // Block second trial
         if ($institution->hasUsedTrial()) {
@@ -69,7 +82,7 @@ class extends Component {
         ]);
 
         session()->flash('success', 'Your 14-day free trial has started! Welcome to Academiq.');
-        
+
         return redirect()->route('dashboard');
     }
 

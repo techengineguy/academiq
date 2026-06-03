@@ -1,17 +1,19 @@
 <?php
 
-use Livewire\Component;
-use Livewire\Attributes\Title;
-use Livewire\Attributes\Layout;
 use App\Models\SubscriptionPlan;
+use Flux\Flux;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Flux\Flux;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
+use Livewire\Component;
 
 new #[Title('Checkout')]
 #[Layout('layouts.guest')]
-class extends Component {
+class extends Component
+{
     public ?SubscriptionPlan $plan = null;
+
     public string $billingCycle = 'monthly';
 
     public function mount(): void
@@ -49,13 +51,13 @@ class extends Component {
         $amountInKobo = (int) round($amount * 100);
 
         $response = Http::withToken(config('services.paystack.secret'))
-            ->post(config('services.paystack.base_url') . '/transaction/initialize', [
+            ->post(config('services.paystack.base_url').'/transaction/initialize', [
                 'email' => auth()->user()->email,
                 'amount' => $amountInKobo,
                 'plan' => $planCode,
                 'callback_url' => route('subscription.callback'),
                 'metadata' => [
-                    'institution_id' => auth()->user()->institution_id,
+                    'institution_id' => session('active_institution_id') ?? auth()->user()->institution_id,
                     'subscription_plan_id' => $this->plan->id,
                     'billing_cycle' => $this->billingCycle,
                     'user_id' => auth()->id(),

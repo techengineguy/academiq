@@ -81,6 +81,14 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsTo(Institution::class);
     }
 
+    /**
+     * Institutions this user manages as an admin (many-to-many via admin_institutions).
+     */
+    public function adminInstitutions()
+    {
+        return $this->belongsToMany(Institution::class, 'admin_institutions');
+    }
+
     public function roles()
     {
         return $this->belongsToMany(Role::class, 'user_roles');

@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use App\Models\Concerns\BelongsToTenant;
 
 class Subscription extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
         'uuid',
         'institution_id',

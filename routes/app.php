@@ -14,7 +14,7 @@ use Laravel\Fortify\Http\Controllers\TwoFactorQrCodeController;
 use Laravel\Fortify\Http\Controllers\TwoFactorSecretKeyController;
 
 // App Domain Routes - Protected pages (require authentication)
-Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web', 'redirect.users', 'subscription'])->group(function () {
+Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web', 'redirect.users', 'tenant', 'subscription'])->group(function () {
     Route::livewire('dashboard', 'pages::app.dashboard.index')->name('dashboard');
 
     // Expired page — visible to all authenticated users so they see why they're blocked
@@ -287,6 +287,24 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web', 'red
     Route::livewire('roles', 'pages::app.roles.index')->name('roles.index');
     Route::livewire('roles/create', 'pages::app.roles.create')->name('roles.create');
     Route::livewire('roles/{id}/edit', 'pages::app.roles.edit')->name('roles.edit');
+});
+
+// Institution Switcher — requires auth but not current tenant (sets the tenant)
+Route::domain(config('domain.app'))->middleware(['auth', 'web'])->group(function () {
+    Route::post('/institutions/switch', function (\Illuminate\Http\Request $request) {
+        $request->validate(['institution_id' => 'required|integer']);
+
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
+
+        if ($user->adminInstitutions()->where('id', $request->integer('institution_id'))->exists()) {
+            $request->session()->put('active_institution_id', $request->integer('institution_id'));
+        }
+
+        return redirect()->route('dashboard');
+    })->name('institutions.switch');
+
+    Route::livewire('/institutions/create', 'pages::app.institutions.create')->name('institutions.create');
 });
 
 // Student Portal Routes
