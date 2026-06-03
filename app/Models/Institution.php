@@ -221,7 +221,7 @@ class Institution extends Model
             return false;
         }
 
-        return Student::where('institution_id', $this->id)->count() >= $subscription->plan->max_students;
+        return Student::query()->where('institution_id', '=', $this->id)->count('*') >= $subscription->plan->max_students;
     }
 
     public function hasReachedTeacherLimit(): bool
@@ -232,7 +232,7 @@ class Institution extends Model
             return false;
         }
 
-        return Teacher::where('institution_id', $this->id)->count() >= $subscription->plan->max_teachers;
+        return Teacher::query()->where('institution_id', '=', $this->id)->count('*') >= $subscription->plan->max_teachers;
     }
 
     public function hasReachedStaffLimit(): bool
@@ -243,7 +243,7 @@ class Institution extends Model
             return false;
         }
 
-        return Staff::where('institution_id', $this->id)->count() >= $subscription->plan->max_staff;
+        return Staff::query()->where('institution_id', '=', $this->id)->count('*') >= $subscription->plan->max_staff;
     }
 
     public function planLimitFor(string $type): ?int

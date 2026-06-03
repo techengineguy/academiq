@@ -30,6 +30,7 @@ class SubscriptionPlanSeeder extends Seeder
                 'max_teachers' => 10,
                 'max_staff' => 5,
                 'has_hostel_management' => false,
+                'has_accountant_management' => false,
                 'has_exam_management' => false,
                 'has_assignment_management' => false,
                 'has_advanced_reports' => false,
@@ -57,6 +58,7 @@ class SubscriptionPlanSeeder extends Seeder
                 'max_teachers' => 50,
                 'max_staff' => 25,
                 'has_hostel_management' => true,
+                'has_accountant_management' => true,
                 'has_exam_management' => true,
                 'has_assignment_management' => true,
                 'has_advanced_reports' => true,
@@ -84,6 +86,7 @@ class SubscriptionPlanSeeder extends Seeder
                 'max_teachers' => null, // unlimited
                 'max_staff' => null, // unlimited
                 'has_hostel_management' => true,
+                'has_accountant_management' => true,
                 'has_exam_management' => true,
                 'has_assignment_management' => true,
                 'has_advanced_reports' => true,

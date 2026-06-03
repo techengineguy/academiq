@@ -12,6 +12,7 @@ use Illuminate\Auth\Events\Failed;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -72,7 +73,8 @@ class AppServiceProvider extends ServiceProvider
     protected function registerBladeDirectives(): void
     {
         Blade::if('hasPermission', function (string ...$permissions): bool {
-            $user = auth()->user();
+            /** @var User|null $user */
+            $user = Auth::user();
 
             if (! $user) {
                 return false;
@@ -86,7 +88,8 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Blade::if('hasRole', function (string ...$roles): bool {
-            $user = auth()->user();
+            /** @var User|null $user */
+            $user = Auth::user();
 
             if (! $user) {
                 return false;
@@ -102,7 +105,8 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Blade::if('hasFeature', function (string $feature): bool {
-            $user = auth()->user();
+            /** @var User|null $user */
+            $user = Auth::user();
 
             if (! $user || ! $user->institution) {
                 return false;

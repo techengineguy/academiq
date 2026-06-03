@@ -159,6 +159,9 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified', 'web', 'red
     Route::livewire('staff/{id}/edit', 'pages::app.staff.staff.edit')->name('staff.edit');
 
     Route::livewire('accountants', 'pages::app.staff.accountants.index')->name('accountants.index');
+    Route::middleware('plan.feature:accountant_management')->group(function () {
+        Route::livewire('accountants/invite', 'pages::app.staff.accountants.invite')->name('accountants.invite');
+    });
 
     Route::livewire('payroll', 'pages::app.staff.payroll.index')->name('payroll.index');
     Route::livewire('payroll/create', 'pages::app.staff.payroll.create')->name('payroll.create');

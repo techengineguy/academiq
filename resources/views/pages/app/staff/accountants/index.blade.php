@@ -116,10 +116,11 @@ class extends Component {
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Accountants') }}</h1>
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Manage accountants and send invitations.') }}</p>
         </div>
+        @if(auth()->user()->institution->hasFeature('accountant_management'))
         <flux:button class="button" x-on:click="$tsui.open.slide('invite-accountant')" icon="envelope">
             {{ __('Invite Accountant') }}
         </flux:button>
-    </div>
+        @endif    </div>
 
     {{-- Active Accountants --}}
     <flux:card>

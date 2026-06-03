@@ -462,7 +462,7 @@
                     <h3 class="text-xl font-bold text-zinc-900 mb-2">Starter</h3>
                     <p class="text-zinc-600 text-sm mb-4">Perfect for small schools getting started</p>
                     <div class="mb-4">
-                        <span class="text-4xl font-bold text-zinc-900">₦15,000</span>
+                        <span class="text-4xl font-bold text-zinc-900">₦{{ isset($plans['starter']) ? number_format($plans['starter']->price) : '15,000' }}</span>
                         <span class="text-zinc-600">/month</span>
                     </div>
                 </div>
@@ -505,7 +505,7 @@
                     <h3 class="text-xl font-bold text-zinc-900 mb-2">Professional</h3>
                     <p class="text-zinc-600 text-sm mb-4">Comprehensive solution for growing institutions</p>
                     <div class="mb-4">
-                        <span class="text-4xl font-bold text-zinc-900">₦35,000</span>
+                        <span class="text-4xl font-bold text-zinc-900">₦{{ isset($plans['professional']) ? number_format($plans['professional']->price) : '35,000' }}</span>
                         <span class="text-zinc-600">/month</span>
                     </div>
                 </div>
@@ -548,7 +548,7 @@
                     <h3 class="text-xl font-bold text-zinc-900 mb-2">Enterprise</h3>
                     <p class="text-zinc-600 text-sm mb-4">Complete solution for large institutions</p>
                     <div class="mb-4">
-                        <span class="text-4xl font-bold text-zinc-900">₦75,000</span>
+                        <span class="text-4xl font-bold text-zinc-900">₦{{ isset($plans['enterprise']) ? number_format($plans['enterprise']->price) : '75,000' }}</span>
                         <span class="text-zinc-600">/month</span>
                     </div>
                 </div>
@@ -564,15 +564,11 @@
                     </li>
                     <li class="flex items-center gap-3">
                         <flux:icon name="check-circle" class="w-5 h-5 text-emerald-500 shrink-0" />
-                        <span class="text-sm text-zinc-700">API access</span>
-                    </li>
-                    <li class="flex items-center gap-3">
-                        <flux:icon name="check-circle" class="w-5 h-5 text-emerald-500 shrink-0" />
                         <span class="text-sm text-zinc-700">Custom branding</span>
                     </li>
                     <li class="flex items-center gap-3">
                         <flux:icon name="check-circle" class="w-5 h-5 text-emerald-500 shrink-0" />
-                        <span class="text-sm text-zinc-700">Multi-campus support</span>
+                        <span class="text-sm text-zinc-700">Multi-school support</span>
                     </li>
                     <li class="flex items-center gap-3">
                         <flux:icon name="check-circle" class="w-5 h-5 text-emerald-500 shrink-0" />
@@ -583,29 +579,6 @@
                 <a href="{{ route('register') }}" class="block w-full text-center px-6 py-3 border border-zinc-300 text-zinc-700 font-semibold rounded-xl hover:border-indigo-400 hover:text-indigo-600 transition-all">
                     Start Free Trial
                 </a>
-            </div>
-        </div>
-
-        {{-- FAQ Section --}}
-        <div class="mt-20 text-center">
-            <h3 class="text-2xl font-bold text-zinc-900 mb-8">Frequently Asked Questions</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto text-left">
-                <div>
-                    <h4 class="font-semibold text-zinc-900 mb-2">Is there a free trial?</h4>
-                    <p class="text-zinc-600 text-sm">Yes! Every plan comes with a 14-day free trial. No credit card required.</p>
-                </div>
-                <div>
-                    <h4 class="font-semibold text-zinc-900 mb-2">Can I change plans later?</h4>
-                    <p class="text-zinc-600 text-sm">Absolutely. You can upgrade or downgrade your plan at any time from your dashboard.</p>
-                </div>
-                <div>
-                    <h4 class="font-semibold text-zinc-900 mb-2">What payment methods do you accept?</h4>
-                    <p class="text-zinc-600 text-sm">We accept all major credit cards, bank transfers, and mobile money payments.</p>
-                </div>
-                <div>
-                    <h4 class="font-semibold text-zinc-900 mb-2">Is my data secure?</h4>
-                    <p class="text-zinc-600 text-sm">Yes. We use bank-level encryption and your school's data is completely private and isolated.</p>
-                </div>
             </div>
         </div>
     </div>
@@ -781,112 +754,11 @@
     </div>
 </section>
 
-{{-- ═══════════════════════════════════════════
-     PRICING
-═══════════════════════════════════════════ --}}
-<section class="py-28 px-6 bg-zinc-950 relative overflow-hidden" id="pricing">
-    {{-- Background --}}
-    <div class="absolute inset-0 pointer-events-none" style="background-image: linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px); background-size: 52px 52px;"></div>
-    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] rounded-full bg-[radial-gradient(ellipse,rgba(79,70,229,.15),transparent_65%)] pointer-events-none"></div>
-
-    <div class="relative max-w-[1100px] mx-auto">
-        <div class="text-center mb-16 reveal">
-            <div class="inline-flex items-center gap-2.5 text-[.7rem] font-extrabold tracking-[.12em] uppercase text-indigo-400 mb-4 justify-center">
-                <span class="block w-6 h-[1.5px] bg-indigo-400 rounded-full"></span> Pricing
-            </div>
-            <h2 class="text-[clamp(2rem,4vw,3.25rem)] font-bold tracking-tight leading-tight text-white mb-3.5">
-                Simple, <span class="shine">transparent</span> pricing
-            </h2>
-            <p class="text-base text-white/50">No per-student fees. No hidden limits. Start with a 14-day free trial.</p>
-        </div>
-
-        <div class="grid grid-cols-3 max-lg:grid-cols-1 gap-5 items-stretch">
-
-            {{-- Starter --}}
-            <div class="reveal bg-white/[.04] border border-white/[.08] rounded-3xl p-8 hover:bg-white/[.06] hover:border-white/[.14] transition-all duration-300">
-                <div class="flex items-center justify-between mb-6">
-                    <p class="text-[.65rem] font-extrabold tracking-widest uppercase text-white/40">Starter</p>
-                    <span class="text-[.6rem] font-bold px-2.5 py-1 rounded-lg bg-white/10 text-white/50 border border-white/10">Monthly</span>
-                </div>
-                <div class="text-[2.75rem] font-black text-white tracking-tighter leading-none mb-1">₦25k</div>
-                <p class="text-xs text-white/40 mb-6">/ month, billed monthly</p>
-                <p class="text-sm text-white/50 mb-7 leading-relaxed">Perfect for small schools getting started with digital management.</p>
-                <ul class="space-y-3 mb-8">
-                    @foreach(['Up to 300 students','5 staff accounts','Academic & attendance','Basic fee management','Email support'] as $item)
-                    <li class="flex items-center gap-3 text-sm text-white/60">
-                        <span class="w-4 h-4 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-[.55rem] shrink-0 text-white/50">✓</span>{{ $item }}
-                    </li>
-                    @endforeach
-                </ul>
-                <a href="{{ route('register') }}" class="flex items-center justify-center w-full py-3.5 border border-white/20 text-white/80 rounded-xl text-sm font-semibold no-underline hover:bg-white/[.08] hover:border-white/30 transition-all">
-                    Start Free Trial
-                </a>
-            </div>
-
-            {{-- Growth (popular) --}}
-            <div class="reveal relative rounded-3xl p-px bg-gradient-to-b from-indigo-500/60 via-indigo-500/30 to-transparent shadow-2xl shadow-indigo-500/20">
-                <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[.65rem] font-extrabold px-5 py-1.5 rounded-full shadow-lg shadow-amber-500/40 tracking-wider uppercase whitespace-nowrap z-10">Most Popular</div>
-                <div class="bg-zinc-900 rounded-[calc(1.5rem-1px)] p-8 h-full">
-                    <div class="flex items-center justify-between mb-6">
-                        <p class="text-[.65rem] font-extrabold tracking-widest uppercase text-indigo-400">Growth</p>
-                        <span class="text-[.6rem] font-bold px-2.5 py-1 rounded-lg bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">Monthly</span>
-                    </div>
-                    <div class="text-[2.75rem] font-black text-white tracking-tighter leading-none mb-1">₦65k</div>
-                    <p class="text-xs text-white/40 mb-6">/ month, billed monthly</p>
-                    <p class="text-sm text-white/60 mb-7 leading-relaxed">For growing institutions that need the full feature suite.</p>
-                    <ul class="space-y-3 mb-8">
-                        @foreach(['Up to 1,500 students','Unlimited staff accounts','All modules including Hostel','Payroll & document generation','Two-step login & activity history','Priority support'] as $item)
-                        <li class="flex items-center gap-3 text-sm text-white/80">
-                            <span class="w-4 h-4 rounded-full bg-indigo-500/25 border border-indigo-500/40 flex items-center justify-center text-[.55rem] shrink-0 text-indigo-400">✓</span>{{ $item }}
-                        </li>
-                        @endforeach
-                    </ul>
-                    <a href="{{ route('register') }}" class="flex items-center justify-center gap-2 w-full py-3.5 bg-indigo-600 text-white rounded-xl text-sm font-extrabold no-underline shadow-lg shadow-indigo-600/40 hover:bg-indigo-500 transition-colors">
-                        Start Free Trial →
-                    </a>
-                </div>
-            </div>
-
-            {{-- Enterprise --}}
-            <div class="reveal bg-white/[.04] border border-white/[.08] rounded-3xl p-8 hover:bg-white/[.06] hover:border-white/[.14] transition-all duration-300">
-                <div class="flex items-center justify-between mb-6">
-                    <p class="text-[.65rem] font-extrabold tracking-widest uppercase text-white/40">Enterprise</p>
-                    <span class="text-[.6rem] font-bold px-2.5 py-1 rounded-lg bg-white/10 text-white/50 border border-white/10">Custom</span>
-                </div>
-                <div class="text-[2.2rem] font-black text-white tracking-tighter leading-none mb-1">Custom</div>
-                <p class="text-xs text-white/40 mb-6">contact us for pricing</p>
-                <p class="text-sm text-white/50 mb-7 leading-relaxed">For large institutions, school networks, and government deployments.</p>
-                <ul class="space-y-3 mb-8">
-                    @foreach(['Unlimited students & staff','Multi-school management','Custom integrations & API','Dedicated account manager','Uptime guarantee & on-premise option'] as $item)
-                    <li class="flex items-center gap-3 text-sm text-white/60">
-                        <span class="w-4 h-4 rounded-full bg-white/10 border border-white/15 flex items-center justify-center text-[.55rem] shrink-0 text-white/50">✓</span>{{ $item }}
-                    </li>
-                    @endforeach
-                </ul>
-                <a href="#" class="flex items-center justify-center w-full py-3.5 border border-white/20 text-white/80 rounded-xl text-sm font-semibold no-underline hover:bg-white/[.08] hover:border-white/30 transition-all">
-                    Contact Sales
-                </a>
-            </div>
-        </div>
-
-        {{-- Trust badges --}}
-        <div class="mt-12 flex flex-wrap items-center justify-center gap-6 reveal">
-            @foreach(['14-day free trial', 'No credit card required', 'Cancel anytime', 'Data export included'] as $badge)
-            <div class="flex items-center gap-2 text-xs text-white/40">
-                <span class="w-4 h-4 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-500 text-[.55rem]">✓</span>
-                {{ $badge }}
-            </div>
-            @endforeach
-        </div>
-    </div>
-</section>
-
-
 
 {{-- ═══════════════════════════════════════════
      FAQ
 ═══════════════════════════════════════════ --}}
-<section class="py-28 px-6 bg-white" id="faq">
+<section class="py-28 px-6 bg-zinc-50" id="faq">
     <div class="max-w-[720px] mx-auto">
         <div class="text-center mb-14 reveal">
             <div class="inline-flex items-center gap-2.5 text-[.7rem] font-extrabold tracking-[.12em] uppercase text-indigo-600 mb-4 justify-center">
@@ -968,16 +840,12 @@
                 Start Your Free Trial
                 <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
             </a>
-            <a href="#" class="inline-flex items-center gap-2 px-8 py-4 text-white/70 border border-white/15 text-[.925rem] font-medium rounded-2xl no-underline hover:bg-white/[.06] hover:border-white/25 hover:text-white/90 transition-all">
-                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                Schedule a Demo
-            </a>
         </div>
 
         <div class="flex flex-wrap items-center justify-center gap-5">
             @foreach(['14-day free trial', 'No credit card', 'Cancel anytime'] as $item)
             <span class="flex items-center gap-1.5 text-xs text-white/35">
-                <span class="w-3.5 h-3.5 rounded-full bg-white/10 flex items-center justify-center text-white/40 text-[.5rem]">✓</span>
+                <span class="w-3.5 h-3.5 rounded-full bg-white/10 flex items-center justify-center text-white/40 text-[.5rem]"><flux:icon name="check-circle" class="w-5 h-5 text-emerald-500 shrink-0" /></span>
                 {{ $item }}
             </span>
             @endforeach

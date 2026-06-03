@@ -7,6 +7,7 @@ use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -18,7 +19,7 @@ class CallbackController extends Controller
 
         if (! $reference) {
             return redirect()->route('subscription.plans')
-                ->with('error', __('Invalid payment reference.'));
+                ->with('error', 'Invalid payment reference.');
         }
 
         // Verify the transaction with Paystack
@@ -32,7 +33,7 @@ class CallbackController extends Controller
             ]);
 
             return redirect()->route('subscription.plans')
-                ->with('error', __('Payment verification failed. Please contact support.'));
+                ->with('error', 'Payment verification failed. Please contact support.');
         }
 
         $data = $response->json('data');
@@ -46,15 +47,17 @@ class CallbackController extends Controller
             Log::error('Paystack callback missing metadata', ['reference' => $reference, 'meta' => $meta]);
 
             return redirect()->route('subscription.plans')
-                ->with('error', __('Subscription activation failed. Please contact support.'));
+                ->with('error', 'Subscription activation failed. Please contact support.');
         }
 
         $plan = SubscriptionPlan::findOrFail($planId);
 
         $endsAt = $billingCycle === 'yearly' ? now()->addYear() : now()->addMonth();
 
-        $existing = Subscription::where('institution_id', $institutionId)
-            ->whereIn('status', ['active', 'trial', 'past_due'])
+        /** @var Subscription|null $existing */
+        $existing = Subscription::query()
+            ->where('institution_id', $institutionId)
+            ->whereIn('status', ['active', 'trial', 'past_due'], 'and', false)
             ->latest()
             ->first();
 
@@ -94,7 +97,7 @@ class CallbackController extends Controller
             ], $paystackFields));
         }
 
-        $dashboardRoute = match (auth()->user()?->role) {
+        $dashboardRoute = match (Auth::user()?->role) {
             'student' => 'student.dashboard',
             'teacher' => 'teacher.dashboard',
             'parent' => 'parent.dashboard',

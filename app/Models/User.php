@@ -111,11 +111,14 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function hasAllPermissions(array $slugs): bool
     {
-        $permissionCount = Permission::whereIn('slug', $slugs)->count();
+        $permissionCount = Permission::query()->whereIn('slug', $slugs, 'and', false)->count('*');
 
-        $userPermissionCount = Permission::whereIn('slug', $slugs)
-            ->whereHas('roles', fn ($q) => $q->whereIn('roles.id', $this->roles()->pluck('roles.id')))
-            ->count();
+        $roleIds = $this->roles()->pluck('roles.id');
+
+        $userPermissionCount = Permission::query()
+            ->whereIn('slug', $slugs, 'and', false)
+            ->whereHas('roles', fn ($q) => $q->whereIn('roles.id', $roleIds, 'and', false))
+            ->count('*');
 
         return $permissionCount === $userPermissionCount;
     }

@@ -44,7 +44,7 @@ class WebhookController extends Controller
             return;
         }
 
-        $subscription = Subscription::where('paystack_subscription_code', $subCode)->first();
+        $subscription = Subscription::firstWhere('paystack_subscription_code', $subCode);
 
         if (! $subscription) {
             return;
@@ -68,11 +68,13 @@ class WebhookController extends Controller
             return;
         }
 
-        Subscription::where('paystack_subscription_code', $subCode)->update([
-            'status' => 'cancelled',
-            'cancelled_at' => now(),
-            'cancellation_reason' => 'Subscription disabled on Paystack.',
-        ]);
+        $subscription = Subscription::firstWhere('paystack_subscription_code', $subCode);
+
+        if (! $subscription) {
+            return;
+        }
+
+        $subscription->cancel('Subscription disabled on Paystack.');
     }
 
     private function handlePaymentFailed(array $data): void
@@ -83,8 +85,12 @@ class WebhookController extends Controller
             return;
         }
 
-        Subscription::where('paystack_subscription_code', $subCode)->update([
-            'status' => 'past_due',
-        ]);
+        $subscription = Subscription::firstWhere('paystack_subscription_code', $subCode);
+
+        if (! $subscription) {
+            return;
+        }
+
+        $subscription->update(['status' => 'past_due']);
     }
 }

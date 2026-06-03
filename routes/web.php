@@ -2,13 +2,22 @@
 
 use App\Http\Controllers\Subscription\CallbackController;
 use App\Http\Controllers\Subscription\WebhookController;
-use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
+use App\Models\SubscriptionPlan;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Support\Facades\Route;
 
 Route::domain(config('domain.main'))->group(function () {
 
     // Welcome / Home page
-    Route::view('/', 'welcome')->name('home');
+    Route::get('/', function () {
+        $plans = SubscriptionPlan::query()
+            ->where('is_active', '=', true)
+            ->orderBy('sort_order', 'asc')
+            ->get()
+            ->keyBy('slug');
+
+        return view('welcome', compact('plans'));
+    })->name('home');
     Route::livewire('admissions/apply/{institution:uuid}', 'pages::public.admissions.apply')
         ->name('admissions.apply');
     Route::livewire('admissions/success/{institution:uuid}/{application:uuid}', 'pages::public.admissions.success')
@@ -34,7 +43,7 @@ Route::domain(config('domain.main'))->group(function () {
     // Paystack webhook — no auth, signature-verified instead
     Route::post('/subscription/webhook/paystack', WebhookController::class)
         ->name('subscription.webhook.paystack')
-        ->withoutMiddleware(ValidateCsrfToken::class);
+        ->withoutMiddleware(PreventRequestForgery::class);
 });
 
 require __DIR__.'/auth.php';

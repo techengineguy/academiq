@@ -3,12 +3,12 @@
 use Livewire\Component;
 use Livewire\Attributes\Title;
 use App\Models\SubscriptionPlan;
+use Flux\Flux;
 use Illuminate\View\View;
 
 new #[Title('Subscription Management')]
 class extends Component {
-    public $showCancelModal = false;
-    public $cancellationReason = '';
+    public string $cancellationReason = '';
 
     public function rendering(View $view): void
     {
@@ -25,22 +25,25 @@ class extends Component {
         return redirect()->route('subscription.checkout', ['plan' => $planId]);
     }
 
-    public function showCancelModal()
+    public function openCancelModal(): void
     {
-        $this->showCancelModal = true;
+        Flux::modal('cancel-subscription')->show();
     }
 
     public function cancelSubscription()
     {
-        if (!$this->currentSubscription()) {
+        $subscription = $this->currentSubscription();
+
+        if (! $subscription) {
             return;
         }
 
-        $this->currentSubscription()->cancel($this->cancellationReason);
-        
-        session()->flash('success', 'Your subscription has been cancelled.');
-        $this->showCancelModal = false;
-        $this->redirect(request()->header('Referer'));
+        $subscription->cancel($this->cancellationReason);
+
+        $this->cancellationReason = '';
+
+        Flux::modal('cancel-subscription')->close();
+        Flux::toast(variant: 'success', text: 'Your subscription has been cancelled.');
     }
 
     public function currentSubscription()
@@ -117,7 +120,7 @@ class extends Component {
             {{-- Actions --}}
             <div class="flex gap-3">
                 @if($this->currentSubscription()->hasAccess())
-                    <flux:button variant="outline" wire:click="showCancelModal">
+                    <flux:button variant="outline" wire:click="openCancelModal">
                         Cancel Subscription
                     </flux:button>
                 @endif
@@ -171,30 +174,28 @@ class extends Component {
     @endif
 
     {{-- Cancel Modal --}}
-    @if($showCancelModal)
-    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
-            <h3 class="text-lg font-semibold text-zinc-900 mb-4">Cancel Subscription</h3>
-            <p class="text-zinc-600 mb-4">
-                Are you sure you want to cancel your subscription? You'll lose access to all features at the end of your current billing period.
-            </p>
-            
-            <div class="mb-4">
-                <flux:field>
-                    <flux:label>Reason for cancellation (optional)</flux:label>
-                    <flux:textarea wire:model="cancellationReason" placeholder="Help us improve by telling us why you're cancelling..."></flux:textarea>
-                </flux:field>
+    <flux:modal name="cancel-subscription" class="min-w-[22rem] max-w-md">
+        <div class="space-y-4">
+            <div>
+                <flux:heading size="lg">Cancel Subscription</flux:heading>
+                <flux:text class="mt-1">
+                    Are you sure? You'll lose access to all features at the end of your current billing period.
+                </flux:text>
             </div>
-            
-            <div class="flex gap-3">
-                <flux:button wire:click="$set('showCancelModal', false)" variant="outline" class="flex-1">
-                    Keep Subscription
-                </flux:button>
-                <flux:button wire:click="cancelSubscription" variant="danger" class="flex-1">
+
+            <flux:field>
+                <flux:label>Reason for cancellation (optional)</flux:label>
+                <flux:textarea wire:model="cancellationReason" placeholder="Help us improve by telling us why you're cancelling..." rows="3" />
+            </flux:field>
+
+            <div class="flex gap-3 justify-end">
+                <flux:modal.close>
+                    <flux:button variant="ghost">Keep Subscription</flux:button>
+                </flux:modal.close>
+                <flux:button wire:click="cancelSubscription" variant="danger">
                     Cancel Subscription
                 </flux:button>
             </div>
         </div>
-    </div>
-    @endif
+    </flux:modal>
 </div>
