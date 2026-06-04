@@ -24,7 +24,7 @@ class extends Component {
     #[Computed]
     public function rooms()
     {
-        $query = HostelRoom::whereHas('hostelBuilding', fn ($q) => $q->where('tenant_id', Auth::user()->tenant_id))
+        $query = HostelRoom::whereHas('hostelBuilding', fn ($q) => $q)
             ->with('hostelBuilding')
             ->orderBy('hostel_building_id')
             ->orderBy('room_number');
@@ -43,8 +43,7 @@ class extends Component {
     #[Computed]
     public function buildings()
     {
-        return HostelBuilding::where('tenant_id', Auth::user()->tenant_id)
-            ->orderBy('name')
+        return HostelBuilding::orderBy('name')
             ->get();
     }
 
@@ -76,7 +75,7 @@ class extends Component {
             return;
         }
 
-        HostelRoom::whereHas('hostelBuilding', fn ($q) => $q->where('tenant_id', Auth::user()->tenant_id))
+        HostelRoom::whereHas('hostelBuilding', fn ($q) => $q)
             ->findOrFail($this->roomIdToDelete)
             ->delete();
 

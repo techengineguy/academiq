@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -23,8 +23,7 @@ class extends Component {
     #[Computed]
     public function academicYears()
     {
-        return AcademicYear::where('tenant_id', Auth::user()->tenant_id)
-            ->orderByDesc('start_date')
+        return AcademicYear::orderByDesc('start_date')
             ->get();
     }
 
@@ -41,7 +40,7 @@ class extends Component {
         ]);
 
         Exam::create([
-            'tenant_id' => Auth::user()->tenant_id,
+            'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
             'uuid' => Str::uuid(),
             'institution_id' => Auth::user()->institution_id,
             'academic_year_id' => $validated['academic_year_id'],

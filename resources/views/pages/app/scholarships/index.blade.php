@@ -18,8 +18,7 @@ class extends Component
     #[Computed]
     public function scholarships()
     {
-        return Scholarship::where('tenant_id', Auth::user()->tenant_id)
-            ->orderBy('created_at', 'desc')
+        return Scholarship::orderBy('created_at', 'desc')
             ->paginate(10);
     }
 
@@ -43,8 +42,7 @@ class extends Component
             return;
         }
 
-        Scholarship::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->scholarshipIdToDelete)->delete();
+        Scholarship::findOrFail($this->scholarshipIdToDelete)->delete();
 
         $this->scholarshipIdToDelete = null;
         unset($this->scholarships);

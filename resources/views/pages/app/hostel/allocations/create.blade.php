@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -26,8 +26,7 @@ class extends Component {
     {
         $this->allocated_date = now()->format('Y-m-d');
 
-        $currentYear = AcademicYear::where('tenant_id', Auth::user()->tenant_id)
-            ->where('is_current', true)
+        $currentYear = AcademicYear::where('is_current', true)
             ->first();
 
         if ($currentYear) {
@@ -38,8 +37,7 @@ class extends Component {
     #[Computed]
     public function students()
     {
-        return Student::where('tenant_id', Auth::user()->tenant_id)
-            ->where('status', 'active')
+        return Student::where('status', 'active')
             ->with(['user', 'class'])
             ->orderBy('roll_number')
             ->get();
@@ -48,7 +46,7 @@ class extends Component {
     #[Computed]
     public function rooms()
     {
-        return HostelRoom::whereHas('hostelBuilding', fn ($q) => $q->where('tenant_id', Auth::user()->tenant_id))
+        return HostelRoom::whereHas('hostelBuilding', fn ($q) => $q)
             ->whereColumn('occupied', '<', 'capacity')
             ->where('status', 'available')
             ->with('hostelBuilding')
@@ -60,8 +58,7 @@ class extends Component {
     #[Computed]
     public function academicYears()
     {
-        return AcademicYear::where('tenant_id', Auth::user()->tenant_id)
-            ->orderByDesc('start_date')
+        return AcademicYear::orderByDesc('start_date')
             ->get();
     }
 
@@ -84,7 +81,7 @@ class extends Component {
             }
 
             HostelAllocation::create([
-                'tenant_id' => Auth::user()->tenant_id,
+                'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
                 'uuid' => Str::uuid(),
                 'student_id' => $validated['student_id'],
                 'hostel_room_id' => $validated['hostel_room_id'],

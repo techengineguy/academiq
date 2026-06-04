@@ -23,8 +23,7 @@ class extends Component {
     #[Computed]
     public function announcements()
     {
-        $query = Announcement::where('tenant_id', Auth::user()->tenant_id)
-            ->with('createdBy')
+        $query = Announcement::with('createdBy')
             ->orderByDesc('publish_date');
 
         if ($this->filterStatus !== '') {
@@ -66,8 +65,7 @@ class extends Component {
             return;
         }
 
-        Announcement::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->announcementIdToDelete)
+        Announcement::findOrFail($this->announcementIdToDelete)
             ->delete();
 
         $this->announcementIdToDelete = null;

@@ -43,8 +43,7 @@ class extends Component {
     #[Computed]
     public function assignments()
     {
-        return Assignment::where('tenant_id', Auth::user()->tenant_id)
-            ->where('teacher_id', Auth::id())
+        return Assignment::where('teacher_id', Auth::id())
             ->with(['class', 'subject', 'section'])
             ->withCount('submissions')
             ->orderByDesc('created_at')
@@ -54,13 +53,11 @@ class extends Component {
     #[Computed]
     public function myClasses()
     {
-        $classIds = ClassSubject::where('tenant_id', Auth::user()->tenant_id)
-            ->where('teacher_id', Auth::id())
+        $classIds = ClassSubject::where('teacher_id', Auth::id())
             ->pluck('class_id')
             ->unique();
 
-        return ClassModel::where('tenant_id', Auth::user()->tenant_id)
-            ->whereIn('id', $classIds)
+        return ClassModel::whereIn('id', $classIds)
             ->orderBy('name')
             ->get();
     }
@@ -72,8 +69,7 @@ class extends Component {
             return collect();
         }
 
-        return Section::where('tenant_id', Auth::user()->tenant_id)
-            ->where('class_id', $this->class_id)
+        return Section::where('class_id', $this->class_id)
             ->orderBy('name')
             ->get();
     }
@@ -85,8 +81,7 @@ class extends Component {
             return collect();
         }
 
-        $subjectIds = ClassSubject::where('tenant_id', Auth::user()->tenant_id)
-            ->where('teacher_id', Auth::id())
+        $subjectIds = ClassSubject::where('teacher_id', Auth::id())
             ->where('class_id', $this->class_id)
             ->pluck('subject_id');
 
@@ -114,7 +109,7 @@ class extends Component {
         ]);
 
         Assignment::create([
-            'tenant_id' => Auth::user()->tenant_id,
+            'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
             'uuid' => Str::uuid(),
             'teacher_id' => Auth::id(),
             'class_id' => $validated['class_id'],
@@ -155,8 +150,7 @@ class extends Component {
             return;
         }
 
-        Assignment::where('tenant_id', Auth::user()->tenant_id)
-            ->where('teacher_id', Auth::id())
+        Assignment::where('teacher_id', Auth::id())
             ->findOrFail($this->assignmentIdToDelete)
             ->delete();
 

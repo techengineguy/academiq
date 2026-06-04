@@ -25,8 +25,7 @@ class extends Component {
     #[Computed]
     public function exams()
     {
-        $query = Exam::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['academicYear'])
+        $query = Exam::with(['academicYear'])
             ->orderByDesc('start_date');
 
         if ($this->filterStatus !== '') {
@@ -47,33 +46,32 @@ class extends Component {
     #[Computed]
     public function academicYears()
     {
-        return AcademicYear::where('tenant_id', Auth::user()->tenant_id)
-            ->orderByDesc('start_date')
+        return AcademicYear::orderByDesc('start_date')
             ->get();
     }
 
     #[Computed]
     public function totalExams(): int
     {
-        return (int) Exam::where('tenant_id', Auth::user()->tenant_id)->count();
+        return (int) Exam::count();
     }
 
     #[Computed]
     public function scheduledCount(): int
     {
-        return (int) Exam::where('tenant_id', Auth::user()->tenant_id)->where('status', 'scheduled')->count();
+        return (int) Exam::where('status', 'scheduled')->count();
     }
 
     #[Computed]
     public function ongoingCount(): int
     {
-        return (int) Exam::where('tenant_id', Auth::user()->tenant_id)->where('status', 'ongoing')->count();
+        return (int) Exam::where('status', 'ongoing')->count();
     }
 
     #[Computed]
     public function completedCount(): int
     {
-        return (int) Exam::where('tenant_id', Auth::user()->tenant_id)->where('status', 'completed')->count();
+        return (int) Exam::where('status', 'completed')->count();
     }
 
     public function updatedFilterStatus(): void
@@ -117,8 +115,7 @@ class extends Component {
             return;
         }
 
-        Exam::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->examIdToDelete)
+        Exam::findOrFail($this->examIdToDelete)
             ->delete();
 
         $this->examIdToDelete = null;

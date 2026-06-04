@@ -6,6 +6,7 @@ use App\Models\ClassModel;
 use App\Models\AcademicYear;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Spatie\Multitenancy\Models\Tenant;
 use Flux\Flux;
 use TallStackUi\Traits\Interactions;
 use Livewire\WithFileUploads;
@@ -54,7 +55,7 @@ new class extends Component {
             'status' => 'required|in:submitted,under_review,test_scheduled,interview_scheduled,approved,rejected,admitted',
         ]);
 
-        $institution = Auth::user()->institution;
+        $institution = Tenant::current();
 
         $birthPath = null;
         if ($this->birth_certificate) {
@@ -77,7 +78,7 @@ new class extends Component {
         }
 
         AdmissionApplication::create([
-            'tenant_id' => Auth::user()->tenant_id,
+            'tenant_id' => Tenant::current()->uuid,
             'uuid' => Str::uuid(),
             'institution_id' => $institution->id,
             'academic_year_id' => $this->academic_year_id ?: null,
@@ -122,7 +123,7 @@ new class extends Component {
         <div class="grid grid-cols-2 gap-4">
             <flux:select label="{{ __('Academic Year') }}" variant="listbox" wire:model="academic_year_id">
                 <flux:select.option value="">{{ __('Select Academic Year') }}</flux:select.option>
-                @forelse(AcademicYear::where('tenant_id', Auth::user()->tenant_id)->get() as $ay)
+                @forelse(AcademicYear::all() as $ay)
                     <flux:select.option value="{{ $ay->id }}">{{ $ay->name }}</flux:select.option>
                 @empty
                     <flux:select.option value="">{{ __('No Academic Years') }}</flux:select.option>
@@ -131,7 +132,7 @@ new class extends Component {
 
             <flux:select label="{{ __('Class') }}" variant="listbox" wire:model="class_id">
                 <flux:select.option value="">{{ __('Select Class') }}</flux:select.option>
-                @forelse(ClassModel::where('tenant_id', Auth::user()->tenant_id)->get() as $class)
+                @forelse(ClassModel::all() as $class)
                     <flux:select.option value="{{ $class->id }}">{{ $class->name }}</flux:select.option>
                 @empty
                     <flux:select.option value="">{{ __('No Classes Available') }}</flux:select.option>

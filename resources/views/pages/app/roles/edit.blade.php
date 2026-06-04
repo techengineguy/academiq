@@ -31,8 +31,7 @@ class extends Component {
     #[On('edit-role')]
     public function loadRole(int $id): void
     {
-        $this->role = Role::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['permissions', 'users'])
+        $this->role = Role::with(['permissions', 'users'])
             ->findOrFail($id);
 
         $this->name = $this->role->name;
@@ -53,8 +52,7 @@ class extends Component {
     #[Computed]
     public function users()
     {
-        return User::where('tenant_id', Auth::user()->tenant_id)
-            ->where('is_active', true)
+        return User::where('is_active', true)
             ->orderBy('first_name')
             ->orderBy('last_name')
             ->get();
@@ -94,7 +92,7 @@ class extends Component {
         // Sync permissions
         $permPivot = collect($this->selectedPermissions)->mapWithKeys(fn (string $permId) => [
             $permId => [
-                'tenant_id' => Auth::user()->tenant_id,
+                'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
                 'uuid' => Str::uuid(),
             ],
         ])->all();
@@ -103,7 +101,7 @@ class extends Component {
         // Sync users
         $userPivot = collect($this->selectedUsers)->mapWithKeys(fn (string $userId) => [
             $userId => [
-                'tenant_id' => Auth::user()->tenant_id,
+                'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
                 'uuid' => Str::uuid(),
             ],
         ])->all();

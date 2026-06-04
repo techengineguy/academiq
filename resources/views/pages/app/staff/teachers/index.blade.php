@@ -18,8 +18,7 @@ class extends Component {
     #[Computed]
     public function teachers()
     {
-        return Teacher::where('tenant_id', Auth::user()->tenant_id)
-            ->with('user')
+        return Teacher::with('user')
             ->orderBy('created_at', 'desc')->paginate(10);
     }
 
@@ -41,8 +40,7 @@ class extends Component {
     {
         if (! $this->teacherIdToDelete) return;
 
-        Teacher::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->teacherIdToDelete)->delete();
+        Teacher::findOrFail($this->teacherIdToDelete)->delete();
 
         $this->teacherIdToDelete = null;
         unset($this->teachers);

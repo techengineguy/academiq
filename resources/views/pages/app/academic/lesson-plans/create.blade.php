@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use App\Models\LessonPlan;
@@ -51,7 +51,7 @@ new class extends Component {
         }
 
         LessonPlan::create([
-            'tenant_id' => Auth::user()->tenant_id,
+            'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
             'uuid' => Str::uuid(),
             'teacher_id' => $validated['teacher_id'],
             'class_id' => $validated['class_id'],
@@ -80,7 +80,7 @@ new class extends Component {
         <div class="grid grid-cols-2 gap-4">
             <flux:select label="{{ __('Teacher') }}" variant="listbox" wire:model="teacher_id" searchable required>
                 <flux:select.option value="">{{ __('Select Teacher') }}</flux:select.option>
-                @forelse(User::where('tenant_id', Auth::user()->tenant_id)->where('role', 'teacher')->get() as $teacher)
+                @forelse(User::where('role', 'teacher')->get() as $teacher)
                     <flux:select.option value="{{ $teacher->id }}">{{ $teacher->first_name }} {{ $teacher->last_name }}</flux:select.option>
                 @empty
                     <flux:select.option value="">{{ __('No Teachers Available') }}</flux:select.option>
@@ -88,7 +88,7 @@ new class extends Component {
             </flux:select>
             <flux:select label="{{ __('Class') }}" variant="listbox" wire:model="class_id" required>
                 <flux:select.option value="">{{ __('Select Class') }}</flux:select.option>
-                @forelse(ClassModel::where('tenant_id', Auth::user()->tenant_id)->get() as $class)
+                @forelse(ClassModel::get() as $class)
                     <flux:select.option value="{{ $class->id }}">{{ $class->name }}</flux:select.option>
                 @empty
                     <flux:select.option value="">{{ __('No Classes Available') }}</flux:select.option>
@@ -99,7 +99,7 @@ new class extends Component {
         <div class="grid grid-cols-2 gap-4">
             <flux:select label="{{ __('Subject') }}" variant="listbox" wire:model="subject_id" required>
                 <flux:select.option value="">{{ __('Select Subject') }}</flux:select.option>
-                @forelse(Subject::where('tenant_id', Auth::user()->tenant_id)->get() as $subject)
+                @forelse(Subject::get() as $subject)
                     <flux:select.option value="{{ $subject->id }}">{{ $subject->name }}</flux:select.option>
                 @empty
                     <flux:select.option value="">{{ __('No Subjects Available') }}</flux:select.option>

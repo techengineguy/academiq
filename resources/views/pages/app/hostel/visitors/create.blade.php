@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -21,8 +21,7 @@ class extends Component {
     #[Computed]
     public function students()
     {
-        return Student::where('tenant_id', Auth::user()->tenant_id)
-            ->where('status', 'active')
+        return Student::where('status', 'active')
             ->whereHas('hostelAllocations', fn ($q) => $q->where('status', 'active'))
             ->with(['user', 'class'])
             ->orderBy('roll_number')
@@ -40,7 +39,7 @@ class extends Component {
         ]);
 
         HostelVisitor::create([
-            'tenant_id' => Auth::user()->tenant_id,
+            'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
             'uuid' => Str::uuid(),
             'student_id' => $validated['student_id'],
             'visitor_name' => $validated['visitor_name'],

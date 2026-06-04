@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -28,8 +28,7 @@ class extends Component {
     #[On('edit-result')]
     public function loadResult(int $id): void
     {
-        $this->result = ExamResult::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['examSchedule.exam', 'examSchedule.subject', 'examSchedule.class', 'student.user'])
+        $this->result = ExamResult::with(['examSchedule.exam', 'examSchedule.subject', 'examSchedule.class', 'student.user'])
             ->findOrFail($id);
 
         $this->marks_obtained = (string) $this->result->marks_obtained;
@@ -53,8 +52,7 @@ class extends Component {
 
         $grade = null;
         if (! $isAbsent) {
-            $gradeScales = GradeScale::where('tenant_id', Auth::user()->tenant_id)
-                ->orderByDesc('min_percentage')
+            $gradeScales = GradeScale::orderByDesc('min_percentage')
                 ->get();
 
             foreach ($gradeScales as $scale) {

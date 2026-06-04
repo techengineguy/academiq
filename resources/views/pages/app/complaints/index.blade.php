@@ -24,8 +24,7 @@ class extends Component {
     #[Computed]
     public function complaints()
     {
-        $query = Complaint::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['submittedBy', 'assignedTo'])
+        $query = Complaint::with(['submittedBy', 'assignedTo'])
             ->orderByDesc('created_at');
 
         if ($this->filterStatus !== '') {
@@ -46,7 +45,7 @@ class extends Component {
     #[Computed]
     public function stats(): array
     {
-        $base = Complaint::where('tenant_id', Auth::user()->tenant_id);
+        $base = Complaint::query();
 
         return [
             'total' => (clone $base)->count(),
@@ -86,8 +85,7 @@ class extends Component {
             return;
         }
 
-        Complaint::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->complaintIdToDelete)
+        Complaint::findOrFail($this->complaintIdToDelete)
             ->delete();
 
         $this->complaintIdToDelete = null;

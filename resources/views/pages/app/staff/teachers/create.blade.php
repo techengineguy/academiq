@@ -5,6 +5,7 @@ use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Multitenancy\Models\Tenant;
 use Illuminate\Support\Str;
 use Flux\Flux;
 use TallStackUi\Traits\Interactions;
@@ -48,7 +49,7 @@ new class extends Component {
             'status' => 'required|in:active,inactive',
         ]);
 
-        $institution = Auth::user()->institution;
+        $institution = Tenant::current();
 
         if ($institution->hasReachedTeacherLimit()) {
             $limit = $institution->planLimitFor('teachers');
@@ -59,7 +60,7 @@ new class extends Component {
 
         // Create user first
         $user = User::create([
-            'tenant_id' => Auth::user()->tenant_id,
+            'tenant_id' => Tenant::current()->uuid,
             'uuid' => Str::uuid(),
             'institution_id' => $institution->id,
             'username' => $validated['first_name'],
@@ -73,7 +74,7 @@ new class extends Component {
 
         // Create teacher linked to user
         Teacher::create([
-            'tenant_id' => Auth::user()->tenant_id,
+            'tenant_id' => Tenant::current()->uuid,
             'uuid' => Str::uuid(),
             'institution_id' => $institution->id,
             'user_id' => $user->id,

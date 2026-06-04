@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -29,8 +29,7 @@ class extends Component {
             'date' => ['required', 'date'],
         ]);
 
-        $query = User::where('tenant_id', Auth::user()->tenant_id)
-            ->whereIn('role', ['teacher', 'staff'])
+        $query = User::whereIn('role', ['teacher', 'staff'])
             ->where('is_active', true)
             ->orderBy('first_name')
             ->orderBy('last_name');
@@ -41,8 +40,7 @@ class extends Component {
 
         $employees = $query->get();
 
-        $existingAttendances = TeacherAttendance::where('tenant_id', Auth::user()->tenant_id)
-            ->whereDate('date', $this->date)
+        $existingAttendances = TeacherAttendance::whereDate('date', $this->date)
             ->pluck('status', 'teacher_id');
 
         $this->rows = $employees->map(function (User $employee) use ($existingAttendances): array {
@@ -84,7 +82,7 @@ class extends Component {
             foreach ($this->rows as $row) {
                 TeacherAttendance::updateOrCreate(
                     [
-                        'tenant_id' => Auth::user()->tenant_id,
+                        'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
                         'teacher_id' => $row['teacher_id'],
                         'date' => $this->date,
                     ],

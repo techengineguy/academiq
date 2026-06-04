@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -37,7 +37,7 @@ class extends Component {
     #[On('edit-schedule')]
     public function loadSchedule(int $id): void
     {
-        $this->schedule = ExamSchedule::where('tenant_id', Auth::user()->tenant_id)->findOrFail($id);
+        $this->schedule = ExamSchedule::findOrFail($id);
 
         $this->exam_id = (string) $this->schedule->exam_id;
         $this->class_id = (string) $this->schedule->class_id;
@@ -54,16 +54,14 @@ class extends Component {
     #[Computed]
     public function exams()
     {
-        return Exam::where('tenant_id', Auth::user()->tenant_id)
-            ->orderByDesc('start_date')
+        return Exam::orderByDesc('start_date')
             ->get();
     }
 
     #[Computed]
     public function classes()
     {
-        return ClassModel::where('tenant_id', Auth::user()->tenant_id)
-            ->whereHas('academicYear', fn ($q) => $q->where('is_current', true))
+        return ClassModel::whereHas('academicYear', fn ($q) => $q->where('is_current', true))
             ->with('sections')
             ->orderBy('name')
             ->get();
@@ -72,8 +70,7 @@ class extends Component {
     #[Computed]
     public function subjects()
     {
-        return Subject::where('tenant_id', Auth::user()->tenant_id)
-            ->where('status', 'active')
+        return Subject::where('status', 'active')
             ->orderBy('name')
             ->get();
     }

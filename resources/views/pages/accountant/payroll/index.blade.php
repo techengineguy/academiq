@@ -19,8 +19,7 @@ class extends Component {
     #[Computed]
     public function payrolls()
     {
-        return Payroll::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['user', 'processedBy'])
+        return Payroll::with(['user', 'processedBy'])
             ->orderByDesc('payment_date')
             ->orderByDesc('created_at')
             ->paginate(10, ['*'], 'payrollsPage');
@@ -29,8 +28,7 @@ class extends Component {
     #[Computed]
     public function allowances()
     {
-        return PayrollAllowance::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['payroll.user'])
+        return PayrollAllowance::with(['payroll.user'])
             ->orderByDesc('created_at')
             ->paginate(10, ['*'], 'allowancesPage');
     }
@@ -38,8 +36,7 @@ class extends Component {
     #[Computed]
     public function deductions()
     {
-        return PayrollDeduction::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['payroll.user'])
+        return PayrollDeduction::with(['payroll.user'])
             ->orderByDesc('created_at')
             ->paginate(10, ['*'], 'deductionsPage');
     }
@@ -47,19 +44,19 @@ class extends Component {
     #[Computed]
     public function totalNetSalary(): float
     {
-        return (float) Payroll::where('tenant_id', Auth::user()->tenant_id)->sum('net_salary');
+        return (float) Payroll::sum('net_salary');
     }
 
     #[Computed]
     public function totalAllowances(): float
     {
-        return (float) PayrollAllowance::where('tenant_id', Auth::user()->tenant_id)->sum('amount');
+        return (float) PayrollAllowance::sum('amount');
     }
 
     #[Computed]
     public function totalDeductions(): float
     {
-        return (float) PayrollDeduction::where('tenant_id', Auth::user()->tenant_id)->sum('amount');
+        return (float) PayrollDeduction::sum('amount');
     }
 };
 ?>

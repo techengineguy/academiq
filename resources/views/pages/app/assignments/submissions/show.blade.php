@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -30,16 +30,14 @@ class extends Component {
     #[Computed]
     public function assignment()
     {
-        return Assignment::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['class', 'section', 'subject', 'teacher'])
+        return Assignment::with(['class', 'section', 'subject', 'teacher'])
             ->findOrFail($this->id);
     }
 
     #[Computed]
     public function submissions()
     {
-        return AssignmentSubmission::where('tenant_id', Auth::user()->tenant_id)
-            ->where('assignment_id', $this->id)
+        return AssignmentSubmission::where('assignment_id', $this->id)
             ->with(['student.user'])
             ->orderBy('submitted_at')
             ->get();
@@ -53,8 +51,7 @@ class extends Component {
         ]);
 
         foreach ($this->grades as $submissionId => $grade) {
-            $submission = AssignmentSubmission::where('tenant_id', Auth::user()->tenant_id)
-                ->where('assignment_id', $this->id)
+            $submission = AssignmentSubmission::where('assignment_id', $this->id)
                 ->find($submissionId);
 
             if (! $submission) {

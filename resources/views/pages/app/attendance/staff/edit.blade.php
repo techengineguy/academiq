@@ -27,8 +27,7 @@ class extends Component {
     #[On('edit-staff-attendance')]
     public function loadAttendance(int $id): void
     {
-        $this->attendance = TeacherAttendance::where('tenant_id', Auth::user()->tenant_id)
-            ->with('teacher')
+        $this->attendance = TeacherAttendance::with('teacher')
             ->findOrFail($id);
 
         $this->status = $this->attendance->status;

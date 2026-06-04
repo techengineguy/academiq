@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -25,8 +25,7 @@ class extends Component {
     #[Computed]
     public function wardens()
     {
-        return User::where('tenant_id', Auth::user()->tenant_id)
-            ->whereIn('role', ['teacher', 'staff'])
+        return User::whereIn('role', ['teacher', 'staff'])
             ->orderBy('first_name')
             ->get();
     }
@@ -35,7 +34,7 @@ class extends Component {
     {
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
-            'code' => ['required', 'string', 'max:50', Rule::unique('hostel_buildings', 'code')->where('tenant_id', Auth::user()->tenant_id)],
+            'code' => ['required', 'string', 'max:50', Rule::unique('hostel_buildings', 'code')],
             'type' => ['required', 'in:boys,girls,mixed'],
             'address' => ['nullable', 'string'],
             'total_floors' => ['nullable', 'integer', 'min:1'],
@@ -45,7 +44,7 @@ class extends Component {
         ]);
 
         HostelBuilding::create([
-            'tenant_id' => Auth::user()->tenant_id,
+            'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
             'uuid' => Str::uuid(),
             'institution_id' => Auth::user()->institution_id,
             'name' => $validated['name'],

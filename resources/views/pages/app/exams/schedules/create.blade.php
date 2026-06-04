@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -29,16 +29,14 @@ class extends Component {
     #[Computed]
     public function exams()
     {
-        return Exam::where('tenant_id', Auth::user()->tenant_id)
-            ->orderByDesc('start_date')
+        return Exam::orderByDesc('start_date')
             ->get();
     }
 
     #[Computed]
     public function classes()
     {
-        return ClassModel::where('tenant_id', Auth::user()->tenant_id)
-            ->whereHas('academicYear', fn ($q) => $q->where('is_current', true))
+        return ClassModel::whereHas('academicYear', fn ($q) => $q->where('is_current', true))
             ->with('sections')
             ->orderBy('name')
             ->get();
@@ -47,8 +45,7 @@ class extends Component {
     #[Computed]
     public function subjects()
     {
-        return Subject::where('tenant_id', Auth::user()->tenant_id)
-            ->where('status', 'active')
+        return Subject::where('status', 'active')
             ->orderBy('name')
             ->get();
     }
@@ -69,7 +66,7 @@ class extends Component {
         ]);
 
         ExamSchedule::create([
-            'tenant_id' => Auth::user()->tenant_id,
+            'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
             'uuid' => Str::uuid(),
             'exam_id' => $validated['exam_id'],
             'class_id' => $validated['class_id'],

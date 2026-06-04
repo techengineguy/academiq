@@ -2,6 +2,7 @@
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
+use App\Models\Institution;
 use App\Models\SubscriptionPlan;
 use Flux\Flux;
 use Illuminate\View\View;
@@ -48,7 +49,10 @@ class extends Component {
 
     public function currentSubscription()
     {
-        return auth()->user()->institution->currentSubscription()->first();
+        $institution = Institution::find(session('active_institution_id'))
+            ?? auth()->user()?->institution;
+
+        return $institution?->currentSubscription()->first();
     }
 
     public function plans()

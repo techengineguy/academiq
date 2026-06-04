@@ -20,8 +20,7 @@ class extends Component {
     #[Computed]
     public function buildings()
     {
-        return HostelBuilding::where('tenant_id', Auth::user()->tenant_id)
-            ->with('warden')
+        return HostelBuilding::with('warden')
             ->withCount('rooms')
             ->orderBy('name')
             ->paginate(15);
@@ -45,8 +44,7 @@ class extends Component {
             return;
         }
 
-        HostelBuilding::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->buildingIdToDelete)
+        HostelBuilding::findOrFail($this->buildingIdToDelete)
             ->delete();
 
         $this->buildingIdToDelete = null;

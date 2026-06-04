@@ -20,8 +20,7 @@ class extends Component {
     #[Computed]
     public function notifications()
     {
-        $query = Notification::where('tenant_id', Auth::user()->tenant_id)
-            ->where('user_id', Auth::id())
+        $query = Notification::where('user_id', Auth::id())
             ->orderByDesc('created_at');
 
         if ($this->filterStatus === 'unread') {
@@ -36,7 +35,7 @@ class extends Component {
     #[Computed]
     public function stats(): array
     {
-        $base = Notification::where('tenant_id', Auth::user()->tenant_id)->where('user_id', Auth::id());
+        $base = Notification::where('user_id', Auth::id());
 
         return [
             'total' => (clone $base)->count(),

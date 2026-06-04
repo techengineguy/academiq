@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -33,7 +33,7 @@ class extends Component {
     #[On('edit-fee-structure')]
     public function loadStructure(int $id): void
     {
-        $this->structure = FeeStructure::where('tenant_id', Auth::user()->tenant_id)->findOrFail($id);
+        $this->structure = FeeStructure::findOrFail($id);
 
         $this->fee_type_id = (string) $this->structure->fee_type_id;
         $this->class_id = (string) $this->structure->class_id;
@@ -46,8 +46,7 @@ class extends Component {
     #[Computed]
     public function feeTypes()
     {
-        return FeeType::where('tenant_id', Auth::user()->tenant_id)
-            ->where('status', 'active')
+        return FeeType::where('status', 'active')
             ->orderBy('name')
             ->get();
     }
@@ -55,8 +54,7 @@ class extends Component {
     #[Computed]
     public function classes()
     {
-        return ClassModel::where('tenant_id', Auth::user()->tenant_id)
-            ->whereHas('academicYear', fn ($q) => $q->where('is_current', true))
+        return ClassModel::whereHas('academicYear', fn ($q) => $q->where('is_current', true))
             ->with('sections')
             ->orderBy('name')
             ->get();
@@ -65,8 +63,7 @@ class extends Component {
     #[Computed]
     public function academicYears()
     {
-        return AcademicYear::where('tenant_id', Auth::user()->tenant_id)
-            ->orderByDesc('start_date')
+        return AcademicYear::orderByDesc('start_date')
             ->get();
     }
 

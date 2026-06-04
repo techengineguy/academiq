@@ -18,8 +18,7 @@ class extends Component {
     #[Computed]
     public function timetables()
     {
-        return Timetable::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['class', 'subject', 'teacher', 'timeSlot'])
+        return Timetable::with(['class', 'subject', 'teacher', 'timeSlot'])
             ->orderBy('day', 'asc')
             ->paginate(10);
     }
@@ -42,8 +41,7 @@ class extends Component {
     {
         if (! $this->timetableIdToDelete) return;
 
-        Timetable::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->timetableIdToDelete)->delete();
+        Timetable::findOrFail($this->timetableIdToDelete)->delete();
 
         $this->timetableIdToDelete = null;
         unset($this->timetables);

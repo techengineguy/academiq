@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             TeacherSeeder::class,
             StaffSeeder::class,
             StudentSeeder::class,
+            SubscriptionPlanSeeder::class,
         ]);
     }
 }

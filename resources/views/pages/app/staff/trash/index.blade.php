@@ -23,8 +23,7 @@ class extends Component {
     #[Computed]
     public function trashedTeachers()
     {
-        return Teacher::where('tenant_id', Auth::user()->tenant_id)
-            ->onlyTrashed()
+        return Teacher::onlyTrashed()
             ->orderBy('deleted_at', 'desc')
             ->paginate(10);
     }
@@ -32,16 +31,14 @@ class extends Component {
     #[Computed]
     public function trashedStaff()
     {
-        return Staff::where('tenant_id', Auth::user()->tenant_id)
-            ->onlyTrashed()
+        return Staff::onlyTrashed()
             ->orderBy('deleted_at', 'desc')
             ->paginate(10);
     }
 
     public function restoreTeacher($id): void
     {
-        $teacher = Teacher::where('tenant_id', Auth::user()->tenant_id)
-            ->onlyTrashed()
+        $teacher = Teacher::onlyTrashed()
             ->findOrFail($id);
         
         $teacher->restore();
@@ -52,8 +49,7 @@ class extends Component {
 
     public function restoreStaff($id): void
     {
-        $staff = Staff::where('tenant_id', Auth::user()->tenant_id)
-            ->onlyTrashed()
+        $staff = Staff::onlyTrashed()
             ->findOrFail($id);
         
         $staff->restore();
@@ -86,15 +82,13 @@ class extends Component {
         if (! $this->itemIdToDelete || ! $this->itemTypeToDelete) return;
 
         if ($this->itemTypeToDelete === 'teacher') {
-            Teacher::where('tenant_id', Auth::user()->tenant_id)
-                ->onlyTrashed()
+            Teacher::onlyTrashed()
                 ->findOrFail($this->itemIdToDelete)
                 ->forceDelete();
             unset($this->trashedTeachers);
             Flux::toast(variant: 'success', text: __('Teacher permanently deleted.'));
         } elseif ($this->itemTypeToDelete === 'staff') {
-            Staff::where('tenant_id', Auth::user()->tenant_id)
-                ->onlyTrashed()
+            Staff::onlyTrashed()
                 ->findOrFail($this->itemIdToDelete)
                 ->forceDelete();
             unset($this->trashedStaff);

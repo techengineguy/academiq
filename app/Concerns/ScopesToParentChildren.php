@@ -19,8 +19,7 @@ trait ScopesToParentChildren
             return new Collection();
         }
 
-        return Student::where('tenant_id', Auth::user()->tenant_id)
-            ->whereHas('parents', fn ($q) => $q->where('parents.id', $parentRecord->id))
+        return Student::whereHas('parents', fn ($q) => $q->where('parents.id', $parentRecord->id))
             ->with(['user', 'class', 'section'])
             ->get();
     }

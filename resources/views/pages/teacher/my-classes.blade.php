@@ -16,8 +16,7 @@ class extends Component {
     #[Computed]
     public function classSubjects()
     {
-        return ClassSubject::where('tenant_id', Auth::user()->tenant_id)
-            ->where('teacher_id', Auth::id())
+        return ClassSubject::where('teacher_id', Auth::id())
             ->with(['class.sections', 'subject'])
             ->get()
             ->groupBy(fn ($cs) => $cs->class?->name ?? 'Unknown');
@@ -26,15 +25,13 @@ class extends Component {
     #[Computed]
     public function studentsByClass(): array
     {
-        $classIds = ClassSubject::where('tenant_id', Auth::user()->tenant_id)
-            ->where('teacher_id', Auth::id())
+        $classIds = ClassSubject::where('teacher_id', Auth::id())
             ->pluck('class_id')
             ->unique();
 
         $counts = [];
         foreach ($classIds as $classId) {
-            $counts[$classId] = Student::where('tenant_id', Auth::user()->tenant_id)
-                ->where('class_id', $classId)
+            $counts[$classId] = Student::where('class_id', $classId)
                 ->where('status', 'active')
                 ->count();
         }

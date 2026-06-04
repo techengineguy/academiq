@@ -23,8 +23,7 @@ class extends Component {
     #[Computed]
     public function schedules()
     {
-        $query = ExamSchedule::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['exam', 'class', 'subject'])
+        $query = ExamSchedule::with(['exam', 'class', 'subject'])
             ->orderByDesc('exam_date');
 
         if ($this->filterExam !== '') {
@@ -37,15 +36,14 @@ class extends Component {
     #[Computed]
     public function exams()
     {
-        return Exam::where('tenant_id', Auth::user()->tenant_id)
-            ->orderByDesc('start_date')
+        return Exam::orderByDesc('start_date')
             ->get();
     }
 
     #[Computed]
     public function totalSchedules(): int
     {
-        return (int) ExamSchedule::where('tenant_id', Auth::user()->tenant_id)->count();
+        return (int) ExamSchedule::count();
     }
 
     public function updatedFilterExam(): void
@@ -77,8 +75,7 @@ class extends Component {
             return;
         }
 
-        ExamSchedule::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->scheduleIdToDelete)
+        ExamSchedule::findOrFail($this->scheduleIdToDelete)
             ->delete();
 
         $this->scheduleIdToDelete = null;

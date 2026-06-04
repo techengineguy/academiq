@@ -21,8 +21,7 @@ class extends Component {
     #[Computed]
     public function exams()
     {
-        return Exam::where('tenant_id', Auth::user()->tenant_id)
-            ->where('result_published', true)
+        return Exam::where('result_published', true)
             ->orderByDesc('start_date')
             ->get();
     }
@@ -30,8 +29,7 @@ class extends Component {
     #[Computed]
     public function students()
     {
-        return Student::where('tenant_id', Auth::user()->tenant_id)
-            ->where('status', 'active')
+        return Student::where('status', 'active')
             ->with(['user', 'class'])
             ->orderBy('roll_number')
             ->get();
@@ -58,12 +56,10 @@ class extends Component {
             'student_id' => ['required', 'exists:students,id'],
         ]);
 
-        $scheduleIds = ExamSchedule::where('tenant_id', Auth::user()->tenant_id)
-            ->where('exam_id', $this->exam_id)
+        $scheduleIds = ExamSchedule::where('exam_id', $this->exam_id)
             ->pluck('id');
 
-        $examResults = ExamResult::where('tenant_id', Auth::user()->tenant_id)
-            ->where('student_id', $this->student_id)
+        $examResults = ExamResult::where('student_id', $this->student_id)
             ->whereIn('exam_schedule_id', $scheduleIds)
             ->with(['examSchedule.subject', 'examSchedule.class'])
             ->get();

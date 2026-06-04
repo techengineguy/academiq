@@ -34,8 +34,7 @@ class extends Component {
             $classIds = $child ? collect([$child->class_id]) : collect();
         }
 
-        return Assignment::where('tenant_id', Auth::user()->tenant_id)
-            ->whereIn('class_id', $classIds)
+        return Assignment::whereIn('class_id', $classIds)
             ->with(['class', 'subject', 'teacher'])
             ->orderByDesc('due_date')
             ->paginate(15);

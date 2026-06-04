@@ -82,7 +82,7 @@ class extends Component {
             for ($date = $start; $date->lte($end); $date = $date->addDay()) {
                 Attendance::updateOrCreate(
                     [
-                        'tenant_id' => Auth::user()->tenant_id,
+                        'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
                         'student_id' => $validated['student_id'],
                         'date' => $date->format('Y-m-d'),
                     ],

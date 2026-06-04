@@ -67,8 +67,7 @@ class extends Component {
             return 0;
         }
 
-        return (int) Assignment::where('tenant_id', Auth::user()->tenant_id)
-            ->where('class_id', $student->class_id)
+        return (int) Assignment::where('class_id', $student->class_id)
             ->where('due_date', '>=', now())
             ->count();
     }

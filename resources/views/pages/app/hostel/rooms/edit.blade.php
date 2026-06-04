@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -33,7 +33,7 @@ class extends Component {
     #[On('edit-room')]
     public function loadRoom(int $id): void
     {
-        $this->room = HostelRoom::whereHas('hostelBuilding', fn ($q) => $q->where('tenant_id', Auth::user()->tenant_id))
+        $this->room = HostelRoom::whereHas('hostelBuilding', fn ($q) => $q)
             ->findOrFail($id);
 
         $this->hostel_building_id = (string) $this->room->hostel_building_id;
@@ -49,8 +49,7 @@ class extends Component {
     #[Computed]
     public function buildings()
     {
-        return HostelBuilding::where('tenant_id', Auth::user()->tenant_id)
-            ->orderBy('name')
+        return HostelBuilding::orderBy('name')
             ->get();
     }
 

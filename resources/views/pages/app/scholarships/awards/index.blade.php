@@ -26,8 +26,7 @@ class extends Component
     #[Computed]
     public function awards()
     {
-        $query = StudentScholarship::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['student', 'scholarship', 'academicYear', 'grantedBy']);
+        $query = StudentScholarship::with(['student', 'scholarship', 'academicYear', 'grantedBy']);
 
         if ($this->filterAcademicYear) {
             $query->where('academic_year_id', $this->filterAcademicYear);
@@ -67,8 +66,7 @@ class extends Component
             return;
         }
 
-        StudentScholarship::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->awardIdToDelete)->delete();
+        StudentScholarship::findOrFail($this->awardIdToDelete)->delete();
 
         $this->awardIdToDelete = null;
         unset($this->awards);
@@ -96,7 +94,7 @@ class extends Component
         <div class="grid grid-cols-3 gap-4 mb-6">
             <flux:select label="{{ __('Academic Year') }}" variant="listbox" wire:model.live="filterAcademicYear">
                 <flux:select.option value="">{{ __('All Academic Years') }}</flux:select.option>
-                @forelse(AcademicYear::where('tenant_id', Auth::user()->tenant_id)->orderBy('name', 'desc')->get() as $ay)
+                @forelse(AcademicYear::orderBy('name', 'desc')->get() as $ay)
                     <flux:select.option value="{{ $ay->id }}">{{ $ay->name }}</flux:select.option>
                 @empty
                 @endforelse
@@ -104,7 +102,7 @@ class extends Component
 
             <flux:select label="{{ __('Student') }}" variant="listbox" wire:model.live="filterStudent">
                 <flux:select.option value="">{{ __('All Students') }}</flux:select.option>
-                @forelse(Student::where('tenant_id', Auth::user()->tenant_id)->orderBy('first_name')->get() as $student)
+                @forelse(Student::orderBy('first_name')->get() as $student)
                     <flux:select.option value="{{ $student->id }}">{{ $student->first_name }} {{ $student->last_name }}</flux:select.option>
                 @empty
                 @endforelse

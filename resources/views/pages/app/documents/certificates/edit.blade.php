@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -27,8 +27,7 @@ class extends Component {
     #[On('edit-certificate')]
     public function loadCertificate(int $id): void
     {
-        $this->certificate = Certificate::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['student.user'])
+        $this->certificate = Certificate::with(['student.user'])
             ->findOrFail($id);
 
         $this->type = $this->certificate->type;

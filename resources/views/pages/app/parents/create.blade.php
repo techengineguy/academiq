@@ -53,8 +53,7 @@ class extends Component {
     #[Computed]
     public function classes()
     {
-        return \App\Models\ClassModel::where('tenant_id', Auth::user()->tenant_id)
-            ->whereHas('academicYear', fn ($q) => $q->where('is_current', true))
+        return \App\Models\ClassModel::whereHas('academicYear', fn ($q) => $q->where('is_current', true))
             ->orderBy('name')
             ->get();
     }
@@ -62,8 +61,7 @@ class extends Component {
     #[Computed]
     public function students()
     {
-        return Student::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['user', 'class'])
+        return Student::with(['user', 'class'])
             ->when($this->studentSearch !== '', function ($query) {
                 $search = '%' . $this->studentSearch . '%';
                 $query->where(function ($q) use ($search) {
@@ -107,7 +105,7 @@ class extends Component {
         DB::transaction(function () use ($validated): void {
             // Create user account
             $user = User::create([
-                'tenant_id' => Auth::user()->tenant_id,
+                'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
                 'uuid' => Str::uuid(),
                 'institution_id' => Auth::user()->institution_id,
                 'username' => $validated['username'] ?: Str::slug($validated['first_name'] . '-' . $validated['last_name']) . '-' . random_int(100, 999),
@@ -122,7 +120,7 @@ class extends Component {
 
             // Create parent record
             $parent = StudentParent::create([
-                'tenant_id' => Auth::user()->tenant_id,
+                'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
                 'uuid' => Str::uuid(),
                 'user_id' => $user->id,
                 'father_name' => $validated['father_name'] ?: null,
@@ -143,7 +141,7 @@ class extends Component {
             if (! empty($validated['student_ids'])) {
                 $pivotData = collect($validated['student_ids'])->mapWithKeys(fn ($studentId) => [
                     $studentId => [
-                        'tenant_id' => Auth::user()->tenant_id,
+                        'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
                         'uuid' => Str::uuid(),
                         'relation' => $validated['primary_relation'],
                         'is_primary' => true,

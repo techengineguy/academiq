@@ -19,8 +19,7 @@ class extends Component {
     #[Computed]
     public function timeSlots()
     {
-        return TimeSlot::where('tenant_id', Auth::user()->tenant_id)
-            ->orderBy('order', 'asc')->paginate(10);
+        return TimeSlot::orderBy('order', 'asc')->paginate(10);
     }
 
     public $timeSlotIdToDelete = null;
@@ -41,8 +40,7 @@ class extends Component {
     {
         if (! $this->timeSlotIdToDelete) return;
 
-        TimeSlot::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->timeSlotIdToDelete)->delete();
+        TimeSlot::findOrFail($this->timeSlotIdToDelete)->delete();
 
         $this->timeSlotIdToDelete = null;
         unset($this->timeSlots);

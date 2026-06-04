@@ -45,8 +45,7 @@ class extends Component {
 
     public function mount(int $id): void
     {
-        $this->parent = StudentParent::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['user', 'students'])
+        $this->parent = StudentParent::with(['user', 'students'])
             ->findOrFail($id);
 
         $this->first_name = (string) ($this->parent->user?->first_name ?? '');
@@ -85,8 +84,7 @@ class extends Component {
     #[Computed]
     public function students()
     {
-        return Student::where('tenant_id', Auth::user()->tenant_id)
-            ->where('status', 'active')
+        return Student::where('status', 'active')
             ->with(['user', 'class'])
             ->orderBy('roll_number')
             ->get();
@@ -151,7 +149,7 @@ class extends Component {
             $pivotData = [];
             foreach ($validated['student_ids'] ?? [] as $studentId) {
                 $pivotData[$studentId] = [
-                    'tenant_id' => Auth::user()->tenant_id,
+                    'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
                     'uuid' => Str::uuid(),
                     'relation' => $this->relations[$studentId] ?? 'father',
                     'is_primary' => (string) $studentId === $this->primary_student_id,

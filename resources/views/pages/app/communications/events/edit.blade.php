@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -33,7 +33,7 @@ class extends Component {
     #[On('edit-event')]
     public function loadEvent(int $id): void
     {
-        $this->event = Event::where('tenant_id', Auth::user()->tenant_id)->findOrFail($id);
+        $this->event = Event::findOrFail($id);
 
         $this->title = $this->event->title;
         $this->description = (string) ($this->event->description ?? '');

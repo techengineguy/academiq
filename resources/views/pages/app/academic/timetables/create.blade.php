@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use App\Models\ClassModel;
@@ -27,8 +27,7 @@ new class extends Component {
 
     public function mount()
     {
-        $currentYear = AcademicYear::where('tenant_id', Auth::user()->tenant_id)
-        ->where('is_current', true)->first();
+        $currentYear = AcademicYear::where('is_current', true)->first();
         if ($currentYear) {
             $this->academic_year_id = $currentYear->id;
         }
@@ -48,7 +47,7 @@ new class extends Component {
         ]);
 
         Timetable::create([
-            'tenant_id' => Auth::user()->tenant_id,
+            'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
             'uuid' => Str::uuid(),
             'class_id' => $validated['class_id'],
             'section_id' => $validated['section_id'],
@@ -72,7 +71,7 @@ new class extends Component {
     <form wire:submit="save" class="space-y-6">
         <flux:select label="{{ __('Academic Year') }}" variant="listbox" wire:model="academic_year_id" required>
             <flux:select.option value="">{{ __('Select Academic Year') }}</flux:select.option>
-            @forelse(AcademicYear::where('tenant_id', Auth::user()->tenant_id)->where('status', 'active')->get() as $year)
+            @forelse(AcademicYear::where('status', 'active')->get() as $year)
                 <flux:select.option value="{{ $year->id }}">{{ $year->name }}</flux:select.option>
             @empty
                 <flux:select.option value="">{{ __('No Academic Years Available') }}</flux:select.option>
@@ -81,7 +80,7 @@ new class extends Component {
 
         <flux:select label="{{ __('Class') }}" variant="listbox" wire:model="class_id" required>
             <flux:select.option value="">{{ __('Select Class') }}</flux:select.option>
-            @forelse(ClassModel::where('tenant_id', Auth::user()->tenant_id)->get() as $class)
+            @forelse(ClassModel::get() as $class)
                 <flux:select.option value="{{ $class->id }}">{{ $class->name }}</flux:select.option>
             @empty
                 <flux:select.option value="">{{ __('No Classes Available') }}</flux:select.option>
@@ -90,7 +89,7 @@ new class extends Component {
 
         <flux:select label="{{ __('Section') }}" variant="listbox" wire:model="section_id" required>
             <flux:select.option value="">{{ __('Select Section') }}</flux:select.option>
-            @forelse(Section::where('tenant_id', Auth::user()->tenant_id)->get() as $section)
+            @forelse(Section::get() as $section)
                 <flux:select.option value="{{ $section->id }}">{{ $section->name }}</flux:select.option>
             @empty
                 <flux:select.option value="">{{ __('No Sections Available') }}</flux:select.option>
@@ -99,7 +98,7 @@ new class extends Component {
 
         <flux:select label="{{ __('Subject') }}" variant="listbox" wire:model="subject_id" required>
             <flux:select.option value="">{{ __('Select Subject') }}</flux:select.option>
-            @forelse(Subject::where('tenant_id', Auth::user()->tenant_id)->get() as $subject)
+            @forelse(Subject::get() as $subject)
                 <flux:select.option value="{{ $subject->id }}">{{ $subject->name }}</flux:select.option>
             @empty
                 <flux:select.option value="">{{ __('No Subjects Available') }}</flux:select.option>
@@ -108,7 +107,7 @@ new class extends Component {
 
         <flux:select label="{{ __('Teacher') }}" variant="listbox" wire:model="teacher_id" searchable required>
             <flux:select.option value="">{{ __('Select Teacher') }}</flux:select.option>
-            @forelse(User::where('tenant_id', Auth::user()->tenant_id)->where('role', 'teacher')->get() as $teacher)
+            @forelse(User::where('role', 'teacher')->get() as $teacher)
                 <flux:select.option value="{{ $teacher->id }}">{{ $teacher->first_name }} {{ $teacher->last_name }}</flux:select.option>
             @empty
                 <flux:select.option value="">{{ __('No Teachers Available') }}</flux:select.option>
@@ -117,7 +116,7 @@ new class extends Component {
 
         <flux:select label="{{ __('Time Slot') }}" variant="listbox" wire:model="time_slot_id" required>
             <flux:select.option value="">{{ __('Select Time Slot') }}</flux:select.option>
-            @forelse(TimeSlot::where('tenant_id', Auth::user()->tenant_id)->get() as $slot)
+            @forelse(TimeSlot::get() as $slot)
                 <flux:select.option value="{{ $slot->id }}">{{ $slot->start_time->format('H:i') }} - {{ $slot->end_time->format('H:i') }}</flux:select.option>
             @empty
                 <flux:select.option value="">{{ __('No Time Slots Available') }}</flux:select.option>

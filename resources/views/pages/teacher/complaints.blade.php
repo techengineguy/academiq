@@ -24,8 +24,7 @@ class extends Component {
     #[Computed]
     public function complaints()
     {
-        return Complaint::where('tenant_id', Auth::user()->tenant_id)
-            ->where('submitted_by', Auth::id())
+        return Complaint::where('submitted_by', Auth::id())
             ->orderByDesc('created_at')
             ->paginate(10);
     }
@@ -40,7 +39,7 @@ class extends Component {
         ]);
 
         Complaint::create([
-            'tenant_id' => Auth::user()->tenant_id,
+            'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
             'uuid' => Str::uuid(),
             'institution_id' => Auth::user()->institution_id,
             'submitted_by' => Auth::id(),

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -27,8 +27,7 @@ class extends Component {
     #[Computed]
     public function classSections()
     {
-        return Section::where('tenant_id', Auth::user()->tenant_id)
-            ->with('class')
+        return Section::with('class')
             ->whereHas('class')
             ->orderBy('class_id')
             ->orderBy('name')
@@ -50,16 +49,14 @@ class extends Component {
 
         [$classId, $sectionId] = explode('-', $this->class_section);
 
-        $students = Student::where('tenant_id', Auth::user()->tenant_id)
-            ->where('class_id', $classId)
+        $students = Student::where('class_id', $classId)
             ->where('section_id', $sectionId)
             ->where('status', 'active')
             ->with('user')
             ->orderBy('roll_number')
             ->get();
 
-        $existingAttendances = Attendance::where('tenant_id', Auth::user()->tenant_id)
-            ->where('class_id', $classId)
+        $existingAttendances = Attendance::where('class_id', $classId)
             ->where('section_id', $sectionId)
             ->whereDate('date', $this->date)
             ->pluck('status', 'student_id');
@@ -106,7 +103,7 @@ class extends Component {
             foreach ($this->rows as $row) {
                 Attendance::updateOrCreate(
                     [
-                        'tenant_id' => Auth::user()->tenant_id,
+                        'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
                         'student_id' => $row['student_id'],
                         'date' => $this->date,
                     ],

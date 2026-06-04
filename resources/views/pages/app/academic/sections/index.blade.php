@@ -18,8 +18,7 @@ class extends Component {
     #[Computed]
     public function sections()
     {
-        return Section::where('tenant_id', Auth::user()->tenant_id)
-            ->with('class')
+        return Section::with('class')
             ->orderBy('name', 'asc')->paginate(10);
     }
 
@@ -41,8 +40,7 @@ class extends Component {
     {
         if (! $this->sectionIdToDelete) return;
 
-        Section::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->sectionIdToDelete)->delete();
+        Section::findOrFail($this->sectionIdToDelete)->delete();
 
         $this->sectionIdToDelete = null;
         unset($this->sections);

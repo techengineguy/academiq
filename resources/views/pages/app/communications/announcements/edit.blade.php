@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -31,7 +31,7 @@ class extends Component {
     #[On('edit-announcement')]
     public function loadAnnouncement(int $id): void
     {
-        $this->announcement = Announcement::where('tenant_id', Auth::user()->tenant_id)->findOrFail($id);
+        $this->announcement = Announcement::findOrFail($id);
 
         $this->title = $this->announcement->title;
         $this->content = $this->announcement->content;

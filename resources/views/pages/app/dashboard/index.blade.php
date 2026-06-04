@@ -23,72 +23,67 @@ class extends Component {
     #[Computed]
     public function totalStudents(): int
     {
-        return (int) Student::where('tenant_id', Auth::user()->tenant_id)->where('status', 'active')->count();
+        return (int) Student::where('status', 'active')->count();
     }
 
     #[Computed]
     public function totalTeachers(): int
     {
-        return (int) Teacher::where('tenant_id', Auth::user()->tenant_id)->where('status', 'active')->count();
+        return (int) Teacher::where('status', 'active')->count();
     }
 
     #[Computed]
     public function totalStaff(): int
     {
-        return (int) Staff::where('tenant_id', Auth::user()->tenant_id)->where('status', 'active')->count();
+        return (int) Staff::where('status', 'active')->count();
     }
 
     #[Computed]
     public function activeClasses(): int
     {
-        return (int) ClassModel::where('tenant_id', Auth::user()->tenant_id)
-            ->whereHas('academicYear', fn ($q) => $q->where('is_current', true))
+        return (int) ClassModel::whereHas('academicYear', fn ($q) => $q->where('is_current', true))
             ->count();
     }
 
     #[Computed]
     public function feeCollected(): float
     {
-        return (float) FeePayment::where('tenant_id', Auth::user()->tenant_id)->sum('amount');
+        return (float) FeePayment::sum('amount');
     }
 
     #[Computed]
     public function pendingInvoices(): int
     {
-        return (int) FeeInvoice::where('tenant_id', Auth::user()->tenant_id)
-            ->whereIn('status', ['pending', 'partial', 'overdue'])
+        return (int) FeeInvoice::whereIn('status', ['pending', 'partial', 'overdue'])
             ->count();
     }
 
     #[Computed]
     public function outstandingBalance(): float
     {
-        return (float) FeeInvoice::where('tenant_id', Auth::user()->tenant_id)
-            ->whereIn('status', ['pending', 'partial', 'overdue'])
+        return (float) FeeInvoice::whereIn('status', ['pending', 'partial', 'overdue'])
             ->sum('balance');
     }
 
     #[Computed]
     public function pendingLeaveRequests(): int
     {
-        return (int) LeaveApplication::where('tenant_id', Auth::user()->tenant_id)
-            ->where('status', 'pending')
+        return (int) LeaveApplication::where('status', 'pending')
             ->count();
     }
 
     #[Computed]
     public function openComplaints(): int
     {
-        return (int) Complaint::where('tenant_id', Auth::user()->tenant_id)
-            ->whereIn('status', ['open', 'in_progress'])
+        return (int) Complaint::whereIn('status', ['open', 'in_progress'])
             ->count();
     }
 
     #[Computed]
     public function studentAttendanceToday(): float
     {
-        $total = Attendance::where('tenant_id', Auth::user()->tenant_id)->whereDate('date', now())->count();
-        $present = Attendance::where('tenant_id', Auth::user()->tenant_id)->whereDate('date', now())->where('status', 'present')->count();
+        $total = Attendance::whereDate('date', now())->count();
+        $present = Attendance::whereDate('date', now())->where('status', 'present')->count();
 
         return $total > 0 ? round(($present / $total) * 100, 1) : 0;
     }
@@ -96,8 +91,8 @@ class extends Component {
     #[Computed]
     public function staffAttendanceToday(): float
     {
-        $total = TeacherAttendance::where('tenant_id', Auth::user()->tenant_id)->whereDate('date', now())->count();
-        $present = TeacherAttendance::where('tenant_id', Auth::user()->tenant_id)->whereDate('date', now())->where('status', 'present')->count();
+        $total = TeacherAttendance::whereDate('date', now())->count();
+        $present = TeacherAttendance::whereDate('date', now())->where('status', 'present')->count();
 
         return $total > 0 ? round(($present / $total) * 100, 1) : 0;
     }
@@ -105,8 +100,7 @@ class extends Component {
     #[Computed]
     public function recentStudents()
     {
-        return Student::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['user', 'class'])
+        return Student::with(['user', 'class'])
             ->orderByDesc('created_at')
             ->limit(5)
             ->get();
@@ -115,8 +109,7 @@ class extends Component {
     #[Computed]
     public function upcomingEvents()
     {
-        return Event::where('tenant_id', Auth::user()->tenant_id)
-            ->where('start_date', '>=', now())
+        return Event::where('start_date', '>=', now())
             ->where('status', 'published')
             ->orderBy('start_date')
             ->limit(4)
@@ -126,8 +119,7 @@ class extends Component {
     #[Computed]
     public function recentActivities()
     {
-        $tenantUserIds = \App\Models\User::where('tenant_id', Auth::user()->tenant_id)
-            ->pluck('id');
+        $tenantUserIds = \App\Models\User::pluck('id');
 
         return ActivityLog::whereIn('causer_id', $tenantUserIds)
             ->with('causer')
@@ -142,8 +134,7 @@ class extends Component {
         $data = [];
         for ($i = 3; $i >= 0; $i--) {
             $month = now()->subMonths($i);
-            $collected = (float) FeePayment::where('tenant_id', Auth::user()->tenant_id)
-                ->whereYear('payment_date', $month->year)
+            $collected = (float) FeePayment::whereYear('payment_date', $month->year)
                 ->whereMonth('payment_date', $month->month)
                 ->sum('amount');
             $data[] = ['month' => $month->format('M'), 'collected' => $collected];

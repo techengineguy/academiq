@@ -5,6 +5,7 @@ use App\Models\ClassModel;
 use App\Models\AcademicYear;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Spatie\Multitenancy\Models\Tenant;
 use Flux\Flux;
 use TallStackUi\Traits\Interactions;
 
@@ -19,8 +20,7 @@ new class extends Component {
 
     public function mount()
     {
-        $currentYear = AcademicYear::where('tenant_id', Auth::user()->tenant_id)
-            ->where('is_current', true)->first();
+        $currentYear = AcademicYear::where('is_current', true)->first();
         if ($currentYear) {
             $this->academic_year_id = $currentYear->id;
         }
@@ -36,10 +36,10 @@ new class extends Component {
             'status' => 'required|in:active,inactive',
         ]);
 
-        $institution = Auth::user()->institution;
+        $institution = Tenant::current();
 
         ClassModel::create([
-            'tenant_id' => Auth::user()->tenant_id,
+            'tenant_id' => Tenant::current()->uuid,
             'uuid' => Str::uuid(),
             'institution_id' => $institution->id,
             'name' => $validated['name'],
@@ -63,7 +63,7 @@ new class extends Component {
         <flux:input label="{{ __('Code') }}" placeholder="{{ __('Enter class code') }}" wire:model="code" required />
         <flux:select label="{{ __('Academic Year') }}" variant="listbox" wire:model="academic_year_id" required>
             <flux:select.option value="">{{ __('Select Academic Year') }}</flux:select.option>
-            @forelse(AcademicYear::where('tenant_id', Auth::user()->tenant_id)->where('status', 'active')->get() as $year)
+            @forelse(AcademicYear::where('status', 'active')->get() as $year)
                 <flux:select.option value="{{ $year->id }}">{{ $year->name }}</flux:select.option>
             @empty
                 <flux:select.option value="">{{ __('No Academic Years Available') }}</flux:select.option>

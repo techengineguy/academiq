@@ -28,14 +28,12 @@ class extends Component {
 
         // Students can message their class teachers and admins
         $teacherIds = $classId
-            ? ClassSubject::where('tenant_id', Auth::user()->tenant_id)
-                ->where('class_id', $classId)
+            ? ClassSubject::where('class_id', $classId)
                 ->pluck('teacher_id')
                 ->unique()
             : collect();
 
-        return User::where('tenant_id', Auth::user()->tenant_id)
-            ->where('is_active', true)
+        return User::where('is_active', true)
             ->where(fn ($q) => $q->whereIn('id', $teacherIds)->orWhere('role', 'admin'))
             ->orderBy('role')
             ->orderBy('first_name')
@@ -51,7 +49,7 @@ class extends Component {
         ]);
 
         Message::create([
-            'tenant_id' => Auth::user()->tenant_id,
+            'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
             'uuid' => Str::uuid(),
             'sender_id' => Auth::id(),
             'receiver_id' => $validated['receiver_id'],

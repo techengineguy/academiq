@@ -22,8 +22,7 @@ class extends Component {
         $query = Activity::with('causer')
             ->where(function ($q) {
                 // Scope to current tenant's users
-                $tenantUserIds = \App\Models\User::where('tenant_id', Auth::user()->tenant_id)
-                    ->pluck('id');
+                $tenantUserIds = \App\Models\User::pluck('id');
                 $q->whereIn('causer_id', $tenantUserIds)
                     ->orWhereNull('causer_id');
             })
@@ -51,15 +50,14 @@ class extends Component {
     #[Computed]
     public function users()
     {
-        return \App\Models\User::where('tenant_id', Auth::user()->tenant_id)
-            ->orderBy('first_name')
+        return \App\Models\User::orderBy('first_name')
             ->get();
     }
 
     #[Computed]
     public function totalLogs(): int
     {
-        $tenantUserIds = \App\Models\User::where('tenant_id', Auth::user()->tenant_id)->pluck('id');
+        $tenantUserIds = \App\Models\User::pluck('id');
 
         return (int) Activity::whereIn('causer_id', $tenantUserIds)->count();
     }

@@ -34,6 +34,7 @@ class UserSeeder extends Seeder
                 'is_active' => true,
             ]);
             $this->assignRole($admin, $roles['admin'], $institution);
+            $admin->adminInstitutions()->syncWithoutDetaching([$institution->id]);
 
             // Create Accountant
             $accountant = User::create([
@@ -49,6 +50,7 @@ class UserSeeder extends Seeder
                 'is_active' => true,
             ]);
             $this->assignRole($accountant, $roles['accountant'], $institution);
+            $accountant->adminInstitutions()->syncWithoutDetaching([$institution->id]);
 
             // Create Staff
             $staff = User::create([

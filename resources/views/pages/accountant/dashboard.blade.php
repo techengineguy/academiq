@@ -23,36 +23,33 @@ class extends Component {
     #[Computed]
     public function totalInvoices(): int
     {
-        return (int) FeeInvoice::where('tenant_id', Auth::user()->tenant_id)->count();
+        return (int) FeeInvoice::count();
     }
 
     #[Computed]
     public function totalCollected(): float
     {
-        return (float) FeePayment::where('tenant_id', Auth::user()->tenant_id)->sum('amount');
+        return (float) FeePayment::sum('amount');
     }
 
     #[Computed]
     public function totalOutstanding(): float
     {
-        return (float) FeeInvoice::where('tenant_id', Auth::user()->tenant_id)
-            ->whereIn('status', ['pending', 'partial', 'overdue'])
+        return (float) FeeInvoice::whereIn('status', ['pending', 'partial', 'overdue'])
             ->sum('balance');
     }
 
     #[Computed]
     public function overdueInvoices(): int
     {
-        return (int) FeeInvoice::where('tenant_id', Auth::user()->tenant_id)
-            ->where('status', 'overdue')
+        return (int) FeeInvoice::where('status', 'overdue')
             ->count();
     }
 
     #[Computed]
     public function recentPayments()
     {
-        return FeePayment::where('tenant_id', Auth::user()->tenant_id)
-            ->with('student')
+        return FeePayment::with('student')
             ->orderByDesc('payment_date')
             ->limit(5)
             ->get();

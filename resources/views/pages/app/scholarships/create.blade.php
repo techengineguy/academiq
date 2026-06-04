@@ -4,6 +4,7 @@ use App\Models\Scholarship;
 use Flux\Flux;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Spatie\Multitenancy\Models\Tenant;
 use Livewire\Component;
 use TallStackUi\Traits\Interactions;
 
@@ -40,7 +41,7 @@ new class extends Component
             'status' => 'required|in:active,inactive',
         ]);
 
-        $institution = Auth::user()->institution;
+        $institution = Tenant::current();
 
         // Convert eligibility_criteria to JSON if provided
         $criteria = null;
@@ -49,7 +50,7 @@ new class extends Component
         }
 
         Scholarship::create([
-            'tenant_id' => Auth::user()->tenant_id,
+            'tenant_id' => Tenant::current()->uuid,
             'uuid' => Str::uuid(),
             'institution_id' => $institution->id,
             'name' => $this->name,

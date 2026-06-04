@@ -19,8 +19,7 @@ class extends Component {
     #[Computed]
     public function messages()
     {
-        $query = Message::where('tenant_id', Auth::user()->tenant_id)
-            ->whereNull('parent_message_id')
+        $query = Message::whereNull('parent_message_id')
             ->with(['sender', 'receiver']);
 
         if ($this->folder === 'inbox') {
@@ -38,9 +37,9 @@ class extends Component {
     public function stats(): array
     {
         return [
-            'inbox' => Message::where('tenant_id', Auth::user()->tenant_id)->where('receiver_id', Auth::id())->whereNull('parent_message_id')->count(),
-            'sent' => Message::where('tenant_id', Auth::user()->tenant_id)->where('sender_id', Auth::id())->whereNull('parent_message_id')->count(),
-            'unread' => Message::where('tenant_id', Auth::user()->tenant_id)->where('receiver_id', Auth::id())->where('is_read', false)->whereNull('parent_message_id')->count(),
+            'inbox' => Message::where('receiver_id', Auth::id())->whereNull('parent_message_id')->count(),
+            'sent' => Message::where('sender_id', Auth::id())->whereNull('parent_message_id')->count(),
+            'unread' => Message::where('receiver_id', Auth::id())->where('is_read', false)->whereNull('parent_message_id')->count(),
         ];
     }
 

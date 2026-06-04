@@ -20,8 +20,7 @@ new class extends Component {
     #[On('edit-section')]
     public function loadSection(string $uuid): void
     {
-        $this->section = Section::where('tenant_id', Auth::user()->tenant_id)
-            ->where('uuid', $uuid)->firstOrFail();
+        $this->section = Section::where('uuid', $uuid)->firstOrFail();
 
         $this->name = $this->section->name;
         $this->class_id = $this->section->class_id;
@@ -65,7 +64,7 @@ new class extends Component {
                 <flux:input label="{{ __('Name') }}" wire:model="name" required />
                 <flux:select label="{{ __('Class') }}" variant="listbox" wire:model="class_id" required>
                     <flux:select.option value="">{{ __('Select Class') }}</flux:select.option>
-                    @forelse(ClassModel::where('tenant_id', Auth::user()->tenant_id)->get() as $class)
+                    @forelse(ClassModel::get() as $class)
                         <flux:select.option value="{{ $class->id }}">{{ $class->name }}</flux:select.option>
                     @empty
                         <flux:select.option value="">{{ __('No Classes Available') }}</flux:select.option>
@@ -77,7 +76,7 @@ new class extends Component {
                 <flux:input label="{{ __('Capacity') }}" type="number" wire:model="capacity" required />
                 <flux:select label="{{ __('Class Teacher') }}" variant="listbox" wire:model="class_teacher_id" searchable>
                     <flux:select.option value="">{{ __('Select Teacher') }}</flux:select.option>
-                    @forelse(App\Models\User::where('tenant_id', Auth::user()->tenant_id)->where('role', 'teacher')->get() as $teacher)
+                    @forelse(App\Models\User::where('role', 'teacher')->get() as $teacher)
                         <flux:select.option value="{{ $teacher->id }}">{{ $teacher->first_name }} {{ $teacher->last_name }}</flux:select.option>
                     @empty
                         <flux:select.option value="">{{ __('No Teachers Available') }}</flux:select.option>

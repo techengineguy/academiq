@@ -23,8 +23,7 @@ class extends Component {
     #[Computed]
     public function applications()
     {
-        $query = LeaveApplication::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['user', 'leaveType', 'approvedBy'])
+        $query = LeaveApplication::with(['user', 'leaveType', 'approvedBy'])
             ->orderByDesc('created_at');
 
         if ($this->filterStatus !== '') {
@@ -41,7 +40,7 @@ class extends Component {
     #[Computed]
     public function stats(): array
     {
-        $base = LeaveApplication::where('tenant_id', Auth::user()->tenant_id);
+        $base = LeaveApplication::query();
 
         return [
             'total' => (clone $base)->count(),
@@ -79,8 +78,7 @@ class extends Component {
             return;
         }
 
-        LeaveApplication::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->applicationIdToDelete)
+        LeaveApplication::findOrFail($this->applicationIdToDelete)
             ->delete();
 
         $this->applicationIdToDelete = null;

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -27,8 +27,7 @@ class extends Component {
     #[Computed]
     public function users()
     {
-        return User::where('tenant_id', Auth::user()->tenant_id)
-            ->where('is_active', true)
+        return User::where('is_active', true)
             ->whereIn('role', ['student', 'teacher', 'staff'])
             ->when($this->type !== '', fn ($q) => $q->where('role', $this->type))
             ->orderBy('first_name')
@@ -53,7 +52,7 @@ class extends Component {
         ]);
 
         IdCard::create([
-            'tenant_id' => Auth::user()->tenant_id,
+            'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
             'uuid' => Str::uuid(),
             'user_id' => $validated['user_id'],
             'card_number' => 'ID-' . strtoupper(Str::random(8)),

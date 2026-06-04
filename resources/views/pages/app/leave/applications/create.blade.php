@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -22,8 +22,7 @@ class extends Component {
     #[Computed]
     public function employees()
     {
-        return User::where('tenant_id', Auth::user()->tenant_id)
-            ->whereIn('role', ['teacher', 'staff'])
+        return User::whereIn('role', ['teacher', 'staff'])
             ->orderBy('first_name')
             ->orderBy('last_name')
             ->get();
@@ -32,8 +31,7 @@ class extends Component {
     #[Computed]
     public function leaveTypes()
     {
-        return LeaveType::where('tenant_id', Auth::user()->tenant_id)
-            ->orderBy('name')
+        return LeaveType::orderBy('name')
             ->get();
     }
 
@@ -63,7 +61,7 @@ class extends Component {
         $totalDays = (int) now()->parse($validated['start_date'])->diffInDays(now()->parse($validated['end_date'])) + 1;
 
         LeaveApplication::create([
-            'tenant_id' => Auth::user()->tenant_id,
+            'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
             'uuid' => Str::uuid(),
             'user_id' => $validated['user_id'],
             'leave_type_id' => $validated['leave_type_id'],

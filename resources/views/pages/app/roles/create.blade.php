@@ -52,7 +52,7 @@ class extends Component {
         $slug = Str::slug($validated['name']);
 
         $role = Role::create([
-            'tenant_id' => Auth::user()->tenant_id,
+            'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
             'uuid' => Str::uuid(),
             'institution_id' => Auth::user()->institution_id,
             'name' => $validated['name'],
@@ -63,7 +63,7 @@ class extends Component {
         if (! empty($this->selectedPermissions)) {
             $pivotData = collect($this->selectedPermissions)->mapWithKeys(fn (string $permId) => [
                 $permId => [
-                    'tenant_id' => Auth::user()->tenant_id,
+                    'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
                     'uuid' => Str::uuid(),
                 ],
             ])->all();

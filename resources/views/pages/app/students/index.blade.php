@@ -18,8 +18,7 @@ class extends Component {
     #[Computed]
     public function students()
     {
-        return Student::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['user','class','section','academicYear'])
+        return Student::with(['user','class','section','academicYear'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
     }
@@ -42,8 +41,7 @@ class extends Component {
     {
         if (! $this->studentIdToDelete) return;
 
-        Student::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->studentIdToDelete)->delete();
+        Student::findOrFail($this->studentIdToDelete)->delete();
 
         $this->studentIdToDelete = null;
         unset($this->students);

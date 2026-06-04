@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -34,7 +34,7 @@ class extends Component {
     #[On('edit-building')]
     public function loadBuilding(int $id): void
     {
-        $this->building = HostelBuilding::where('tenant_id', Auth::user()->tenant_id)->findOrFail($id);
+        $this->building = HostelBuilding::findOrFail($id);
 
         $this->name = $this->building->name;
         $this->code = $this->building->code;
@@ -49,8 +49,7 @@ class extends Component {
     #[Computed]
     public function wardens()
     {
-        return User::where('tenant_id', Auth::user()->tenant_id)
-            ->whereIn('role', ['teacher', 'staff'])
+        return User::whereIn('role', ['teacher', 'staff'])
             ->orderBy('first_name')
             ->get();
     }
@@ -59,7 +58,7 @@ class extends Component {
     {
         $validated = $this->validate([
             'name' => ['required', 'string', 'max:255'],
-            'code' => ['required', 'string', 'max:50', Rule::unique('hostel_buildings', 'code')->where('tenant_id', Auth::user()->tenant_id)->ignore($this->building?->id)],
+            'code' => ['required', 'string', 'max:50', Rule::unique('hostel_buildings', 'code')->ignore($this->building?->id)],
             'type' => ['required', 'in:boys,girls,mixed'],
             'address' => ['nullable', 'string'],
             'total_floors' => ['nullable', 'integer', 'min:1'],

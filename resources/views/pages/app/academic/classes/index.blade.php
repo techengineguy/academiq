@@ -18,8 +18,7 @@ class extends Component {
     #[Computed]
     public function classes()
     {
-        return ClassModel::where('tenant_id', Auth::user()->tenant_id)
-            ->orderBy('name', 'asc')->paginate(10);
+        return ClassModel::orderBy('name', 'asc')->paginate(10);
     }
 
     public $classIdToDelete = null;
@@ -40,8 +39,7 @@ class extends Component {
     {
         if (! $this->classIdToDelete) return;
 
-        ClassModel::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->classIdToDelete)->delete();
+        ClassModel::findOrFail($this->classIdToDelete)->delete();
 
         $this->classIdToDelete = null;
         unset($this->classes);

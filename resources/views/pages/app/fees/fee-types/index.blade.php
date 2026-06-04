@@ -20,15 +20,14 @@ class extends Component {
     #[Computed]
     public function feeTypes()
     {
-        return FeeType::where('tenant_id', Auth::user()->tenant_id)
-            ->orderBy('name')
+        return FeeType::orderBy('name')
             ->paginate(15);
     }
 
     #[Computed]
     public function totalFeeTypes(): int
     {
-        return (int) FeeType::where('tenant_id', Auth::user()->tenant_id)->count();
+        return (int) FeeType::count();
     }
 
     public function confirmDelete(int $id): void
@@ -49,8 +48,7 @@ class extends Component {
             return;
         }
 
-        FeeType::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->feeTypeIdToDelete)
+        FeeType::findOrFail($this->feeTypeIdToDelete)
             ->delete();
 
         $this->feeTypeIdToDelete = null;

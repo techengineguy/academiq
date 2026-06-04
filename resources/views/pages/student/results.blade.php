@@ -18,8 +18,7 @@ class extends Component {
     #[Computed]
     public function exams()
     {
-        return Exam::where('tenant_id', Auth::user()->tenant_id)
-            ->where('result_published', true)
+        return Exam::where('result_published', true)
             ->orderByDesc('start_date')
             ->get();
     }

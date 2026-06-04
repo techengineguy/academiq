@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\On;
@@ -44,7 +44,7 @@ new class extends Component {
     #[On('edit-admission')]
     public function loadApplication(string $uuid)
     {
-        $this->app = AdmissionApplication::where('tenant_id', Auth::user()->tenant_id)->where('uuid', $uuid)->firstOrFail();
+        $this->app = AdmissionApplication::where('uuid', $uuid)->firstOrFail();
 
         $this->academic_year_id = $this->app->academic_year_id;
         $this->class_id = $this->app->class_id;
@@ -138,7 +138,7 @@ new class extends Component {
         <div class="grid grid-cols-2 gap-4">
             <flux:select label="{{ __('Academic Year') }}" variant="listbox" wire:model="academic_year_id">
                 <flux:select.option value="">{{ __('Select Academic Year') }}</flux:select.option>
-                @forelse(AcademicYear::where('tenant_id', Auth::user()->tenant_id)->get() as $ay)
+                @forelse(AcademicYear::get() as $ay)
                     <flux:select.option value="{{ $ay->id }}">{{ $ay->name }}</flux:select.option>
                 @empty
                     <flux:select.option value="">{{ __('No Academic Years') }}</flux:select.option>
@@ -147,7 +147,7 @@ new class extends Component {
 
             <flux:select label="{{ __('Class') }}" variant="listbox" wire:model="class_id">
                 <flux:select.option value="">{{ __('Select Class') }}</flux:select.option>
-                @forelse(ClassModel::where('tenant_id', Auth::user()->tenant_id)->get() as $class)
+                @forelse(ClassModel::get() as $class)
                     <flux:select.option value="{{ $class->id }}">{{ $class->name }}</flux:select.option>
                 @empty
                     <flux:select.option value="">{{ __('No Classes Available') }}</flux:select.option>

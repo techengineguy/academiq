@@ -1,13 +1,21 @@
 <?php
 
-use Livewire\Component;
-use Livewire\Attributes\Title;
-use Livewire\Attributes\Layout;
+use App\Models\Institution;
 use App\Models\SubscriptionPlan;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
+use Livewire\Component;
 
 new #[Title('Subscription Required')]
 #[Layout('layouts.guest')]
-class extends Component {
+class extends Component
+{
+    private function currentInstitution(): ?Institution
+    {
+        return Institution::find(session('active_institution_id'))
+            ?? auth()->user()?->institution;
+    }
+
     public function selectPlan($planId)
     {
         return redirect()->route('subscription.checkout', ['plan' => $planId]);
@@ -20,7 +28,14 @@ class extends Component {
 
     public function currentSubscription()
     {
-        return auth()->user()->institution->currentSubscription()->first();
+        return $this->currentInstitution()?->currentSubscription()->first();
+    }
+
+    public function trialAvailable(): bool
+    {
+        $institution = $this->currentInstitution();
+
+        return $institution && ! $institution->hasUsedTrial();
     }
 }; ?>
 
@@ -75,6 +90,22 @@ class extends Component {
         @endif
 
         @if(in_array(auth()->user()->role, ['admin', 'accountant']) || auth()->user()->isAdmin())
+        {{-- Free Trial Card --}}
+        @if($this->trialAvailable())
+        <div class="bg-indigo-50 dark:bg-indigo-900/20 rounded-xl border border-indigo-200 dark:border-indigo-700 p-6 mb-8 max-w-md mx-auto">
+            <div class="flex items-center justify-center mb-3">
+                <flux:icon name="gift" class="w-7 h-7 text-indigo-600 dark:text-indigo-400 mr-2" />
+                <h3 class="text-lg font-bold text-indigo-900 dark:text-indigo-100">Start Your Free Trial</h3>
+            </div>
+            <p class="text-sm text-indigo-700 dark:text-indigo-300 mb-4">
+                Get 14 days of full access, no payment required.
+            </p>
+            <flux:button variant="primary" href="{{ route('subscription.plans') }}" class="w-full">
+                Start Free Trial
+            </flux:button>
+        </div>
+        @endif
+
         {{-- Plans Grid — admin/accountant only --}}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             @foreach($this->plans() as $plan)

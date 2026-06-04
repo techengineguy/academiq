@@ -23,8 +23,7 @@ class extends Component {
     #[Computed]
     public function feeStructures()
     {
-        $query = FeeStructure::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['academicYear', 'class', 'feeType'])
+        $query = FeeStructure::with(['academicYear', 'class', 'feeType'])
             ->orderByDesc('created_at');
 
         if ($this->filterAcademicYear !== '') {
@@ -37,15 +36,14 @@ class extends Component {
     #[Computed]
     public function academicYears()
     {
-        return AcademicYear::where('tenant_id', Auth::user()->tenant_id)
-            ->orderByDesc('start_date')
+        return AcademicYear::orderByDesc('start_date')
             ->get();
     }
 
     #[Computed]
     public function totalStructures(): int
     {
-        return (int) FeeStructure::where('tenant_id', Auth::user()->tenant_id)->count();
+        return (int) FeeStructure::count();
     }
 
     public function updatedFilterAcademicYear(): void
@@ -77,8 +75,7 @@ class extends Component {
             return;
         }
 
-        FeeStructure::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->structureIdToDelete)
+        FeeStructure::findOrFail($this->structureIdToDelete)
             ->delete();
 
         $this->structureIdToDelete = null;

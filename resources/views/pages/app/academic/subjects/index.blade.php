@@ -18,8 +18,7 @@ class extends Component {
     #[Computed]
     public function subjects()
     {
-        return Subject::where('tenant_id', Auth::user()->tenant_id)
-            ->orderBy('name', 'asc')->paginate(10);
+        return Subject::orderBy('name', 'asc')->paginate(10);
     }
 
     public $subjectIdToDelete = null;
@@ -40,8 +39,7 @@ class extends Component {
     {
         if (! $this->subjectIdToDelete) return;
 
-        Subject::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->subjectIdToDelete)->delete();
+        Subject::findOrFail($this->subjectIdToDelete)->delete();
 
         $this->subjectIdToDelete = null;
         unset($this->subjects);

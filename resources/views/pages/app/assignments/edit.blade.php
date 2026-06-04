@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -37,7 +37,7 @@ class extends Component {
     #[On('edit-assignment')]
     public function loadAssignment(int $id): void
     {
-        $this->assignment = Assignment::where('tenant_id', Auth::user()->tenant_id)->findOrFail($id);
+        $this->assignment = Assignment::findOrFail($id);
 
         $this->title = $this->assignment->title;
         $this->class_id = (string) $this->assignment->class_id;
@@ -53,8 +53,7 @@ class extends Component {
     #[Computed]
     public function classes()
     {
-        return ClassModel::where('tenant_id', Auth::user()->tenant_id)
-            ->whereHas('academicYear', fn ($q) => $q->where('is_current', true))
+        return ClassModel::whereHas('academicYear', fn ($q) => $q->where('is_current', true))
             ->with('sections')
             ->orderBy('name')
             ->get();
@@ -67,8 +66,7 @@ class extends Component {
             return collect();
         }
 
-        return Section::where('tenant_id', Auth::user()->tenant_id)
-            ->where('class_id', $this->class_id)
+        return Section::where('class_id', $this->class_id)
             ->orderBy('name')
             ->get();
     }
@@ -76,8 +74,7 @@ class extends Component {
     #[Computed]
     public function subjects()
     {
-        return Subject::where('tenant_id', Auth::user()->tenant_id)
-            ->where('status', 'active')
+        return Subject::where('status', 'active')
             ->orderBy('name')
             ->get();
     }
@@ -85,8 +82,7 @@ class extends Component {
     #[Computed]
     public function teachers()
     {
-        return User::where('tenant_id', Auth::user()->tenant_id)
-            ->where('role', 'teacher')
+        return User::where('role', 'teacher')
             ->orderBy('first_name')
             ->get();
     }

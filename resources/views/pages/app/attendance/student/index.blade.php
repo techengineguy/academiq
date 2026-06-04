@@ -30,8 +30,7 @@ class extends Component {
     #[Computed]
     public function classSections()
     {
-        return Section::where('tenant_id', Auth::user()->tenant_id)
-            ->with('class')
+        return Section::with('class')
             ->whereHas('class')
             ->orderBy('class_id')
             ->orderBy('name')
@@ -41,8 +40,7 @@ class extends Component {
     #[Computed]
     public function attendances()
     {
-        $query = Attendance::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['student.user', 'class', 'section', 'markedBy'])
+        $query = Attendance::with(['student.user', 'class', 'section', 'markedBy'])
             ->orderByDesc('date')
             ->orderByDesc('created_at');
 
@@ -70,8 +68,7 @@ class extends Component {
     #[Computed]
     public function totalPresent(): int
     {
-        return (int) Attendance::where('tenant_id', Auth::user()->tenant_id)
-            ->where('status', 'present')
+        return (int) Attendance::where('status', 'present')
             ->whereDate('date', now())
             ->count();
     }
@@ -79,8 +76,7 @@ class extends Component {
     #[Computed]
     public function totalAbsent(): int
     {
-        return (int) Attendance::where('tenant_id', Auth::user()->tenant_id)
-            ->where('status', 'absent')
+        return (int) Attendance::where('status', 'absent')
             ->whereDate('date', now())
             ->count();
     }
@@ -88,8 +84,7 @@ class extends Component {
     #[Computed]
     public function totalLate(): int
     {
-        return (int) Attendance::where('tenant_id', Auth::user()->tenant_id)
-            ->where('status', 'late')
+        return (int) Attendance::where('status', 'late')
             ->whereDate('date', now())
             ->count();
     }
@@ -97,7 +92,7 @@ class extends Component {
     #[Computed]
     public function totalRecords(): int
     {
-        return (int) Attendance::where('tenant_id', Auth::user()->tenant_id)->count();
+        return (int) Attendance::count();
     }
 
     public function updatedFilterClassSection(): void
@@ -141,8 +136,7 @@ class extends Component {
             return;
         }
 
-        Attendance::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->attendanceIdToDelete)
+        Attendance::findOrFail($this->attendanceIdToDelete)
             ->delete();
 
         $this->attendanceIdToDelete = null;

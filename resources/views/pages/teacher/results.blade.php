@@ -26,13 +26,11 @@ class extends Component {
     #[Computed]
     public function mySchedules()
     {
-        $classIds = ClassSubject::where('tenant_id', Auth::user()->tenant_id)
-            ->where('teacher_id', Auth::id())
+        $classIds = ClassSubject::where('teacher_id', Auth::id())
             ->pluck('class_id')
             ->unique();
 
-        return ExamSchedule::where('tenant_id', Auth::user()->tenant_id)
-            ->whereIn('class_id', $classIds)
+        return ExamSchedule::whereIn('class_id', $classIds)
             ->with(['exam', 'class', 'subject'])
             ->orderByDesc('exam_date')
             ->get();
@@ -48,17 +46,15 @@ class extends Component {
     {
         $this->validate(['exam_schedule_id' => ['required', 'exists:exam_schedules,id']]);
 
-        $schedule = ExamSchedule::where('tenant_id', Auth::user()->tenant_id)->findOrFail($this->exam_schedule_id);
+        $schedule = ExamSchedule::findOrFail($this->exam_schedule_id);
 
-        $students = Student::where('tenant_id', Auth::user()->tenant_id)
-            ->where('class_id', $schedule->class_id)
+        $students = Student::where('class_id', $schedule->class_id)
             ->where('status', 'active')
             ->with('user')
             ->orderBy('roll_number')
             ->get();
 
-        $existing = ExamResult::where('tenant_id', Auth::user()->tenant_id)
-            ->where('exam_schedule_id', $this->exam_schedule_id)
+        $existing = ExamResult::where('exam_schedule_id', $this->exam_schedule_id)
             ->get()->keyBy('student_id');
 
         $this->rows = $students->map(fn (Student $s) => [
@@ -83,7 +79,7 @@ class extends Component {
             'rows.*.is_absent' => ['boolean'],
         ]);
 
-        $schedule = ExamSchedule::where('tenant_id', Auth::user()->tenant_id)->findOrFail($this->exam_schedule_id);
+        $schedule = ExamSchedule::findOrFail($this->exam_schedule_id);
         $gradeScales = GradeScale::orderByDesc('min_percentage')->get();
 
         DB::transaction(function () use ($schedule, $gradeScales): void {
@@ -104,7 +100,7 @@ class extends Component {
                 }
 
                 ExamResult::updateOrCreate(
-                    ['tenant_id' => Auth::user()->tenant_id, 'exam_schedule_id' => $this->exam_schedule_id, 'student_id' => $row['student_id']],
+                    ['tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid, 'exam_schedule_id' => $this->exam_schedule_id, 'student_id' => $row['student_id']],
                     ['uuid' => Str::uuid(), 'marks_obtained' => number_format($marks, 2, '.', ''), 'total_marks' => number_format($total, 2, '.', ''), 'grade' => $grade, 'is_absent' => $isAbsent, 'entered_by' => Auth::id()]
                 );
             }

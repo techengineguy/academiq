@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -27,7 +27,7 @@ class extends Component {
     #[On('edit-template')]
     public function loadTemplate(int $id): void
     {
-        $this->template = DocumentTemplate::where('tenant_id', Auth::user()->tenant_id)->findOrFail($id);
+        $this->template = DocumentTemplate::findOrFail($id);
 
         $this->name = $this->template->name;
         $this->type = $this->template->type;

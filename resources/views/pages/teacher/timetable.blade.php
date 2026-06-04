@@ -15,8 +15,7 @@ class extends Component {
     #[Computed]
     public function timetables()
     {
-        return Timetable::where('tenant_id', Auth::user()->tenant_id)
-            ->where('teacher_id', Auth::id())
+        return Timetable::where('teacher_id', Auth::id())
             ->with(['class', 'section', 'subject', 'timeSlot'])
             ->orderByRaw("FIELD(day, 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday')")
             ->get()

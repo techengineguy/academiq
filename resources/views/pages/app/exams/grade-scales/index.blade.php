@@ -20,15 +20,14 @@ class extends Component {
     #[Computed]
     public function gradeScales()
     {
-        return GradeScale::where('tenant_id', Auth::user()->tenant_id)
-            ->orderBy('min_percentage')
+        return GradeScale::orderBy('min_percentage')
             ->paginate(15);
     }
 
     #[Computed]
     public function totalGrades(): int
     {
-        return (int) GradeScale::where('tenant_id', Auth::user()->tenant_id)->count();
+        return (int) GradeScale::count();
     }
 
     public function confirmDelete(int $id): void
@@ -49,8 +48,7 @@ class extends Component {
             return;
         }
 
-        GradeScale::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->gradeIdToDelete)
+        GradeScale::findOrFail($this->gradeIdToDelete)
             ->delete();
 
         $this->gradeIdToDelete = null;

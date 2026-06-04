@@ -44,8 +44,7 @@ class extends Component {
     #[Computed]
     public function lessonPlans()
     {
-        return LessonPlan::where('tenant_id', Auth::user()->tenant_id)
-            ->where('teacher_id', Auth::id())
+        return LessonPlan::where('teacher_id', Auth::id())
             ->with(['class', 'subject'])
             ->orderByDesc('lesson_date')
             ->paginate(10);
@@ -54,13 +53,11 @@ class extends Component {
     #[Computed]
     public function myClasses()
     {
-        $classIds = ClassSubject::where('tenant_id', Auth::user()->tenant_id)
-            ->where('teacher_id', Auth::id())
+        $classIds = ClassSubject::where('teacher_id', Auth::id())
             ->pluck('class_id')
             ->unique();
 
-        return ClassModel::where('tenant_id', Auth::user()->tenant_id)
-            ->whereIn('id', $classIds)
+        return ClassModel::whereIn('id', $classIds)
             ->orderBy('name')
             ->get();
     }
@@ -72,8 +69,7 @@ class extends Component {
             return collect();
         }
 
-        $subjectIds = ClassSubject::where('tenant_id', Auth::user()->tenant_id)
-            ->where('teacher_id', Auth::id())
+        $subjectIds = ClassSubject::where('teacher_id', Auth::id())
             ->where('class_id', $this->class_id)
             ->pluck('subject_id');
 
@@ -102,7 +98,7 @@ class extends Component {
         ]);
 
         LessonPlan::create([
-            'tenant_id' => Auth::user()->tenant_id,
+            'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
             'uuid' => Str::uuid(),
             'teacher_id' => Auth::id(),
             'class_id' => $validated['class_id'],
@@ -144,8 +140,7 @@ class extends Component {
             return;
         }
 
-        LessonPlan::where('tenant_id', Auth::user()->tenant_id)
-            ->where('teacher_id', Auth::id())
+        LessonPlan::where('teacher_id', Auth::id())
             ->findOrFail($this->planIdToDelete)
             ->delete();
 

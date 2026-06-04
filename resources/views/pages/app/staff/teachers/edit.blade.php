@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\On;
@@ -30,8 +30,7 @@ new class extends Component {
     #[On('edit-teacher')]
     public function loadTeacher(string $uuid): void
     {
-        $this->teacher = Teacher::where('tenant_id', Auth::user()->tenant_id)
-            ->where('uuid', $uuid)->firstOrFail();
+        $this->teacher = Teacher::where('uuid', $uuid)->firstOrFail();
 
         $this->first_name = $this->teacher->first_name;
         $this->last_name = $this->teacher->last_name;

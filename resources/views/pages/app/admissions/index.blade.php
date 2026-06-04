@@ -18,8 +18,7 @@ class extends Component {
     #[Computed]
     public function applications()
     {
-        return AdmissionApplication::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['class','academicYear','reviewedBy'])
+        return AdmissionApplication::with(['class','academicYear','reviewedBy'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
     }
@@ -42,8 +41,7 @@ class extends Component {
     {
         if (! $this->applicationIdToDelete) return;
 
-        AdmissionApplication::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->applicationIdToDelete)->delete();
+        AdmissionApplication::findOrFail($this->applicationIdToDelete)->delete();
 
         $this->applicationIdToDelete = null;
         unset($this->applications);
@@ -61,7 +59,7 @@ class extends Component {
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Manage admissions and incoming applications.') }}</p>
         </div>
         <div class="flex gap-2">
-            <flux:button class="button" href="{{ route('admissions.apply', ['institution' => auth()->user()->institution->uuid]) }}" icon="share" target="_blank">
+            <flux:button class="button" href="{{ route('admissions.apply', ['institution' => \Spatie\Multitenancy\Models\Tenant::current()?->uuid]) }}" icon="share" target="_blank">
                 {{ __('Share Public Link') }}
             </flux:button>
             <flux:button class="button" x-on:click="$tsui.open.slide('create-admission')" icon="plus">

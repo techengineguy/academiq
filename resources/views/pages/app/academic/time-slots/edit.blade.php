@@ -18,8 +18,7 @@ new class extends Component {
     #[On('edit-time-slot')]
     public function loadTimeSlot(string $uuid): void
     {
-        $this->timeSlot = TimeSlot::where('tenant_id', Auth::user()->tenant_id)
-            ->where('uuid', $uuid)->firstOrFail();
+        $this->timeSlot = TimeSlot::where('uuid', $uuid)->firstOrFail();
 
         $this->name = $this->timeSlot->name;
         $this->start_time = $this->timeSlot->start_time ? \Carbon\Carbon::parse($this->timeSlot->start_time)->format('H:i') : '';

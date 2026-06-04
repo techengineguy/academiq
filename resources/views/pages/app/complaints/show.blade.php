@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -30,16 +30,14 @@ class extends Component {
     #[Computed]
     public function complaint()
     {
-        return Complaint::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['submittedBy', 'assignedTo'])
+        return Complaint::with(['submittedBy', 'assignedTo'])
             ->findOrFail($this->id);
     }
 
     #[Computed]
     public function staff()
     {
-        return User::where('tenant_id', Auth::user()->tenant_id)
-            ->whereIn('role', ['admin', 'staff'])
+        return User::whereIn('role', ['admin', 'staff'])
             ->where('is_active', true)
             ->orderBy('first_name')
             ->get();

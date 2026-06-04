@@ -25,8 +25,7 @@ class extends Component {
     #[Computed]
     public function results()
     {
-        $query = ExamResult::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['examSchedule.exam', 'examSchedule.subject', 'examSchedule.class', 'student.user', 'enteredBy'])
+        $query = ExamResult::with(['examSchedule.exam', 'examSchedule.subject', 'examSchedule.class', 'student.user', 'enteredBy'])
             ->orderByDesc('created_at');
 
         // Students can only see their own results
@@ -48,16 +47,14 @@ class extends Component {
     #[Computed]
     public function exams()
     {
-        return Exam::where('tenant_id', Auth::user()->tenant_id)
-            ->orderByDesc('start_date')
+        return Exam::orderByDesc('start_date')
             ->get();
     }
 
     #[Computed]
     public function schedules()
     {
-        $query = ExamSchedule::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['exam', 'subject', 'class']);
+        $query = ExamSchedule::with(['exam', 'subject', 'class']);
 
         if ($this->filterExam !== '') {
             $query->where('exam_id', $this->filterExam);
@@ -69,7 +66,7 @@ class extends Component {
     #[Computed]
     public function totalResults(): int
     {
-        return (int) ExamResult::where('tenant_id', Auth::user()->tenant_id)->count();
+        return (int) ExamResult::count();
     }
 
     public function updatedFilterExam(): void
@@ -110,8 +107,7 @@ class extends Component {
             return;
         }
 
-        ExamResult::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->resultIdToDelete)
+        ExamResult::findOrFail($this->resultIdToDelete)
             ->delete();
 
         $this->resultIdToDelete = null;

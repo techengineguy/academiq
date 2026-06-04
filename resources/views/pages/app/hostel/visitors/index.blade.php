@@ -27,8 +27,7 @@ class extends Component {
     #[Computed]
     public function visitors()
     {
-        $query = HostelVisitor::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['student.user', 'approvedBy'])
+        $query = HostelVisitor::with(['student.user', 'approvedBy'])
             ->orderByDesc('check_in_time');
 
         if ($this->filterDate !== '') {
@@ -41,7 +40,7 @@ class extends Component {
     #[Computed]
     public function stats(): array
     {
-        $base = HostelVisitor::where('tenant_id', Auth::user()->tenant_id);
+        $base = HostelVisitor::query();
 
         return [
             'today' => (clone $base)->whereDate('check_in_time', now())->count(),
@@ -51,7 +50,7 @@ class extends Component {
 
     public function checkOut(int $id): void
     {
-        $visitor = HostelVisitor::where('tenant_id', Auth::user()->tenant_id)->findOrFail($id);
+        $visitor = HostelVisitor::findOrFail($id);
         $visitor->update(['check_out_time' => now()]);
 
         Flux::toast(variant: 'success', text: __('Visitor checked out.'));
@@ -84,8 +83,7 @@ class extends Component {
             return;
         }
 
-        HostelVisitor::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->visitorIdToDelete)
+        HostelVisitor::findOrFail($this->visitorIdToDelete)
             ->delete();
 
         $this->visitorIdToDelete = null;

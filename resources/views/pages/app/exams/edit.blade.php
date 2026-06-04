@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -33,7 +33,7 @@ class extends Component {
     #[On('edit-exam')]
     public function loadExam(int $id): void
     {
-        $this->exam = Exam::where('tenant_id', Auth::user()->tenant_id)->findOrFail($id);
+        $this->exam = Exam::findOrFail($id);
 
         $this->name = $this->exam->name;
         $this->type = $this->exam->type;
@@ -48,8 +48,7 @@ class extends Component {
     #[Computed]
     public function academicYears()
     {
-        return AcademicYear::where('tenant_id', Auth::user()->tenant_id)
-            ->orderByDesc('start_date')
+        return AcademicYear::orderByDesc('start_date')
             ->get();
     }
 

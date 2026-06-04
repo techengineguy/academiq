@@ -23,8 +23,7 @@ class extends Component {
     #[Computed]
     public function idCards()
     {
-        $query = IdCard::where('tenant_id', Auth::user()->tenant_id)
-            ->with('user')
+        $query = IdCard::with('user')
             ->orderByDesc('issue_date');
 
         if ($this->filterType !== '') {
@@ -59,8 +58,7 @@ class extends Component {
             return;
         }
 
-        IdCard::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->cardIdToDelete)
+        IdCard::findOrFail($this->cardIdToDelete)
             ->delete();
 
         $this->cardIdToDelete = null;

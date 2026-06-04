@@ -19,8 +19,7 @@ class extends Component {
     #[Computed]
     public function myClassesCount(): int
     {
-        return (int) ClassSubject::where('tenant_id', Auth::user()->tenant_id)
-            ->where('teacher_id', Auth::id())
+        return (int) ClassSubject::where('teacher_id', Auth::id())
             ->distinct('class_id')
             ->count('class_id');
     }
@@ -28,16 +27,14 @@ class extends Component {
     #[Computed]
     public function mySubjectsCount(): int
     {
-        return (int) ClassSubject::where('tenant_id', Auth::user()->tenant_id)
-            ->where('teacher_id', Auth::id())
+        return (int) ClassSubject::where('teacher_id', Auth::id())
             ->count();
     }
 
     #[Computed]
     public function activeAssignments(): int
     {
-        return (int) Assignment::where('tenant_id', Auth::user()->tenant_id)
-            ->where('teacher_id', Auth::id())
+        return (int) Assignment::where('teacher_id', Auth::id())
             ->where('due_date', '>=', now())
             ->count();
     }
@@ -45,8 +42,7 @@ class extends Component {
     #[Computed]
     public function pendingLeave(): int
     {
-        return (int) LeaveApplication::where('tenant_id', Auth::user()->tenant_id)
-            ->where('user_id', Auth::id())
+        return (int) LeaveApplication::where('user_id', Auth::id())
             ->where('status', 'pending')
             ->count();
     }
@@ -54,8 +50,7 @@ class extends Component {
     #[Computed]
     public function recentAssignments()
     {
-        return Assignment::where('tenant_id', Auth::user()->tenant_id)
-            ->where('teacher_id', Auth::id())
+        return Assignment::where('teacher_id', Auth::id())
             ->with(['class', 'subject'])
             ->orderByDesc('created_at')
             ->limit(5)
@@ -65,8 +60,7 @@ class extends Component {
     #[Computed]
     public function myClasses()
     {
-        return ClassSubject::where('tenant_id', Auth::user()->tenant_id)
-            ->where('teacher_id', Auth::id())
+        return ClassSubject::where('teacher_id', Auth::id())
             ->with(['class', 'subject'])
             ->get();
     }

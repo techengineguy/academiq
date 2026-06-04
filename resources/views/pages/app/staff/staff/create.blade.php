@@ -5,6 +5,7 @@ use App\Models\Staff;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Multitenancy\Models\Tenant;
 use Illuminate\Support\Str;
 use Flux\Flux;
 use TallStackUi\Traits\Interactions;
@@ -42,7 +43,7 @@ new class extends Component {
             'status' => 'required|in:active,inactive',
         ]);
 
-        $institution = Auth::user()->institution;
+        $institution = Tenant::current();
 
         if ($institution->hasReachedStaffLimit()) {
             $limit = $institution->planLimitFor('staff');
@@ -53,7 +54,7 @@ new class extends Component {
 
         // Create user first
         $user = User::create([
-            'tenant_id' => Auth::user()->tenant_id,
+            'tenant_id' => Tenant::current()->uuid,
             'uuid' => Str::uuid(),
             'institution_id' => $institution->id,
             'username' => $validated['first_name'],
@@ -67,7 +68,7 @@ new class extends Component {
 
         // Create staff linked to user
         Staff::create([
-            'tenant_id' => Auth::user()->tenant_id,
+            'tenant_id' => Tenant::current()->uuid,
             'uuid' => Str::uuid(),
             'first_name' => $validated['first_name'],
             'last_name' => $validated['last_name'],

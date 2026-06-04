@@ -262,9 +262,9 @@
             <flux:sidebar.toggle class="lg:hidden" icon="bars-3" inset="left" />
             
             {{-- Trial Warning --}}
-            @if(auth()->user()->institution->isOnTrial())
+            @if(\Spatie\Multitenancy\Models\Tenant::current()?->isOnTrial())
                 @php
-                    $subscription = auth()->user()->institution->currentSubscription()->first();
+                    $subscription = \Spatie\Multitenancy\Models\Tenant::current()?->currentSubscription()->first();
                     $daysRemaining = $subscription && $subscription->trial_ends_at 
                         ? $subscription->trial_ends_at->diffInDays(now(), false) 
                         : 0;

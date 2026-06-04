@@ -22,8 +22,7 @@ class extends Component {
     #[Computed]
     public function certificates()
     {
-        $query = Certificate::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['student.user', 'issuedBy'])
+        $query = Certificate::with(['student.user', 'issuedBy'])
             ->orderByDesc('issue_date');
 
         if ($this->filterType !== '') {
@@ -53,8 +52,7 @@ class extends Component {
             return;
         }
 
-        Certificate::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->certIdToDelete)
+        Certificate::findOrFail($this->certIdToDelete)
             ->delete();
 
         $this->certIdToDelete = null;

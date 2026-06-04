@@ -23,8 +23,7 @@ class extends Component {
     #[Computed]
     public function events()
     {
-        $query = Event::where('tenant_id', Auth::user()->tenant_id)
-            ->with('organizer')
+        $query = Event::with('organizer')
             ->withCount('participants')
             ->orderByDesc('start_date');
 
@@ -67,8 +66,7 @@ class extends Component {
             return;
         }
 
-        Event::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->eventIdToDelete)
+        Event::findOrFail($this->eventIdToDelete)
             ->delete();
 
         $this->eventIdToDelete = null;

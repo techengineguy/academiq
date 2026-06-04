@@ -31,13 +31,11 @@ class extends Component {
     #[Computed]
     public function myClassSections()
     {
-        $classIds = ClassSubject::where('tenant_id', Auth::user()->tenant_id)
-            ->where('teacher_id', Auth::id())
+        $classIds = ClassSubject::where('teacher_id', Auth::id())
             ->pluck('class_id')
             ->unique();
 
-        return Section::where('tenant_id', Auth::user()->tenant_id)
-            ->whereIn('class_id', $classIds)
+        return Section::whereIn('class_id', $classIds)
             ->with('class')
             ->orderBy('class_id')
             ->orderBy('name')
@@ -59,16 +57,14 @@ class extends Component {
 
         [$classId, $sectionId] = explode('-', $this->class_section);
 
-        $students = Student::where('tenant_id', Auth::user()->tenant_id)
-            ->where('class_id', $classId)
+        $students = Student::where('class_id', $classId)
             ->where('section_id', $sectionId)
             ->where('status', 'active')
             ->with('user')
             ->orderBy('roll_number')
             ->get();
 
-        $existing = Attendance::where('tenant_id', Auth::user()->tenant_id)
-            ->where('class_id', $classId)
+        $existing = Attendance::where('class_id', $classId)
             ->where('section_id', $sectionId)
             ->whereDate('date', $this->date)
             ->pluck('status', 'student_id');
@@ -106,7 +102,7 @@ class extends Component {
             foreach ($this->rows as $row) {
                 Attendance::updateOrCreate(
                     [
-                        'tenant_id' => Auth::user()->tenant_id,
+                        'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
                         'student_id' => $row['student_id'],
                         'date' => $this->date,
                     ],

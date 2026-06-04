@@ -17,8 +17,7 @@ class extends Component {
     #[Computed]
     public function notifications()
     {
-        $query = Notification::where('tenant_id', Auth::user()->tenant_id)
-            ->where('user_id', Auth::id())
+        $query = Notification::where('user_id', Auth::id())
             ->orderByDesc('created_at');
 
         if ($this->filterStatus === 'unread') {
@@ -33,7 +32,7 @@ class extends Component {
     #[Computed]
     public function stats(): array
     {
-        $base = Notification::where('tenant_id', Auth::user()->tenant_id)->where('user_id', Auth::id());
+        $base = Notification::where('user_id', Auth::id());
 
         return [
             'total' => (clone $base)->count(),
@@ -43,8 +42,7 @@ class extends Component {
 
     public function markAsRead(int $id): void
     {
-        Notification::where('tenant_id', Auth::user()->tenant_id)
-            ->where('user_id', Auth::id())
+        Notification::where('user_id', Auth::id())
             ->where('id', $id)
             ->update(['is_read' => true, 'read_at' => now()]);
 
@@ -53,8 +51,7 @@ class extends Component {
 
     public function markAllAsRead(): void
     {
-        Notification::where('tenant_id', Auth::user()->tenant_id)
-            ->where('user_id', Auth::id())
+        Notification::where('user_id', Auth::id())
             ->where('is_read', false)
             ->update(['is_read' => true, 'read_at' => now()]);
 
@@ -64,8 +61,7 @@ class extends Component {
 
     public function deleteNotification(int $id): void
     {
-        Notification::where('tenant_id', Auth::user()->tenant_id)
-            ->where('user_id', Auth::id())
+        Notification::where('user_id', Auth::id())
             ->where('id', $id)
             ->delete();
 

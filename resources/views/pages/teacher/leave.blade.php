@@ -26,8 +26,7 @@ class extends Component {
     #[Computed]
     public function leaveApplications()
     {
-        return LeaveApplication::where('tenant_id', Auth::user()->tenant_id)
-            ->where('user_id', Auth::id())
+        return LeaveApplication::where('user_id', Auth::id())
             ->with('leaveType')
             ->orderByDesc('created_at')
             ->paginate(10);
@@ -36,8 +35,7 @@ class extends Component {
     #[Computed]
     public function leaveTypes()
     {
-        return LeaveType::where('tenant_id', Auth::user()->tenant_id)
-            ->where(fn ($q) => $q->where('applicable_to', 'all')->orWhere('applicable_to', 'teacher'))
+        return LeaveType::where(fn ($q) => $q->where('applicable_to', 'all')->orWhere('applicable_to', 'teacher'))
             ->orderBy('name')
             ->get();
     }
@@ -45,7 +43,7 @@ class extends Component {
     #[Computed]
     public function stats(): array
     {
-        $query = LeaveApplication::where('tenant_id', Auth::user()->tenant_id)->where('user_id', Auth::id());
+        $query = LeaveApplication::where('user_id', Auth::id());
 
         return [
             'total' => (clone $query)->count(),
@@ -80,7 +78,7 @@ class extends Component {
         $totalDays = (int) now()->parse($validated['start_date'])->diffInDays(now()->parse($validated['end_date'])) + 1;
 
         LeaveApplication::create([
-            'tenant_id' => Auth::user()->tenant_id,
+            'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
             'uuid' => Str::uuid(),
             'user_id' => Auth::id(),
             'leave_type_id' => $validated['leave_type_id'],

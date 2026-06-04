@@ -25,8 +25,7 @@ class extends Component {
     #[Computed]
     public function assignments()
     {
-        $query = Assignment::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['class', 'section', 'subject', 'teacher'])
+        $query = Assignment::with(['class', 'section', 'subject', 'teacher'])
             ->withCount('submissions')
             ->orderByDesc('created_at');
 
@@ -48,8 +47,7 @@ class extends Component {
     #[Computed]
     public function classes()
     {
-        return ClassModel::where('tenant_id', Auth::user()->tenant_id)
-            ->whereHas('academicYear', fn ($q) => $q->where('is_current', true))
+        return ClassModel::whereHas('academicYear', fn ($q) => $q->where('is_current', true))
             ->orderBy('name')
             ->get();
     }
@@ -57,14 +55,13 @@ class extends Component {
     #[Computed]
     public function totalAssignments(): int
     {
-        return (int) Assignment::where('tenant_id', Auth::user()->tenant_id)->count();
+        return (int) Assignment::count();
     }
 
     #[Computed]
     public function activeAssignments(): int
     {
-        return (int) Assignment::where('tenant_id', Auth::user()->tenant_id)
-            ->where('due_date', '>=', now())
+        return (int) Assignment::where('due_date', '>=', now())
             ->count();
     }
 
@@ -96,8 +93,7 @@ class extends Component {
             return;
         }
 
-        Assignment::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->assignmentIdToDelete)
+        Assignment::findOrFail($this->assignmentIdToDelete)
             ->delete();
 
         $this->assignmentIdToDelete = null;

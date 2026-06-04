@@ -20,8 +20,7 @@ class extends Component {
     #[Computed]
     public function templates()
     {
-        return DocumentTemplate::where('tenant_id', Auth::user()->tenant_id)
-            ->orderBy('type')
+        return DocumentTemplate::orderBy('type')
             ->orderBy('name')
             ->paginate(15);
     }
@@ -44,8 +43,7 @@ class extends Component {
             return;
         }
 
-        DocumentTemplate::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->templateIdToDelete)
+        DocumentTemplate::findOrFail($this->templateIdToDelete)
             ->delete();
 
         $this->templateIdToDelete = null;

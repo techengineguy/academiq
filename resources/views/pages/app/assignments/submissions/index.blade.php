@@ -18,8 +18,7 @@ class extends Component {
     #[Computed]
     public function submissions()
     {
-        $query = AssignmentSubmission::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['assignment.class', 'assignment.subject', 'student.user'])
+        $query = AssignmentSubmission::with(['assignment.class', 'assignment.subject', 'student.user'])
             ->orderByDesc('submitted_at');
 
         if ($this->filterAssignment !== '') {
@@ -36,8 +35,7 @@ class extends Component {
     #[Computed]
     public function assignments()
     {
-        return Assignment::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['class', 'subject'])
+        return Assignment::with(['class', 'subject'])
             ->orderByDesc('created_at')
             ->get();
     }
@@ -45,14 +43,13 @@ class extends Component {
     #[Computed]
     public function totalSubmissions(): int
     {
-        return (int) AssignmentSubmission::where('tenant_id', Auth::user()->tenant_id)->count();
+        return (int) AssignmentSubmission::count();
     }
 
     #[Computed]
     public function pendingGrading(): int
     {
-        return (int) AssignmentSubmission::where('tenant_id', Auth::user()->tenant_id)
-            ->where('status', 'submitted')
+        return (int) AssignmentSubmission::where('status', 'submitted')
             ->whereNull('marks_obtained')
             ->count();
     }

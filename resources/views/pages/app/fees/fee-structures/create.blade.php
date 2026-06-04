@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -24,8 +24,7 @@ class extends Component {
     #[Computed]
     public function feeTypes()
     {
-        return FeeType::where('tenant_id', Auth::user()->tenant_id)
-            ->where('status', 'active')
+        return FeeType::where('status', 'active')
             ->orderBy('name')
             ->get();
     }
@@ -33,8 +32,7 @@ class extends Component {
     #[Computed]
     public function classes()
     {
-        return ClassModel::where('tenant_id', Auth::user()->tenant_id)
-            ->whereHas('academicYear', fn ($q) => $q->where('is_current', true))
+        return ClassModel::whereHas('academicYear', fn ($q) => $q->where('is_current', true))
             ->with('sections')
             ->orderBy('name')
             ->get();
@@ -43,8 +41,7 @@ class extends Component {
     #[Computed]
     public function academicYears()
     {
-        return AcademicYear::where('tenant_id', Auth::user()->tenant_id)
-            ->orderByDesc('start_date')
+        return AcademicYear::orderByDesc('start_date')
             ->get();
     }
 
@@ -60,7 +57,7 @@ class extends Component {
         ]);
 
         FeeStructure::create([
-            'tenant_id' => Auth::user()->tenant_id,
+            'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
             'uuid' => Str::uuid(),
             'institution_id' => Auth::user()->institution_id,
             'fee_type_id' => $validated['fee_type_id'],

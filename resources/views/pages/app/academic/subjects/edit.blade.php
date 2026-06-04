@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\On;
@@ -18,8 +18,7 @@ new class extends Component {
     #[On('edit-subject')]
     public function loadSubject(string $uuid): void
     {
-        $this->subject = Subject::where('tenant_id', Auth::user()->tenant_id)
-            ->where('uuid', $uuid)->firstOrFail();
+        $this->subject = Subject::where('uuid', $uuid)->firstOrFail();
 
         $this->name = $this->subject->name;
         $this->code = $this->subject->code;

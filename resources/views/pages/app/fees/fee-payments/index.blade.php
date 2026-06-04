@@ -22,8 +22,7 @@ class extends Component {
     #[Computed]
     public function payments()
     {
-        $query = FeePayment::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['feeInvoice', 'student.user', 'receivedBy'])
+        $query = FeePayment::with(['feeInvoice', 'student.user', 'receivedBy'])
             ->orderByDesc('payment_date');
 
         // Students can only see their own payments
@@ -41,13 +40,13 @@ class extends Component {
     #[Computed]
     public function totalPayments(): int
     {
-        return (int) FeePayment::where('tenant_id', Auth::user()->tenant_id)->count();
+        return (int) FeePayment::count();
     }
 
     #[Computed]
     public function totalAmount(): float
     {
-        return (float) FeePayment::where('tenant_id', Auth::user()->tenant_id)->sum('amount');
+        return (float) FeePayment::sum('amount');
     }
 
     public function updatedFilterMethod(): void
@@ -79,8 +78,7 @@ class extends Component {
             return;
         }
 
-        $payment = FeePayment::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->paymentIdToDelete);
+        $payment = FeePayment::findOrFail($this->paymentIdToDelete);
 
         $invoice = $payment->feeInvoice;
         $payment->delete();

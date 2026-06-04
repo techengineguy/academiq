@@ -33,8 +33,7 @@ class extends Component {
     #[On('edit-fee-invoice')]
     public function loadInvoice(int $id): void
     {
-        $this->invoice = FeeInvoice::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['student.user', 'items.feeType'])
+        $this->invoice = FeeInvoice::with(['student.user', 'items.feeType'])
             ->findOrFail($id);
 
         $this->due_date = $this->invoice->due_date?->format('Y-m-d') ?? '';
@@ -54,8 +53,7 @@ class extends Component {
     #[Computed]
     public function feeTypes()
     {
-        return FeeType::where('tenant_id', Auth::user()->tenant_id)
-            ->where('status', 'active')
+        return FeeType::where('status', 'active')
             ->orderBy('name')
             ->get();
     }
@@ -112,7 +110,7 @@ class extends Component {
 
         foreach ($validated['items'] as $item) {
             FeeInvoiceItem::create([
-                'tenant_id' => Auth::user()->tenant_id,
+                'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
                 'uuid' => Str::uuid(),
                 'fee_invoice_id' => $this->invoice->id,
                 'fee_type_id' => $item['fee_type_id'],

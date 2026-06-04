@@ -28,8 +28,7 @@ class extends Component {
     #[Computed]
     public function invoices()
     {
-        return FeeInvoice::where('tenant_id', Auth::user()->tenant_id)
-            ->whereIn('status', ['pending', 'partial', 'overdue'])
+        return FeeInvoice::whereIn('status', ['pending', 'partial', 'overdue'])
             ->with(['student.user'])
             ->orderByDesc('invoice_date')
             ->get();
@@ -57,11 +56,10 @@ class extends Component {
             'remarks' => ['nullable', 'string'],
         ]);
 
-        $invoice = FeeInvoice::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($validated['fee_invoice_id']);
+        $invoice = FeeInvoice::findOrFail($validated['fee_invoice_id']);
 
         FeePayment::create([
-            'tenant_id' => Auth::user()->tenant_id,
+            'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
             'uuid' => Str::uuid(),
             'fee_invoice_id' => $invoice->id,
             'student_id' => $invoice->student_id,

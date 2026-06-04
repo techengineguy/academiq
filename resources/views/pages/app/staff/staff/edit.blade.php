@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\On;
@@ -25,8 +25,7 @@ new class extends Component {
     #[On('edit-staff')]
     public function loadStaff(string $uuid): void
     {
-        $this->staff = Staff::where('tenant_id', Auth::user()->tenant_id)
-            ->where('uuid', $uuid)->firstOrFail();
+        $this->staff = Staff::where('uuid', $uuid)->firstOrFail();
 
         $this->first_name = $this->staff->first_name;
         $this->last_name = $this->staff->last_name;

@@ -20,7 +20,7 @@ class extends Component {
     public function mount(int $id): void
     {
         $this->id = $id;
-        $message = Message::where('tenant_id', Auth::user()->tenant_id)->findOrFail($id);
+        $message = Message::findOrFail($id);
         if ($message->sender_id !== Auth::id() && $message->receiver_id !== Auth::id()) {
             abort(403);
         }
@@ -32,8 +32,7 @@ class extends Component {
     #[Computed]
     public function message()
     {
-        return Message::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['sender', 'receiver', 'replies.sender', 'replies.receiver'])
+        return Message::with(['sender', 'receiver', 'replies.sender', 'replies.receiver'])
             ->findOrFail($this->id);
     }
 
@@ -43,7 +42,7 @@ class extends Component {
         $original = $this->message;
         $receiverId = $original->sender_id === Auth::id() ? $original->receiver_id : $original->sender_id;
         Message::create([
-            'tenant_id' => Auth::user()->tenant_id,
+            'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
             'uuid' => Str::uuid(),
             'sender_id' => Auth::id(),
             'receiver_id' => $receiverId,

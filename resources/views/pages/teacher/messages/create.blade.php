@@ -22,8 +22,7 @@ class extends Component {
     #[Computed]
     public function recipients()
     {
-        return User::where('tenant_id', Auth::user()->tenant_id)
-            ->where('id', '!=', Auth::id())
+        return User::where('id', '!=', Auth::id())
             ->where('is_active', true)
             ->whereIn('role', ['admin', 'teacher', 'staff', 'student', 'parent'])
             ->orderBy('role')
@@ -56,7 +55,7 @@ class extends Component {
 
         foreach ($validated['receiver_ids'] as $receiverId) {
             Message::create([
-                'tenant_id' => Auth::user()->tenant_id,
+                'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
                 'uuid' => Str::uuid(),
                 'sender_id' => Auth::id(),
                 'receiver_id' => $receiverId,

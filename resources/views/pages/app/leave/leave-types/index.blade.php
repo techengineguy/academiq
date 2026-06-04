@@ -20,8 +20,7 @@ class extends Component {
     #[Computed]
     public function leaveTypes()
     {
-        return LeaveType::where('tenant_id', Auth::user()->tenant_id)
-            ->withCount('applications')
+        return LeaveType::withCount('applications')
             ->orderBy('name')
             ->paginate(15);
     }
@@ -44,8 +43,7 @@ class extends Component {
             return;
         }
 
-        LeaveType::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->leaveTypeIdToDelete)
+        LeaveType::findOrFail($this->leaveTypeIdToDelete)
             ->delete();
 
         $this->leaveTypeIdToDelete = null;

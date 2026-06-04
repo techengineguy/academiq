@@ -19,8 +19,7 @@ class extends Component {
     #[Computed]
     public function events()
     {
-        return Event::where('tenant_id', Auth::user()->tenant_id)
-            ->whereIn('status', ['upcoming', 'ongoing'])
+        return Event::whereIn('status', ['upcoming', 'ongoing'])
             ->when($this->filterType !== '', fn ($q) => $q->where('type', $this->filterType))
             ->with('organizer')
             ->orderBy('start_date')

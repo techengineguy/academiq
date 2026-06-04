@@ -42,8 +42,7 @@ class extends Component {
             return collect();
         }
 
-        return Timetable::where('tenant_id', Auth::user()->tenant_id)
-            ->where('class_id', $child->class_id)
+        return Timetable::where('class_id', $child->class_id)
             ->where('section_id', $child->section_id)
             ->with(['subject', 'teacher', 'timeSlot'])
             ->orderByRaw("FIELD(day, 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday')")

@@ -3,6 +3,7 @@
 use Livewire\Component;
 use App\Models\TimeSlot;
 use Illuminate\Support\Facades\Auth;
+use Spatie\Multitenancy\Models\Tenant;
 use Illuminate\Support\Str;
 use Flux\Flux;
 use TallStackUi\Traits\Interactions;
@@ -26,10 +27,10 @@ new class extends Component {
             'order' => 'required|integer|min:0',
         ]);
 
-        $institution = Auth::user()->institution;
+        $institution = Tenant::current();
 
         TimeSlot::create([
-            'tenant_id' => Auth::user()->tenant_id,
+            'tenant_id' => Tenant::current()->uuid,
             'uuid' => Str::uuid(),
             'institution_id' => $institution->id,
             'name' => $validated['name'],

@@ -25,8 +25,7 @@ class extends Component {
     #[Computed]
     public function invoices()
     {
-        $query = FeeInvoice::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['student.user', 'student.class'])
+        $query = FeeInvoice::with(['student.user', 'student.class'])
             ->orderByDesc('invoice_date');
 
         if ($this->filterStatus !== '') {
@@ -39,21 +38,20 @@ class extends Component {
     #[Computed]
     public function totalInvoices(): int
     {
-        return (int) FeeInvoice::where('tenant_id', Auth::user()->tenant_id)->count();
+        return (int) FeeInvoice::count();
     }
 
     #[Computed]
     public function totalPending(): float
     {
-        return (float) FeeInvoice::where('tenant_id', Auth::user()->tenant_id)
-            ->whereIn('status', ['pending', 'partial', 'overdue'])
+        return (float) FeeInvoice::whereIn('status', ['pending', 'partial', 'overdue'])
             ->sum('balance');
     }
 
     #[Computed]
     public function totalCollected(): float
     {
-        return (float) FeeInvoice::where('tenant_id', Auth::user()->tenant_id)->sum('paid_amount');
+        return (float) FeeInvoice::sum('paid_amount');
     }
 
     public function updatedFilterStatus(): void
@@ -85,8 +83,7 @@ class extends Component {
             return;
         }
 
-        FeeInvoice::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->invoiceIdToDelete)
+        FeeInvoice::findOrFail($this->invoiceIdToDelete)
             ->delete();
 
         $this->invoiceIdToDelete = null;

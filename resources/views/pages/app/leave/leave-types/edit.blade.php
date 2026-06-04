@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -27,7 +27,7 @@ class extends Component {
     #[On('edit-leave-type')]
     public function loadLeaveType(int $id): void
     {
-        $this->leaveType = LeaveType::where('tenant_id', Auth::user()->tenant_id)->findOrFail($id);
+        $this->leaveType = LeaveType::findOrFail($id);
 
         $this->name = $this->leaveType->name;
         $this->max_days = (string) ($this->leaveType->max_days ?? '');

@@ -33,8 +33,7 @@ new class extends Component
     #[On('edit-award')]
     public function loadAward(string $uuid)
     {
-        $this->award = StudentScholarship::where('tenant_id', Auth::user()->tenant_id)
-            ->where('uuid', $uuid)
+        $this->award = StudentScholarship::where('uuid', $uuid)
             ->firstOrFail();
 
         $this->student_id = $this->award->student_id;
@@ -59,14 +58,11 @@ new class extends Component
         ]);
 
         // Verify tenant isolation
-        $student = Student::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->student_id);
+        $student = Student::findOrFail($this->student_id);
 
-        $scholarship = Scholarship::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->scholarship_id);
+        $scholarship = Scholarship::findOrFail($this->scholarship_id);
 
-        $academicYear = AcademicYear::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->academic_year_id);
+        $academicYear = AcademicYear::findOrFail($this->academic_year_id);
 
         $this->award->update([
             'student_id' => $this->student_id,
@@ -91,7 +87,7 @@ new class extends Component
         <div class="grid grid-cols-2 gap-4">
             <flux:select label="{{ __('Student') }}" variant="listbox" wire:model="student_id" searchable required>
                 <flux:select.option value="">{{ __('Select Student') }}</flux:select.option>
-                @forelse(Student::where('tenant_id', Auth::user()->tenant_id)->orderBy('first_name')->get() as $student)
+                @forelse(Student::orderBy('first_name')->get() as $student)
                     <flux:select.option value="{{ $student->id }}">{{ $student->first_name }} {{ $student->last_name }}</flux:select.option>
                 @empty
                     <flux:select.option value="">{{ __('No Students Available') }}</flux:select.option>
@@ -100,7 +96,7 @@ new class extends Component
 
             <flux:select label="{{ __('Scholarship') }}" variant="listbox" wire:model="scholarship_id" required>
                 <flux:select.option value="">{{ __('Select Scholarship') }}</flux:select.option>
-                @forelse(Scholarship::where('tenant_id', Auth::user()->tenant_id)->get() as $scholarship)
+                @forelse(Scholarship::get() as $scholarship)
                     <flux:select.option value="{{ $scholarship->id }}">{{ $scholarship->name }}</flux:select.option>
                 @empty
                     <flux:select.option value="">{{ __('No Scholarships Available') }}</flux:select.option>
@@ -111,7 +107,7 @@ new class extends Component
         <div class="grid grid-cols-2 gap-4">
             <flux:select label="{{ __('Academic Year') }}" variant="listbox" wire:model="academic_year_id" required>
                 <flux:select.option value="">{{ __('Select Academic Year') }}</flux:select.option>
-                @forelse(AcademicYear::where('tenant_id', Auth::user()->tenant_id)->get() as $ay)
+                @forelse(AcademicYear::get() as $ay)
                     <flux:select.option value="{{ $ay->id }}">{{ $ay->name }}</flux:select.option>
                 @empty
                     <flux:select.option value="">{{ __('No Academic Years') }}</flux:select.option>

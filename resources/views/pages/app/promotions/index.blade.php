@@ -78,8 +78,7 @@ class extends Component
     #[Computed]
     public function classesWithSections()
     {
-        return ClassModel::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['sections' => fn ($q) => $q->where('tenant_id', Auth::user()->tenant_id)])
+        return ClassModel::with(['sections' => fn ($q) => $q])
             ->orderBy('name')
             ->get();
     }
@@ -91,8 +90,7 @@ class extends Component
             return Student::whereRaw('1 = 0')->paginate(15);
         }
         
-        $query = Student::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['class', 'section', 'academicYear']);
+        $query = Student::with(['class', 'section', 'academicYear']);
 
         if ($this->filterAcademicYear) {
             $query->where('academic_year_id', $this->filterAcademicYear);
@@ -114,8 +112,7 @@ class extends Component
     #[Computed]
     public function promotionHistory()
     {
-        return StudentPromotion::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['student', 'fromClass', 'toClass', 'fromAcademicYear', 'toAcademicYear', 'processedBy'])
+        return StudentPromotion::with(['student', 'fromClass', 'toClass', 'fromAcademicYear', 'toAcademicYear', 'processedBy'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
     }
@@ -144,8 +141,7 @@ class extends Component
             return;
         }
 
-        StudentPromotion::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->promotionIdToDelete)
+        StudentPromotion::findOrFail($this->promotionIdToDelete)
             ->delete();
 
         $this->promotionIdToDelete = null;
@@ -187,7 +183,7 @@ class extends Component
             <div class="grid grid-cols-2 gap-4 mb-6">
                 <flux:select label="{{ __('Academic Year') }}" variant="listbox" wire:model.live="filterAcademicYear">
                     <flux:select.option value="">{{ __('All Academic Years') }}</flux:select.option>
-                    @forelse(AcademicYear::where('tenant_id', Auth::user()->tenant_id)->orderBy('name', 'desc')->get() as $ay)
+                    @forelse(AcademicYear::orderBy('name', 'desc')->get() as $ay)
                         <flux:select.option value="{{ $ay->id }}">{{ $ay->name }}</flux:select.option>
                     @empty
                     @endforelse

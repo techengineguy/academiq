@@ -30,7 +30,7 @@ new class extends Component {
         ]);
 
         Section::create([
-            'tenant_id' => Auth::user()->tenant_id,
+            'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
             'uuid' => Str::uuid(),
             'name' => $validated['name'],
             'class_id' => $validated['class_id'],
@@ -54,7 +54,7 @@ new class extends Component {
             <flux:input label="{{ __('Name') }}" placeholder="{{ __('e.g., Section A') }}" wire:model="name" required />
             <flux:select label="{{ __('Class') }}" variant="listbox" wire:model="class_id" required>
                 <flux:select.option value="">{{ __('Select Class') }}</flux:select.option>
-                @forelse(ClassModel::where('tenant_id', Auth::user()->tenant_id)->get() as $class)
+                @forelse(ClassModel::get() as $class)
                     <flux:select.option value="{{ $class->id }}">{{ $class->name }}</flux:select.option>
                 @empty
                     <flux:select.option value="">{{ __('No Classes Available') }}</flux:select.option>
@@ -66,7 +66,7 @@ new class extends Component {
             <flux:input label="{{ __('Capacity') }}" type="number" placeholder="{{ __('Enter capacity') }}" wire:model="capacity" required />
             <flux:select label="{{ __('Class Teacher') }}" variant="listbox" wire:model="class_teacher_id" searchable>
                 <flux:select.option value="">{{ __('Select Teacher') }}</flux:select.option>
-                @forelse(App\Models\User::where('tenant_id', Auth::user()->tenant_id)->where('role', 'teacher')->get() as $teacher)
+                @forelse(App\Models\User::where('role', 'teacher')->get() as $teacher)
                     <flux:select.option value="{{ $teacher->id }}">{{ $teacher->first_name }} {{ $teacher->last_name }}</flux:select.option>
                 @empty
                     <flux:select.option value="">{{ __('No Teachers Available') }}</flux:select.option>

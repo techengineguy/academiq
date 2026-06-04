@@ -27,8 +27,7 @@ class extends Component {
     #[Computed]
     public function users()
     {
-        return User::where('tenant_id', Auth::user()->tenant_id)
-            ->where('is_active', true)
+        return User::where('is_active', true)
             ->orderBy('first_name')
             ->orderBy('last_name')
             ->get();
@@ -37,8 +36,7 @@ class extends Component {
     #[Computed]
     public function staff()
     {
-        return User::where('tenant_id', Auth::user()->tenant_id)
-            ->whereIn('role', ['admin', 'staff'])
+        return User::whereIn('role', ['admin', 'staff'])
             ->where('is_active', true)
             ->orderBy('first_name')
             ->get();
@@ -56,7 +54,7 @@ class extends Component {
         ]);
 
         Complaint::create([
-            'tenant_id' => Auth::user()->tenant_id,
+            'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
             'uuid' => Str::uuid(),
             'institution_id' => Auth::user()->institution_id,
             'submitted_by' => $validated['submitted_by'],

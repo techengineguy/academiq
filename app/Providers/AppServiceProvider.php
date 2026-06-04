@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use Spatie\Multitenancy\Models\Tenant;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -108,11 +109,13 @@ class AppServiceProvider extends ServiceProvider
             /** @var User|null $user */
             $user = Auth::user();
 
-            if (! $user || ! $user->institution) {
+            $institution = Tenant::current() ?? $user?->institution;
+
+            if (! $user || ! $institution) {
                 return false;
             }
 
-            return $user->institution->hasFeature($feature);
+            return $institution->hasFeature($feature);
         });
     }
 }

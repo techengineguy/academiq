@@ -33,8 +33,7 @@ class extends Component {
     #[Computed]
     public function pendingFees(): float
     {
-        return (float) FeeInvoice::where('tenant_id', Auth::user()->tenant_id)
-            ->whereIn('student_id', $this->parentChildIds())
+        return (float) FeeInvoice::whereIn('student_id', $this->parentChildIds())
             ->whereIn('status', ['pending', 'partial', 'overdue'])
             ->sum('balance');
     }
@@ -44,8 +43,7 @@ class extends Component {
     {
         $classIds = $this->parentChildren()->pluck('class_id')->unique()->all();
 
-        return (int) Assignment::where('tenant_id', Auth::user()->tenant_id)
-            ->whereIn('class_id', $classIds)
+        return (int) Assignment::whereIn('class_id', $classIds)
             ->where('due_date', '>=', now())
             ->count();
     }
@@ -67,8 +65,7 @@ class extends Component {
     #[Computed]
     public function upcomingEvents()
     {
-        return Event::where('tenant_id', Auth::user()->tenant_id)
-            ->where('start_date', '>=', now())
+        return Event::where('start_date', '>=', now())
             ->where('status', 'upcoming')
             ->orderBy('start_date')
             ->limit(4)

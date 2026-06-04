@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -33,8 +33,7 @@ class extends Component {
     #[Computed]
     public function students()
     {
-        return Student::where('tenant_id', Auth::user()->tenant_id)
-            ->where('status', 'active')
+        return Student::where('status', 'active')
             ->with(['user', 'class'])
             ->orderBy('roll_number')
             ->get();
@@ -43,8 +42,7 @@ class extends Component {
     #[Computed]
     public function feeTypes()
     {
-        return FeeType::where('tenant_id', Auth::user()->tenant_id)
-            ->where('status', 'active')
+        return FeeType::where('status', 'active')
             ->orderBy('name')
             ->get();
     }
@@ -89,7 +87,7 @@ class extends Component {
 
         DB::transaction(function () use ($validated, $totalAmount, $discount, $lateFee): void {
             $invoice = FeeInvoice::create([
-                'tenant_id' => Auth::user()->tenant_id,
+                'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
                 'uuid' => Str::uuid(),
                 'student_id' => $validated['student_id'],
                 'invoice_number' => 'INV-' . strtoupper(Str::random(8)),
@@ -106,7 +104,7 @@ class extends Component {
 
             foreach ($validated['items'] as $item) {
                 FeeInvoiceItem::create([
-                    'tenant_id' => Auth::user()->tenant_id,
+                    'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
                     'uuid' => Str::uuid(),
                     'fee_invoice_id' => $invoice->id,
                     'fee_type_id' => $item['fee_type_id'],

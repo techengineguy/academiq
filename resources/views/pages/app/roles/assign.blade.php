@@ -19,8 +19,7 @@ class extends Component {
     #[Computed]
     public function users()
     {
-        return User::where('tenant_id', Auth::user()->tenant_id)
-            ->where('is_active', true)
+        return User::where('is_active', true)
             ->with('roles')
             ->orderBy('first_name')
             ->orderBy('last_name')
@@ -30,15 +29,14 @@ class extends Component {
     #[Computed]
     public function roles()
     {
-        return Role::where('tenant_id', Auth::user()->tenant_id)
-            ->orderBy('name')
+        return Role::orderBy('name')
             ->get();
     }
 
     #[On('assign-user-roles')]
     public function loadUser(int $id): void
     {
-        $this->selectedUser = User::where('tenant_id', Auth::user()->tenant_id)->findOrFail($id);
+        $this->selectedUser = User::findOrFail($id);
         $this->selectedRoles = $this->selectedUser->roles->pluck('id')->map(fn ($id) => (string) $id)->all();
     }
 
@@ -50,7 +48,7 @@ class extends Component {
 
         $pivotData = collect($this->selectedRoles)->mapWithKeys(fn (string $roleId) => [
             $roleId => [
-                'tenant_id' => Auth::user()->tenant_id,
+                'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
                 'uuid' => Str::uuid(),
             ],
         ])->all();

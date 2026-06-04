@@ -21,8 +21,7 @@ class extends Component {
     #[Computed]
     public function roles()
     {
-        return Role::where('tenant_id', Auth::user()->tenant_id)
-            ->withCount(['permissions', 'users'])
+        return Role::withCount(['permissions', 'users'])
             ->orderBy('name')
             ->paginate(15);
     }
@@ -30,14 +29,13 @@ class extends Component {
     #[Computed]
     public function totalRoles(): int
     {
-        return (int) Role::where('tenant_id', Auth::user()->tenant_id)->count();
+        return (int) Role::count();
     }
 
     #[Computed]
     public function totalUsersWithRoles(): int
     {
-        return (int) User::where('tenant_id', Auth::user()->tenant_id)
-            ->whereHas('roles')
+        return (int) User::whereHas('roles')
             ->count();
     }
 
@@ -59,7 +57,7 @@ class extends Component {
             return;
         }
 
-        $role = Role::where('tenant_id', Auth::user()->tenant_id)->findOrFail($this->roleIdToDelete);
+        $role = Role::findOrFail($this->roleIdToDelete);
         $role->permissions()->detach();
         $role->users()->detach();
         $role->delete();

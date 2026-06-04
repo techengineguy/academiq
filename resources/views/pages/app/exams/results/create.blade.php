@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -24,8 +24,7 @@ class extends Component {
     #[Computed]
     public function exams()
     {
-        return Exam::where('tenant_id', Auth::user()->tenant_id)
-            ->orderByDesc('start_date')
+        return Exam::orderByDesc('start_date')
             ->get();
     }
 
@@ -36,8 +35,7 @@ class extends Component {
             return collect();
         }
 
-        return ExamSchedule::where('tenant_id', Auth::user()->tenant_id)
-            ->where('exam_id', $this->exam_id)
+        return ExamSchedule::where('exam_id', $this->exam_id)
             ->with(['class', 'subject'])
             ->orderBy('exam_date')
             ->get();
@@ -63,18 +61,15 @@ class extends Component {
             'exam_schedule_id' => ['required', 'exists:exam_schedules,id'],
         ]);
 
-        $schedule = ExamSchedule::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->exam_schedule_id);
+        $schedule = ExamSchedule::findOrFail($this->exam_schedule_id);
 
-        $students = Student::where('tenant_id', Auth::user()->tenant_id)
-            ->where('class_id', $schedule->class_id)
+        $students = Student::where('class_id', $schedule->class_id)
             ->where('status', 'active')
             ->with('user')
             ->orderBy('roll_number')
             ->get();
 
-        $existingResults = ExamResult::where('tenant_id', Auth::user()->tenant_id)
-            ->where('exam_schedule_id', $this->exam_schedule_id)
+        $existingResults = ExamResult::where('exam_schedule_id', $this->exam_schedule_id)
             ->get()
             ->keyBy('student_id');
 
@@ -106,11 +101,9 @@ class extends Component {
             'rows.*.remarks' => ['nullable', 'string', 'max:500'],
         ]);
 
-        $schedule = ExamSchedule::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->exam_schedule_id);
+        $schedule = ExamSchedule::findOrFail($this->exam_schedule_id);
 
-        $gradeScales = GradeScale::where('tenant_id', Auth::user()->tenant_id)
-            ->orderByDesc('min_percentage')
+        $gradeScales = GradeScale::orderByDesc('min_percentage')
             ->get();
 
         DB::transaction(function () use ($schedule, $gradeScales): void {
@@ -132,7 +125,7 @@ class extends Component {
 
                 ExamResult::updateOrCreate(
                     [
-                        'tenant_id' => Auth::user()->tenant_id,
+                        'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
                         'exam_schedule_id' => $this->exam_schedule_id,
                         'student_id' => $row['student_id'],
                     ],

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\On;
@@ -42,8 +42,7 @@ new class extends Component {
     #[On('edit-student')]
     public function loadStudent(string $uuid): void
     {
-        $this->student = Student::where('tenant_id', Auth::user()->tenant_id)
-            ->where('uuid', $uuid)->firstOrFail();
+        $this->student = Student::where('uuid', $uuid)->firstOrFail();
 
         $this->first_name = $this->student->first_name;
         $this->last_name = $this->student->last_name;
@@ -162,7 +161,7 @@ new class extends Component {
             <div class="grid grid-cols-2 gap-4">
                 <flux:select label="{{ __('Class') }}" variant="listbox" wire:model="class_id">
                     <flux:select.option value="">{{ __('Select Class') }}</flux:select.option>
-                    @forelse(ClassModel::where('tenant_id', Auth::user()->tenant_id)->get() as $class)
+                    @forelse(ClassModel::get() as $class)
                         <flux:select.option value="{{ $class->id }}">{{ $class->name }}</flux:select.option>
                     @empty
                         <flux:select.option value="">{{ __('No Classes Available') }}</flux:select.option>
@@ -171,7 +170,7 @@ new class extends Component {
 
                 <flux:select label="{{ __('Section') }}" variant="listbox" wire:model="section_id">
                     <flux:select.option value="">{{ __('Select Section') }}</flux:select.option>
-                    @forelse(Section::where('tenant_id', Auth::user()->tenant_id)->get() as $section)
+                    @forelse(Section::get() as $section)
                         <flux:select.option value="{{ $section->id }}">{{ $section->name }}</flux:select.option>
                     @empty
                         <flux:select.option value="">{{ __('No Sections Available') }}</flux:select.option>
@@ -182,7 +181,7 @@ new class extends Component {
             <div class="grid grid-cols-2 gap-4">
                 <flux:select label="{{ __('Academic Year') }}" variant="listbox" wire:model="academic_year_id">
                     <flux:select.option value="">{{ __('Select Academic Year') }}</flux:select.option>
-                    @forelse(AcademicYear::where('tenant_id', Auth::user()->tenant_id)->get() as $ay)
+                    @forelse(AcademicYear::get() as $ay)
                         <flux:select.option value="{{ $ay->id }}">{{ $ay->name }}</flux:select.option>
                     @empty
                         <flux:select.option value="">{{ __('No Academic Years') }}</flux:select.option>

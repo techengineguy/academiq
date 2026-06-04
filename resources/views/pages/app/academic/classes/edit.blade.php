@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\On;
@@ -19,8 +19,7 @@ new class extends Component {
     #[On('edit-class')]
     public function loadClass(string $uuid): void
     {
-        $this->class = ClassModel::where('tenant_id', Auth::user()->tenant_id)
-            ->where('uuid', $uuid)->firstOrFail();
+        $this->class = ClassModel::where('uuid', $uuid)->firstOrFail();
 
         $this->name = $this->class->name;
         $this->code = $this->class->code;
@@ -69,7 +68,7 @@ new class extends Component {
             />
             <flux:select label="{{ __('Academic Year') }}" wire:model="academic_year_id" required>
                 <option value="">{{ __('Select Academic Year') }}</option>
-                @forelse(AcademicYear::where('tenant_id', Auth::user()->tenant_id)->where('status', 'active')->get() as $year)
+                @forelse(AcademicYear::where('status', 'active')->get() as $year)
                     <option value="{{ $year->id }}">{{ $year->name }}</option>
                 @empty
                 @endforelse

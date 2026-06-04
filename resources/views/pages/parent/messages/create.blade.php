@@ -28,13 +28,11 @@ class extends Component {
         // Show teachers assigned to parent's children's classes + admins
         $classIds = $this->parentChildren()->pluck('class_id')->unique();
 
-        $teacherIds = ClassSubject::where('tenant_id', Auth::user()->tenant_id)
-            ->whereIn('class_id', $classIds)
+        $teacherIds = ClassSubject::whereIn('class_id', $classIds)
             ->pluck('teacher_id')
             ->unique();
 
-        return User::where('tenant_id', Auth::user()->tenant_id)
-            ->where('is_active', true)
+        return User::where('is_active', true)
             ->where(function ($q) use ($teacherIds) {
                 $q->whereIn('id', $teacherIds)->orWhere('role', 'admin');
             })
@@ -52,7 +50,7 @@ class extends Component {
         ]);
 
         Message::create([
-            'tenant_id' => Auth::user()->tenant_id,
+            'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
             'uuid' => Str::uuid(),
             'sender_id' => Auth::id(),
             'receiver_id' => $validated['receiver_id'],

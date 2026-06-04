@@ -22,8 +22,7 @@ class extends Component {
             return Assignment::where('id', 0)->paginate(10);
         }
 
-        return Assignment::where('tenant_id', Auth::user()->tenant_id)
-            ->where('class_id', $student->class_id)
+        return Assignment::where('class_id', $student->class_id)
             ->with(['subject', 'teacher'])
             ->orderByDesc('due_date')
             ->paginate(10);

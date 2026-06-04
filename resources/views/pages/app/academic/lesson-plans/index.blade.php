@@ -19,8 +19,7 @@ class extends Component {
     #[Computed]
     public function lessonPlans()
     {
-        return LessonPlan::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['teacher', 'class', 'subject'])
+        return LessonPlan::with(['teacher', 'class', 'subject'])
             ->orderBy('lesson_date', 'desc')->paginate(10);
     }
 
@@ -42,8 +41,7 @@ class extends Component {
     {
         if (! $this->lessonPlanIdToDelete) return;
 
-        LessonPlan::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->lessonPlanIdToDelete)->delete();
+        LessonPlan::findOrFail($this->lessonPlanIdToDelete)->delete();
 
         $this->lessonPlanIdToDelete = null;
         unset($this->lessonPlans);

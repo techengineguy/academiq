@@ -22,8 +22,7 @@ class extends Component {
     #[Computed]
     public function allocations()
     {
-        $query = HostelAllocation::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['student.user', 'hostelRoom.hostelBuilding', 'academicYear'])
+        $query = HostelAllocation::with(['student.user', 'hostelRoom.hostelBuilding', 'academicYear'])
             ->orderByDesc('allocated_date');
 
         if ($this->filterStatus !== '') {
@@ -36,7 +35,7 @@ class extends Component {
     #[Computed]
     public function stats(): array
     {
-        $base = HostelAllocation::where('tenant_id', Auth::user()->tenant_id);
+        $base = HostelAllocation::query();
 
         return [
             'total' => (clone $base)->count(),
@@ -71,8 +70,7 @@ class extends Component {
             return;
         }
 
-        $allocation = HostelAllocation::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->allocationIdToDelete);
+        $allocation = HostelAllocation::findOrFail($this->allocationIdToDelete);
 
         // Decrement room occupancy if active
         if ($allocation->status === 'active' && $allocation->hostelRoom) {

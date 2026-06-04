@@ -3,6 +3,7 @@
 use Livewire\Component;
 use App\Models\AcademicYear;
 use Illuminate\Support\Facades\Auth;
+use Spatie\Multitenancy\Models\Tenant;
 use Illuminate\Support\Str;
 use Flux\Flux;
 
@@ -24,10 +25,10 @@ new class extends Component {
             'status' => 'required|in:active,inactive,archived',
         ]);
 
-        $institution = Auth::user()->institution;
+        $institution = Tenant::current();
 
         AcademicYear::create([
-            'tenant_id' => Auth::user()->tenant_id,
+            'tenant_id' => Tenant::current()->uuid,
             'uuid' => Str::uuid(),
             'institution_id' => $institution->id,
             'name' => $validated['name'],

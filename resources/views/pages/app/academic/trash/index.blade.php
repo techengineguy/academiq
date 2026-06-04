@@ -26,35 +26,30 @@ class extends Component {
     #[Computed]
     public function trashedSubjects()
     {
-        return Subject::where('tenant_id', Auth::user()->tenant_id)
-            ->onlyTrashed()->orderBy('deleted_at', 'desc')->paginate(10);
+        return Subject::onlyTrashed()->orderBy('deleted_at', 'desc')->paginate(10);
     }
 
     #[Computed]
     public function trashedClasses()
     {
-        return ClassModel::where('tenant_id', Auth::user()->tenant_id)
-            ->onlyTrashed()->orderBy('deleted_at', 'desc')->paginate(10);
+        return ClassModel::onlyTrashed()->orderBy('deleted_at', 'desc')->paginate(10);
     }
 
     #[Computed]
     public function trashedAcademicYears()
     {
-        return AcademicYear::where('tenant_id', Auth::user()->tenant_id)
-            ->onlyTrashed()->orderBy('deleted_at', 'desc')->paginate(10);
+        return AcademicYear::onlyTrashed()->orderBy('deleted_at', 'desc')->paginate(10);
     }
 
     #[Computed]
     public function trashedLessonPlans()
     {
-        return LessonPlan::where('tenant_id', Auth::user()->tenant_id)
-            ->onlyTrashed()->orderBy('deleted_at', 'desc')->paginate(10);
+        return LessonPlan::onlyTrashed()->orderBy('deleted_at', 'desc')->paginate(10);
     }
 
     public function restoreSubject($id): void
     {
-        $subject = Subject::where('tenant_id', Auth::user()->tenant_id)
-            ->onlyTrashed()->findOrFail($id);
+        $subject = Subject::onlyTrashed()->findOrFail($id);
         $subject->restore();
         
         unset($this->trashedSubjects);
@@ -63,8 +58,7 @@ class extends Component {
 
     public function restoreClass($id): void
     {
-        $class = ClassModel::where('tenant_id', Auth::user()->tenant_id)
-            ->onlyTrashed()->findOrFail($id);
+        $class = ClassModel::onlyTrashed()->findOrFail($id);
         $class->restore();
         
         unset($this->trashedClasses);
@@ -73,8 +67,7 @@ class extends Component {
 
     public function restoreAcademicYear($id): void
     {
-        $year = AcademicYear::where('tenant_id', Auth::user()->tenant_id)
-            ->onlyTrashed()->findOrFail($id);
+        $year = AcademicYear::onlyTrashed()->findOrFail($id);
         $year->restore();
         
         unset($this->trashedAcademicYears);
@@ -83,8 +76,7 @@ class extends Component {
 
     public function restoreLessonPlan($id): void
     {
-        $plan = LessonPlan::where('tenant_id', Auth::user()->tenant_id)
-            ->onlyTrashed()->findOrFail($id);
+        $plan = LessonPlan::onlyTrashed()->findOrFail($id);
         $plan->restore();
         
         unset($this->trashedLessonPlans);
@@ -117,23 +109,19 @@ class extends Component {
         if (! $this->itemIdToDelete || ! $this->itemTypeToDelete) return;
 
         if ($this->itemTypeToDelete === 'subject') {
-            Subject::where('tenant_id', Auth::user()->tenant_id)
-                ->onlyTrashed()->findOrFail($this->itemIdToDelete)->forceDelete();
+            Subject::onlyTrashed()->findOrFail($this->itemIdToDelete)->forceDelete();
             unset($this->trashedSubjects);
             Flux::toast(variant: 'success', text: __('Subject permanently deleted.'));
         } elseif ($this->itemTypeToDelete === 'class') {
-            ClassModel::where('tenant_id', Auth::user()->tenant_id)
-                ->onlyTrashed()->findOrFail($this->itemIdToDelete)->forceDelete();
+            ClassModel::onlyTrashed()->findOrFail($this->itemIdToDelete)->forceDelete();
             unset($this->trashedClasses);
             Flux::toast(variant: 'success', text: __('Class permanently deleted.'));
         } elseif ($this->itemTypeToDelete === 'academic-year') {
-            AcademicYear::where('tenant_id', Auth::user()->tenant_id)
-                ->onlyTrashed()->findOrFail($this->itemIdToDelete)->forceDelete();
+            AcademicYear::onlyTrashed()->findOrFail($this->itemIdToDelete)->forceDelete();
             unset($this->trashedAcademicYears);
             Flux::toast(variant: 'success', text: __('Academic year permanently deleted.'));
         } elseif ($this->itemTypeToDelete === 'lesson-plan') {
-            LessonPlan::where('tenant_id', Auth::user()->tenant_id)
-                ->onlyTrashed()->findOrFail($this->itemIdToDelete)->forceDelete();
+            LessonPlan::onlyTrashed()->findOrFail($this->itemIdToDelete)->forceDelete();
             unset($this->trashedLessonPlans);
             Flux::toast(variant: 'success', text: __('Lesson plan permanently deleted.'));
         }

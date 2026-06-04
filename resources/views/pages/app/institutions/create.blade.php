@@ -60,7 +60,7 @@ class extends Component {
         session()->put('active_institution_id', $institution->id);
         $institution->makeCurrent();
 
-        $this->redirect(route('subscription.plans'), navigate: true);
+        $this->redirect(route('subscription.plans'));
     }
 };
 ?>

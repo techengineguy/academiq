@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -19,8 +19,7 @@ class extends Component {
     #[Computed]
     public function recipients()
     {
-        return User::where('tenant_id', Auth::user()->tenant_id)
-            ->where('id', '!=', Auth::id())
+        return User::where('id', '!=', Auth::id())
             ->where('is_active', true)
             ->orderBy('first_name')
             ->orderBy('last_name')
@@ -53,7 +52,7 @@ class extends Component {
 
         foreach ($validated['receiver_ids'] as $receiverId) {
             Message::create([
-                'tenant_id' => Auth::user()->tenant_id,
+                'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
                 'uuid' => Str::uuid(),
                 'sender_id' => Auth::id(),
                 'receiver_id' => $receiverId,

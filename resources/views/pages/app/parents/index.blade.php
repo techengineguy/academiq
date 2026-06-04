@@ -20,8 +20,7 @@ class extends Component {
     #[Computed]
     public function parents()
     {
-        return StudentParent::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['user', 'students.user'])
+        return StudentParent::with(['user', 'students.user'])
             ->withCount('students')
             ->orderByDesc('created_at')
             ->paginate(10);
@@ -30,7 +29,7 @@ class extends Component {
     #[Computed]
     public function totalParents(): int
     {
-        return (int) StudentParent::where('tenant_id', Auth::user()->tenant_id)->count();
+        return (int) StudentParent::count();
     }
 
     public function confirmDelete(int $id): void
@@ -51,8 +50,7 @@ class extends Component {
             return;
         }
 
-        $parent = StudentParent::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->parentIdToDelete);
+        $parent = StudentParent::findOrFail($this->parentIdToDelete);
 
         // Delete the linked user
         $parent->user?->delete();

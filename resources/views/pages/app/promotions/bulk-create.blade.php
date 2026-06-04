@@ -45,8 +45,7 @@ new class extends Component
             return collect();
         }
 
-        return Section::where('tenant_id', Auth::user()->tenant_id)
-            ->where('class_id', $this->to_class_id)
+        return Section::where('class_id', $this->to_class_id)
             ->get();
     }
 
@@ -66,16 +65,13 @@ new class extends Component
             return;
         }
 
-        $students = Student::where('tenant_id', Auth::user()->tenant_id)
-            ->whereIn('id', $this->studentIds)
+        $students = Student::whereIn('id', $this->studentIds)
             ->get();
 
         // Verify tenant isolation once for shared target values.
-        ClassModel::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->to_class_id);
+        ClassModel::findOrFail($this->to_class_id);
 
-        AcademicYear::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->to_academic_year_id);
+        AcademicYear::findOrFail($this->to_academic_year_id);
 
         $createdCount = 0;
 
@@ -83,7 +79,7 @@ new class extends Component
             DB::transaction(function () use ($student): void {
                 // Create promotion record for each student.
                 StudentPromotion::create([
-                    'tenant_id' => Auth::user()->tenant_id,
+                    'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
                     'uuid' => Str::uuid(),
                     'student_id' => $student->id,
                     'from_class_id' => $student->class_id,
@@ -127,7 +123,7 @@ new class extends Component
         <div class="grid grid-cols-2 gap-4">
             <flux:select label="{{ __('To Class') }}" variant="listbox" wire:model.live="to_class_id" required>
                 <flux:select.option value="">{{ __('Select To Class') }}</flux:select.option>
-                @forelse(ClassModel::where('tenant_id', Auth::user()->tenant_id)->get() as $class)
+                @forelse(ClassModel::get() as $class)
                     <flux:select.option value="{{ $class->id }}">{{ $class->name }}</flux:select.option>
                 @empty
                     <flux:select.option value="">{{ __('No Classes Available') }}</flux:select.option>
@@ -136,7 +132,7 @@ new class extends Component
 
             <flux:select label="{{ __('To Academic Year') }}" variant="listbox" wire:model="to_academic_year_id" required>
                 <flux:select.option value="">{{ __('Select To Year') }}</flux:select.option>
-                @forelse(AcademicYear::where('tenant_id', Auth::user()->tenant_id)->get() as $ay)
+                @forelse(AcademicYear::get() as $ay)
                     <flux:select.option value="{{ $ay->id }}">{{ $ay->name }}</flux:select.option>
                 @empty
                     <flux:select.option value="">{{ __('No Academic Years') }}</flux:select.option>

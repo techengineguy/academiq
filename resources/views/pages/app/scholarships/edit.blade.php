@@ -32,8 +32,7 @@ new class extends Component
     #[On('edit-scholarship')]
     public function loadScholarship(string $uuid)
     {
-        $this->scholarship = Scholarship::where('tenant_id', Auth::user()->tenant_id)
-            ->where('uuid', $uuid)
+        $this->scholarship = Scholarship::where('uuid', $uuid)
             ->firstOrFail();
 
         $this->name = $this->scholarship->name;

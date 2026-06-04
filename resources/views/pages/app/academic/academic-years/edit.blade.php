@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\On;
@@ -17,8 +17,7 @@ new class extends Component {
     #[On('edit-academic-year')]
     public function loadAcademicYear(string $uuid): void
     {
-        $this->academicYear = AcademicYear::where('tenant_id', Auth::user()->tenant_id)
-        ->where('uuid', $uuid)->firstOrFail();
+        $this->academicYear = AcademicYear::where('uuid', $uuid)->firstOrFail();
 
         $this->name       = $this->academicYear->name;
         $this->start_date = $this->academicYear->start_date?->format('Y-m-d') ?? '';
@@ -37,7 +36,7 @@ new class extends Component {
         ]);
 
         $this->academicYear->update([
-            'tenant_id' => Auth::user()->tenant_id,
+            'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
             'name'       => $this->name,
             'start_date' => $this->start_date,
             'end_date'   => $this->end_date,

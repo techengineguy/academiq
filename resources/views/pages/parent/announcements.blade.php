@@ -17,8 +17,7 @@ class extends Component {
     #[Computed]
     public function announcements()
     {
-        return Announcement::where('tenant_id', Auth::user()->tenant_id)
-            ->where('status', 'published')
+        return Announcement::where('status', 'published')
             ->whereIn('target_audience', ['all', 'parents'])
             ->where(fn ($q) => $q->whereNull('expiry_date')->orWhere('expiry_date', '>=', now()))
             ->where(fn ($q) => $q->whereNull('publish_date')->orWhere('publish_date', '<=', now()))

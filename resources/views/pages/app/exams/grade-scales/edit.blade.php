@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -28,7 +28,7 @@ class extends Component {
     #[On('edit-grade-scale')]
     public function loadGradeScale(int $id): void
     {
-        $this->gradeScale = GradeScale::where('tenant_id', Auth::user()->tenant_id)->findOrFail($id);
+        $this->gradeScale = GradeScale::findOrFail($id);
 
         $this->grade = $this->gradeScale->grade;
         $this->min_percentage = (string) $this->gradeScale->min_percentage;

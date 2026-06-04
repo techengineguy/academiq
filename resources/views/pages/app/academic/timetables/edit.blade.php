@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\On;
@@ -27,8 +27,7 @@ new class extends Component {
     #[On('edit-timetable')]
     public function loadTimetable(string $uuid): void
     {
-        $this->timetable = Timetable::where('tenant_id', Auth::user()->tenant_id)
-            ->where('uuid', $uuid)->firstOrFail();
+        $this->timetable = Timetable::where('uuid', $uuid)->firstOrFail();
 
         $this->class_id = $this->timetable->class_id;
         $this->section_id = $this->timetable->section_id;
@@ -80,7 +79,7 @@ new class extends Component {
                 required
             >
                 <flux:select.option value="">{{ __('Select Academic Year') }}</flux:select.option>
-                @forelse(AcademicYear::where('tenant_id', Auth::user()->tenant_id)->where('status', 'active')->get() as $year)
+                @forelse(AcademicYear::where('status', 'active')->get() as $year)
                     <flux:select.option value="{{ $year->id }}">{{ $year->name }}</flux:select.option>
                 @empty
                 @endforelse
@@ -92,7 +91,7 @@ new class extends Component {
                 required
             >
                 <flux:select.option value="">{{ __('Select Class') }}</flux:select.option>
-                @forelse(ClassModel::where('tenant_id', Auth::user()->tenant_id)->get() as $class)
+                @forelse(ClassModel::get() as $class)
                     <flux:select.option value="{{ $class->id }}">{{ $class->name }}</flux:select.option>
                 @empty
                 @endforelse
@@ -104,7 +103,7 @@ new class extends Component {
                 required
             >
                 <flux:select.option value="">{{ __('Select Section') }}</flux:select.option>
-                @forelse(Section::where('tenant_id', Auth::user()->tenant_id)->get() as $section)
+                @forelse(Section::get() as $section)
                     <flux:select.option value="{{ $section->id }}">{{ $section->name }}</flux:select.option>
                 @empty
                 @endforelse
@@ -116,7 +115,7 @@ new class extends Component {
                 required
             >
                 <flux:select.option value="">{{ __('Select Subject') }}</flux:select.option>
-                @forelse(Subject::where('tenant_id', Auth::user()->tenant_id)->get() as $subject)
+                @forelse(Subject::get() as $subject)
                     <flux:select.option value="{{ $subject->id }}">{{ $subject->name }}</flux:select.option>
                 @empty
                 @endforelse
@@ -128,7 +127,7 @@ new class extends Component {
                 required
             >
                 <flux:select.option value="">{{ __('Select Teacher') }}</flux:select.option>
-                @forelse(User::where('tenant_id', Auth::user()->tenant_id)->where('role', 'teacher')->get() as $teacher)
+                @forelse(User::where('role', 'teacher')->get() as $teacher)
                     <flux:select.option value="{{ $teacher->id }}">{{ $teacher->first_name }} {{ $teacher->last_name }}</flux:select.option>
                 @empty
                 @endforelse
@@ -140,7 +139,7 @@ new class extends Component {
                 required
             >
                 <flux:select.option value="">{{ __('Select Time Slot') }}</flux:select.option>
-                @forelse(TimeSlot::where('tenant_id', Auth::user()->tenant_id)->get() as $slot)
+                @forelse(TimeSlot::get() as $slot)
                     <flux:select.option value="{{ $slot->id }}">{{ $slot->start_time->format('H:i') }} - {{ $slot->end_time->format('H:i') }}</flux:select.option>
                 @empty
                 @endforelse

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -18,8 +18,7 @@ class extends Component {
     #[Computed]
     public function staffMembers()
     {
-        return Staff::where('tenant_id', Auth::user()->tenant_id)
-            ->with('user')
+        return Staff::with('user')
             ->orderBy('created_at', 'desc')->paginate(10);
     }
 
@@ -41,8 +40,7 @@ class extends Component {
     {
         if (! $this->staffIdToDelete) return;
 
-        Staff::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->staffIdToDelete)->delete();
+        Staff::findOrFail($this->staffIdToDelete)->delete();
 
         $this->staffIdToDelete = null;
         unset($this->staffMembers);

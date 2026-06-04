@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Spatie\Multitenancy\Models\Tenant;
 use Symfony\Component\HttpFoundation\Response;
 
 class CheckPlanFeature
@@ -16,12 +17,13 @@ class CheckPlanFeature
     public function handle(Request $request, Closure $next, string $feature): Response
     {
         $user = $request->user();
+        $institution = Tenant::current() ?? $user?->institution;
 
-        if (! $user || ! $user->institution) {
+        if (! $user || ! $institution) {
             return redirect()->route('login');
         }
 
-        if (! $user->institution->hasFeature($feature)) {
+        if (! $institution->hasFeature($feature)) {
             $dashboardRoute = match ($user->role) {
                 'student' => 'student.dashboard',
                 'teacher' => 'teacher.dashboard',

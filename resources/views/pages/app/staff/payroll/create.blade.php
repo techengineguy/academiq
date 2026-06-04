@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -37,8 +37,7 @@ class extends Component {
     #[Computed]
     public function employees()
     {
-        return User::where('tenant_id', Auth::user()->tenant_id)
-            ->whereIn('role', ['teacher', 'staff'])
+        return User::whereIn('role', ['teacher', 'staff'])
             ->with(['teacher', 'staff'])
             ->orderBy('first_name')
             ->orderBy('last_name')
@@ -99,7 +98,7 @@ class extends Component {
                 'required',
                 'date_format:Y-m',
                 Rule::unique('payrolls')->where(function ($query) {
-                    $query->where('tenant_id', Auth::user()->tenant_id)
+                    $query
                         ->where('user_id', $this->user_id);
                 }),
             ],
@@ -128,7 +127,7 @@ class extends Component {
 
         DB::transaction(function () use ($validated, $basicSalary, $tax, $allowances, $deductions, $allowancesTotal, $deductionsTotal, $netSalary): void {
             $payroll = Payroll::create([
-                'tenant_id' => Auth::user()->tenant_id,
+                'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
                 'uuid' => Str::uuid(),
                 'user_id' => $validated['user_id'],
                 'month' => $validated['month'],
@@ -145,7 +144,7 @@ class extends Component {
 
             foreach ($allowances as $allowance) {
                 PayrollAllowance::create([
-                    'tenant_id' => Auth::user()->tenant_id,
+                    'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
                     'uuid' => Str::uuid(),
                     'payroll_id' => $payroll->id,
                     'type' => $allowance['type'],
@@ -156,7 +155,7 @@ class extends Component {
 
             foreach ($deductions as $deduction) {
                 PayrollDeduction::create([
-                    'tenant_id' => Auth::user()->tenant_id,
+                    'tenant_id' => \Spatie\Multitenancy\Models\Tenant::current()->uuid,
                     'uuid' => Str::uuid(),
                     'payroll_id' => $payroll->id,
                     'type' => $deduction['type'],
@@ -191,8 +190,7 @@ class extends Component {
             return null;
         }
 
-        $employee = User::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['teacher', 'staff'])
+        $employee = User::with(['teacher', 'staff'])
             ->find($this->user_id);
 
         if (! $employee) {

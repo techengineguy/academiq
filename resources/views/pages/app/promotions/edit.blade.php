@@ -39,8 +39,7 @@ new class extends Component
     #[On('edit-promotion')]
     public function loadPromotion(string $uuid)
     {
-        $this->promotion = StudentPromotion::where('tenant_id', Auth::user()->tenant_id)
-            ->where('uuid', $uuid)
+        $this->promotion = StudentPromotion::where('uuid', $uuid)
             ->firstOrFail();
 
         $this->student_id = $this->promotion->student_id;
@@ -70,8 +69,7 @@ new class extends Component
             return collect();
         }
 
-        return Section::where('tenant_id', Auth::user()->tenant_id)
-            ->where('class_id', $this->from_class_id)
+        return Section::where('class_id', $this->from_class_id)
             ->get();
     }
 
@@ -81,8 +79,7 @@ new class extends Component
             return collect();
         }
 
-        return Section::where('tenant_id', Auth::user()->tenant_id)
-            ->where('class_id', $this->to_class_id)
+        return Section::where('class_id', $this->to_class_id)
             ->get();
     }
 
@@ -101,20 +98,15 @@ new class extends Component
         ]);
 
         // Verify tenant isolation
-        Student::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->student_id);
+        Student::findOrFail($this->student_id);
 
-        ClassModel::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->from_class_id);
+        ClassModel::findOrFail($this->from_class_id);
 
-        ClassModel::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->to_class_id);
+        ClassModel::findOrFail($this->to_class_id);
 
-        AcademicYear::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->from_academic_year_id);
+        AcademicYear::findOrFail($this->from_academic_year_id);
 
-        AcademicYear::where('tenant_id', Auth::user()->tenant_id)
-            ->findOrFail($this->to_academic_year_id);
+        AcademicYear::findOrFail($this->to_academic_year_id);
 
         DB::transaction(function (): void {
             $this->promotion->update([
@@ -129,8 +121,7 @@ new class extends Component
                 'remarks' => $this->remarks,
             ]);
 
-            Student::where('tenant_id', Auth::user()->tenant_id)
-                ->findOrFail($this->student_id)
+            Student::findOrFail($this->student_id)
                 ->update([
                     'class_id' => $this->to_class_id,
                     'section_id' => $this->to_section_id ?: null,
@@ -151,7 +142,7 @@ new class extends Component
         <div class="grid grid-cols-2 gap-4">
             <flux:select label="{{ __('Student') }}" variant="listbox" wire:model="student_id" searchable required>
                 <flux:select.option value="">{{ __('Select Student') }}</flux:select.option>
-                @forelse(Student::where('tenant_id', Auth::user()->tenant_id)->orderBy('first_name')->get() as $student)
+                @forelse(Student::orderBy('first_name')->get() as $student)
                     <flux:select.option value="{{ $student->id }}">{{ $student->first_name }} {{ $student->last_name }}</flux:select.option>
                 @empty
                     <flux:select.option value="">{{ __('No Students Available') }}</flux:select.option>
@@ -168,7 +159,7 @@ new class extends Component
         <div class="grid grid-cols-2 gap-4">
             <flux:select label="{{ __('From Class') }}" variant="listbox" wire:model.live="from_class_id" required>
                 <flux:select.option value="">{{ __('Select From Class') }}</flux:select.option>
-                @forelse(ClassModel::where('tenant_id', Auth::user()->tenant_id)->get() as $class)
+                @forelse(ClassModel::get() as $class)
                     <flux:select.option value="{{ $class->id }}">{{ $class->name }}</flux:select.option>
                 @empty
                     <flux:select.option value="">{{ __('No Classes Available') }}</flux:select.option>
@@ -177,7 +168,7 @@ new class extends Component
 
             <flux:select label="{{ __('To Class') }}" variant="listbox" wire:model.live="to_class_id" required>
                 <flux:select.option value="">{{ __('Select To Class') }}</flux:select.option>
-                @forelse(ClassModel::where('tenant_id', Auth::user()->tenant_id)->get() as $class)
+                @forelse(ClassModel::get() as $class)
                     <flux:select.option value="{{ $class->id }}">{{ $class->name }}</flux:select.option>
                 @empty
                     <flux:select.option value="">{{ __('No Classes Available') }}</flux:select.option>
@@ -208,7 +199,7 @@ new class extends Component
         <div class="grid grid-cols-2 gap-4">
             <flux:select label="{{ __('From Academic Year') }}" variant="listbox" wire:model="from_academic_year_id" required>
                 <flux:select.option value="">{{ __('Select From Year') }}</flux:select.option>
-                @forelse(AcademicYear::where('tenant_id', Auth::user()->tenant_id)->get() as $ay)
+                @forelse(AcademicYear::get() as $ay)
                     <flux:select.option value="{{ $ay->id }}">{{ $ay->name }}</flux:select.option>
                 @empty
                     <flux:select.option value="">{{ __('No Academic Years') }}</flux:select.option>
@@ -217,7 +208,7 @@ new class extends Component
 
             <flux:select label="{{ __('To Academic Year') }}" variant="listbox" wire:model="to_academic_year_id" required>
                 <flux:select.option value="">{{ __('Select To Year') }}</flux:select.option>
-                @forelse(AcademicYear::where('tenant_id', Auth::user()->tenant_id)->get() as $ay)
+                @forelse(AcademicYear::get() as $ay)
                     <flux:select.option value="{{ $ay->id }}">{{ $ay->name }}</flux:select.option>
                 @empty
                     <flux:select.option value="">{{ __('No Academic Years') }}</flux:select.option>

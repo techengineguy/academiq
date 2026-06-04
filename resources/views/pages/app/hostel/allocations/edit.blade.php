@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -29,8 +29,7 @@ class extends Component {
     #[On('edit-allocation')]
     public function loadAllocation(int $id): void
     {
-        $this->allocation = HostelAllocation::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['student.user', 'hostelRoom.hostelBuilding'])
+        $this->allocation = HostelAllocation::with(['student.user', 'hostelRoom.hostelBuilding'])
             ->findOrFail($id);
 
         $this->allocated_date = $this->allocation->allocated_date?->format('Y-m-d') ?? '';

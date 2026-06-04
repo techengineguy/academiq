@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -29,7 +29,7 @@ class extends Component {
     #[On('edit-fee-type')]
     public function loadFeeType(int $id): void
     {
-        $this->feeType = FeeType::where('tenant_id', Auth::user()->tenant_id)->findOrFail($id);
+        $this->feeType = FeeType::findOrFail($id);
 
         $this->name = $this->feeType->name;
         $this->code = $this->feeType->code;

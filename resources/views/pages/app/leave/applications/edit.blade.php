@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
@@ -25,8 +25,7 @@ class extends Component {
     #[On('edit-leave-application')]
     public function loadApplication(int $id): void
     {
-        $this->application = LeaveApplication::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['user', 'leaveType'])
+        $this->application = LeaveApplication::with(['user', 'leaveType'])
             ->findOrFail($id);
 
         $this->status = $this->application->status;
@@ -90,7 +89,7 @@ class extends Component {
                 <div>
                     <p class="text-xs text-gray-500">{{ __('Period') }}</p>
                     <p class="text-gray-900 dark:text-white">
-                        {{ $this->application->start_date?->format('M d') }} – {{ $this->application->end_date?->format('M d, Y') }}
+                        {{ $this->application->start_date?->format('M d') }} � {{ $this->application->end_date?->format('M d, Y') }}
                         <span class="text-xs text-gray-500">({{ $this->application->total_days }} {{ __('days') }})</span>
                     </p>
                 </div>

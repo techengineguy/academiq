@@ -9,6 +9,7 @@ use App\Services\PdfService;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Spatie\Multitenancy\Models\Tenant;
 
 class DocumentController extends Controller
 {
@@ -16,11 +17,10 @@ class DocumentController extends Controller
 
     public function downloadCertificate(int $id): Response
     {
-        $certificate = Certificate::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['student.user', 'student.class', 'issuedBy'])
+        $certificate = Certificate::with(['student.user', 'student.class', 'issuedBy'])
             ->findOrFail($id);
 
-        $institution = Auth::user()->institution;
+        $institution = Tenant::current() ?? Auth::user()?->institution;
 
         $html = view('pdf.certificate', [
             'certificate' => $certificate,
@@ -40,11 +40,10 @@ class DocumentController extends Controller
 
     public function downloadIdCard(int $id): Response
     {
-        $idCard = IdCard::where('tenant_id', Auth::user()->tenant_id)
-            ->with(['user.student.class', 'user.teacher', 'user.staff'])
+        $idCard = IdCard::with(['user.student.class', 'user.teacher', 'user.staff'])
             ->findOrFail($id);
 
-        $institution = Auth::user()->institution;
+        $institution = Tenant::current() ?? Auth::user()?->institution;
 
         $html = view('pdf.id-card', [
             'idCard' => $idCard,
@@ -64,10 +63,7 @@ class DocumentController extends Controller
 
     public function downloadResultSheet(int $studentId, int $examId): Response
     {
-        $tenantId = Auth::user()->tenant_id;
-
-        $results = ExamResult::where('tenant_id', $tenantId)
-            ->where('student_id', $studentId)
+        $results = ExamResult::where('student_id', $studentId)
             ->whereHas('examSchedule', fn ($q) => $q->where('exam_id', $examId))
             ->with(['examSchedule.subject', 'examSchedule.exam.academicYear'])
             ->get();
@@ -76,7 +72,7 @@ class DocumentController extends Controller
 
         $student = $results->first()->student()->with(['user', 'class', 'section'])->first();
         $exam = $results->first()->examSchedule?->exam;
-        $institution = Auth::user()->institution;
+        $institution = Tenant::current() ?? Auth::user()?->institution;
 
         $html = view('pdf.result-sheet', [
             'results' => $results,
