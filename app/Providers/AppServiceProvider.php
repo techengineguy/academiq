@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Http\Middleware\RequiresTenant;
 use App\Models\Announcement;
 use App\Models\User;
 use App\Observers\ActivityObserver;
@@ -19,6 +20,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use Livewire\Livewire;
 use Spatie\Multitenancy\Models\Tenant;
 
 class AppServiceProvider extends ServiceProvider
@@ -33,6 +35,8 @@ class AppServiceProvider extends ServiceProvider
         $this->configureDefaults();
         $this->registerMacros();
         $this->registerBladeDirectives();
+
+        Livewire::addPersistentMiddleware([RequiresTenant::class]);
 
         User::observe(UserObserver::class);
         Announcement::observe(AnnouncementObserver::class);

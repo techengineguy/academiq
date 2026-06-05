@@ -22,4 +22,8 @@ Route::domain(config('domain.app'))->middleware(['auth', 'verified'])->group(fun
             ),
         )
         ->name('security.edit');
+
+    Route::livewire('settings/institution', 'pages::settings.institution')
+        ->middleware(['tenant'])
+        ->name('institution.edit');
 });
