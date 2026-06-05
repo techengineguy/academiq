@@ -112,7 +112,7 @@ class extends Component {
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Manage assignments across all classes.') }}</p>
         </div>
 
-        <flux:button class="button" x-on:click="$tsui.open.slide('create-assignment')" icon="plus">
+        <flux:button class="button w-fit" x-on:click="$tsui.open.slide('create-assignment')" icon="plus">
             {{ __('New Assignment') }}
         </flux:button>
     </div>

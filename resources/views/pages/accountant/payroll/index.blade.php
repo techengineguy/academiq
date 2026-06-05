@@ -67,7 +67,7 @@ class extends Component {
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Manage payroll records, allowances, and deductions in one place.') }}</p>
         </div>
 
-        <flux:button class="button" x-on:click="$tsui.open.slide('create-payroll')" icon="plus">
+        <flux:button class="button w-fit" x-on:click="$tsui.open.slide('create-payroll')" icon="plus">
             {{ __('New Payroll') }}
         </flux:button>
     </div>

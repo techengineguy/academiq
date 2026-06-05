@@ -239,7 +239,7 @@ new #[Title('Institution Settings')] class extends Component {
 
             @if ($this->canEdit)
                 <div class="flex items-center gap-4 pt-4">
-                    <flux:button variant="primary" type="submit">
+                    <flux:button variant="primary" type="submit" class="button">
                         {{ __('Save Changes') }}
                     </flux:button>
                 </div>

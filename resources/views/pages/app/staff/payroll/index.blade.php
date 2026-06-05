@@ -58,13 +58,13 @@ class extends Component {
 };
 ?>
 <div class="space-y-6">
-    <div class="flex items-start justify-between">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Payroll') }}</h1>
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Manage payroll records, allowances, and deductions in one place.') }}</p>
         </div>
 
-        <flux:button class="button" x-on:click="$tsui.open.slide('create-payroll')" icon="plus">
+        <flux:button class="button w-fit" x-on:click="$tsui.open.slide('create-payroll')" icon="plus">
             {{ __('New Payroll') }}
         </flux:button>
     </div>

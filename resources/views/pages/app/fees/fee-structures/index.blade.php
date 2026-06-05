@@ -94,7 +94,7 @@ class extends Component {
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Define fee amounts per class and academic year.') }}</p>
         </div>
 
-        <flux:button class="button" x-on:click="$tsui.open.slide('create-fee-structure')" icon="plus">
+        <flux:button class="button w-fit" x-on:click="$tsui.open.slide('create-fee-structure')" icon="plus">
             {{ __('New Structure') }}
         </flux:button>
     </div>

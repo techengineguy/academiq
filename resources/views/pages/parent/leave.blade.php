@@ -109,12 +109,12 @@ class extends Component {
 ?>
 <div>
 <div class="space-y-6 py-4">
-    <div class="flex items-start justify-between">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Apply Leave for Child') }}</h1>
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Submit leave applications on behalf of your children.') }}</p>
         </div>
-        <flux:button class="button" x-on:click="$tsui.open.slide('apply-leave')" icon="plus">
+        <flux:button class="button w-fit" x-on:click="$tsui.open.slide('apply-leave')" icon="plus">
             {{ __('Apply for Leave') }}
         </flux:button>
     </div>

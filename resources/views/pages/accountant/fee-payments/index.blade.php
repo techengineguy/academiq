@@ -108,7 +108,7 @@ class extends Component {
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Record and track fee payments from students.') }}</p>
         </div>
 
-        <flux:button class="button" x-on:click="$tsui.open.slide('create-fee-payment')" icon="plus">
+        <flux:button class="button w-fit" x-on:click="$tsui.open.slide('create-fee-payment')" icon="plus">
             {{ __('Record Payment') }}
         </flux:button>
     </div>

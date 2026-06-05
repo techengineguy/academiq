@@ -158,7 +158,7 @@ class extends Component
         </div>
 
         <div class="flex gap-3">
-            <flux:button wire:click="confirm" variant="primary" class="flex-1">
+            <flux:button wire:click="confirm" variant="primary" class="flex-1 button">
                 Confirm Subscription
             </flux:button>
             <flux:button wire:click="cancel" variant="ghost">

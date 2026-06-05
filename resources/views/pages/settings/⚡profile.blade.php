@@ -106,7 +106,7 @@ new #[Title('Profile settings')] class extends Component {
             </div>
 
             <div class="flex items-center gap-4">
-                <flux:button variant="primary" color="blue" type="submit" data-test="update-profile-button">
+                <flux:button variant="primary" color="blue" type="submit" class="button" data-test="update-profile-button">
                     {{ __('Save') }}
                 </flux:button>
             </div>

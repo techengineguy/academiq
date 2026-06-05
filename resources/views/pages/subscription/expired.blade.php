@@ -100,7 +100,7 @@ class extends Component
             <p class="text-sm text-indigo-700 dark:text-indigo-300 mb-4">
                 Get 14 days of full access, no payment required.
             </p>
-            <flux:button variant="primary" href="{{ route('subscription.plans') }}" class="w-full">
+            <flux:button variant="primary" href="{{ route('subscription.plans') }}" class="w-full button">
                 Start Free Trial
             </flux:button>
         </div>

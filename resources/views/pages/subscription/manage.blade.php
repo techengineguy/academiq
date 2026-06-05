@@ -62,11 +62,16 @@ class extends Component {
 }; ?>
 
 <div class="py-4">
-    <flux:heading size="lg" class="mb-6">Subscription Management</flux:heading>
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Subscription Management') }}</h1>
+            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Manage your subscription plans and billing information.') }}</p>
+        </div>
+    </div>
 
     @if($this->currentSubscription())
         {{-- Current Subscription Card --}}
-        <div class="bg-white rounded-xl border border-zinc-200 p-6 mb-8">
+        <div class="bg-white rounded-xl border border-zinc-200 p-6 mt-4 mb-8">
             <div class="flex items-start justify-between mb-4">
                 <div>
                     <h3 class="text-lg font-semibold text-zinc-900">Current Plan</h3>
@@ -171,7 +176,7 @@ class extends Component {
             <flux:icon name="exclamation-triangle" class="w-16 h-16 text-yellow-500 mx-auto mb-4" />
             <h3 class="text-lg font-semibold text-zinc-900 mb-2">No Active Subscription</h3>
             <p class="text-zinc-600 mb-6">You don't have an active subscription. Choose a plan to get started.</p>
-            <flux:button href="{{ route('subscription.plans') }}" variant="primary">
+            <flux:button href="{{ route('subscription.plans') }}" variant="primary" class="button">
                 View Plans
             </flux:button>
         </div>

@@ -53,12 +53,12 @@ class extends Component {
 
 <div class="py-4 space-y-6">
     <x-dialog/>
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Timetables') }}</h1>
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Manage your timetable entries.') }}</p>
         </div>
-        <flux:button class="button" x-on:click="$tsui.open.slide('create-timetable')" icon="plus">
+        <flux:button class="button w-fit" x-on:click="$tsui.open.slide('create-timetable')" icon="plus">
             {{ __('New Timetable') }}
         </flux:button>
     </div>

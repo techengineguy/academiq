@@ -71,7 +71,7 @@ class extends Component {
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Issue and manage student certificates.') }}</p>
         </div>
 
-        <flux:button class="button" x-on:click="$tsui.open.slide('create-certificate')" icon="plus">
+        <flux:button class="button w-fit" x-on:click="$tsui.open.slide('create-certificate')" icon="plus">
             {{ __('Issue Certificate') }}
         </flux:button>
     </div>

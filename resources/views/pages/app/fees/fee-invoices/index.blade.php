@@ -105,7 +105,7 @@ class extends Component {
         </div>
 
         @hasPermission('create-invoices')
-        <flux:button class="button" x-on:click="$tsui.open.slide('create-fee-invoice')" icon="plus">
+        <flux:button class="button w-fit" x-on:click="$tsui.open.slide('create-fee-invoice')" icon="plus">
             {{ __('New Invoice') }}
         </flux:button>
         @endhasPermission

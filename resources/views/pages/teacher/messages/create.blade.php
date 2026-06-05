@@ -72,7 +72,7 @@ class extends Component {
 ?>
 <div>
 <div class="space-y-6 py-4">
-    <div class="flex items-start justify-between">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Compose Message') }}</h1>
         </div>

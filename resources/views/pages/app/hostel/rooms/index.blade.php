@@ -95,7 +95,7 @@ class extends Component {
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Manage hostel rooms and their occupancy.') }}</p>
         </div>
 
-        <flux:button class="button" x-on:click="$tsui.open.slide('create-room')" icon="plus">
+        <flux:button class="button w-fit" x-on:click="$tsui.open.slide('create-room')" icon="plus">
             {{ __('New Room') }}
         </flux:button>
     </div>

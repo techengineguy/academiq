@@ -116,7 +116,7 @@ class extends Component {
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Manage accountants and send invitations.') }}</p>
         </div>
         @if(\Spatie\Multitenancy\Models\Tenant::current()?->hasFeature('accountant_management'))
-        <flux:button class="button" x-on:click="$tsui.open.slide('invite-accountant')" icon="envelope">
+        <flux:button class="button w-fit" x-on:click="$tsui.open.slide('invite-accountant')" icon="envelope">
             {{ __('Invite Accountant') }}
         </flux:button>
         @endif    </div>

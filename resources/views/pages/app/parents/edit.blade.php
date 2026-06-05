@@ -166,7 +166,7 @@ class extends Component {
 ?>
 <div class="space-y-6">
     @if($this->parent)
-        <div class="flex items-start justify-between">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
                 <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Edit Parent') }}</h1>
                 <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Update parent information and child links.') }}</p>
