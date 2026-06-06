@@ -69,10 +69,15 @@ new class extends Component {
             </flux:select>
 
             <!-- Is Current Field -->
-            <flux:checkbox 
-                label="{{ __('Set as Current Academic Year') }}" 
-                wire:model="is_current"
-            />
+            <div>
+                <flux:checkbox 
+                    label="{{ __('Set as Current Academic Year') }}" 
+                    wire:model="is_current"
+                />
+                <flux:text class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    {{ __('Setting this as current will automatically unset any other current academic year.') }}
+                </flux:text>
+            </div>
 
             <!-- Action Buttons -->
             <div class="flex gap-3 pt-4">

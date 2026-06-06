@@ -20,6 +20,12 @@ class extends Component {
     public ?int $invoiceIdToDelete = null;
 
     #[Computed]
+    public function hasFeeTypesAndStudents(): bool
+    {
+        return App\Models\FeeType::exists() && App\Models\Student::exists();
+    }
+
+    #[Computed]
     public function invoices()
     {
         $query = FeeInvoice::with(['student.user', 'student.class'])
@@ -97,6 +103,28 @@ class extends Component {
 ?>
 <div class="space-y-6 py-4">
     <x-dialog />
+
+    @if(!$this->hasFeeTypesAndStudents)
+        <div class="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/20">
+            <div class="flex items-start gap-3">
+                <flux:icon name="information-circle" class="h-5 w-5 shrink-0 text-blue-600 dark:text-blue-400" />
+                <div class="flex-1">
+                    <h3 class="text-sm font-semibold text-blue-900 dark:text-blue-100">{{ __('Fee Types and Students Required') }}</h3>
+                    <p class="mt-1 text-sm text-blue-700 dark:text-blue-300">
+                        {{ __('You need to create fee types and have students enrolled before generating invoices. Fee types define what charges to bill students for.') }}
+                    </p>
+                    <div class="mt-3 flex gap-2">
+                        <flux:button href="{{ route('fee-types.index') }}" wire:navigate variant="primary" size="sm">
+                            {{ __('Manage Fee Types') }}
+                        </flux:button>
+                        <flux:button href="{{ route('students.index') }}" wire:navigate variant="primary" size="sm">
+                            {{ __('View Students') }}
+                        </flux:button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 
     <div class="flex items-start justify-between">
         <div>

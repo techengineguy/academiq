@@ -71,10 +71,15 @@ new class extends Component {
                 <flux:select.option value="active">{{ __('Active') }}</flux:select.option>
                 <flux:select.option value="inactive">{{ __('Inactive') }}</flux:select.option>
             </flux:select>
-            <flux:checkbox
-                wire:model="is_current"
-                label="{{ __('Set as current academic year') }}"
-            />
+            <div>
+                <flux:checkbox
+                    wire:model="is_current"
+                    label="{{ __('Set as current academic year') }}"
+                />
+                <flux:text class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    {{ __('Setting this as current will automatically unset any other current academic year.') }}
+                </flux:text>
+            </div>
             <div class="flex gap-3 pt-2">
                 <flux:button type="submit" class="button" variant="primary">{{ __('Update') }}</flux:button>
                 <flux:button x-on:click="$tsui.close.slide('edit-academic-year')" variant="subtle">{{ __('Cancel') }}</flux:button>

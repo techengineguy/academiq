@@ -5,6 +5,7 @@ use Livewire\Attributes\Title;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use App\Models\Timetable;
+use App\Models\TimeSlot;
 use Livewire\WithPagination;
 use Flux\Flux;
 use TallStackUi\Traits\Interactions;
@@ -21,6 +22,12 @@ class extends Component {
         return Timetable::with(['class', 'subject', 'teacher', 'timeSlot'])
             ->orderBy('day', 'asc')
             ->paginate(10);
+    }
+
+    #[Computed]
+    public function hasTimeSlots(): bool
+    {
+        return TimeSlot::exists();
     }
 
     public $timetableIdToDelete = null;
@@ -62,6 +69,33 @@ class extends Component {
             {{ __('New Timetable') }}
         </flux:button>
     </div>
+
+    @if(!$this->hasTimeSlots)
+        <div class="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-700/50 dark:bg-blue-900/20">
+            <div class="flex items-start gap-3">
+                <flux:icon name="information-circle" class="h-5 w-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
+                <div class="flex-1">
+                    <h3 class="text-sm font-semibold text-blue-800 dark:text-blue-200">
+                        {{ __('Time Slots Required') }}
+                    </h3>
+                    <p class="mt-1 text-sm text-blue-700 dark:text-blue-300">
+                        {{ __('Before creating timetables, you need to create time slots first. Time slots define the periods during which classes are held.') }}
+                    </p>
+                    <div class="mt-3">
+                        <flux:button 
+                            href="{{ route('time-slots.index') }}" 
+                            wire:navigate
+                            size="sm" 
+                            variant="primary"
+                            icon="clock"
+                        >
+                            {{ __('Go to Time Slots') }}
+                        </flux:button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 
     <flux:card>
         @if($this->timetables->count())

@@ -29,6 +29,15 @@ new class extends Component
 
     public $remarks = '';
 
+    public function mount(): void
+    {
+        // Set current academic year as default
+        $currentYear = AcademicYear::where('is_current', true)->first();
+        if ($currentYear) {
+            $this->academic_year_id = $currentYear->id;
+        }
+    }
+
     public function save()
     {
         $validated = $this->validate([

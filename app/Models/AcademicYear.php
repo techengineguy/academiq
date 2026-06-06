@@ -2,14 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use App\Models\Institution;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Concerns\BelongsToTenant;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AcademicYear extends Model
 {
-    use SoftDeletes, BelongsToTenant;
+    use BelongsToTenant, SoftDeletes;
 
     protected $fillable = [
         'tenant_id',
@@ -27,6 +26,19 @@ class AcademicYear extends Model
         'end_date' => 'date',
         'is_current' => 'boolean',
     ];
+
+    protected static function booted()
+    {
+        // Automatically handle setting a new current academic year
+        static::saving(function ($academicYear) {
+            if ($academicYear->is_current) {
+                // Remove is_current from all other academic years in the same institution
+                static::where('institution_id', $academicYear->institution_id)
+                    ->where('id', '!=', $academicYear->id)
+                    ->update(['is_current' => false]);
+            }
+        });
+    }
 
     public function institution()
     {
@@ -70,7 +82,7 @@ class AcademicYear extends Model
 
     public function admissionApplications()
     {
-        return $this->hasMany(AdmissionApplication::class);
+        return $this->admissionApplications(AdmissionApplication::class);
     }
 
     public function studentPromotions()
@@ -86,5 +98,21 @@ class AcademicYear extends Model
     public function academicCalendars()
     {
         return $this->hasMany(AcademicCalendar::class);
+    }
+
+    /**
+     * Scope a query to only include the current academic year.
+     */
+    public function scopeCurrent($query)
+    {
+        return $query->where('is_current', true);
+    }
+
+    /**
+     * Scope a query to only include active academic years.
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
     }
 }

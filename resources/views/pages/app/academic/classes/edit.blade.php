@@ -66,10 +66,10 @@ new class extends Component {
                 wire:model="code"
                 required
             />
-            <flux:select label="{{ __('Academic Year') }}" wire:model="academic_year_id" required>
-                <option value="">{{ __('Select Academic Year') }}</option>
+            <flux:select label="{{ __('Academic Year') }}" variant="listbox" wire:model="academic_year_id" required>
+                <flux:select.option value="">{{ __('Select Academic Year') }}</flux:select.option>
                 @forelse(AcademicYear::where('status', 'active')->get() as $year)
-                    <option value="{{ $year->id }}">{{ $year->name }}</option>
+                    <flux:select.option value="{{ $year->id }}">{{ $year->name }}</flux:select.option>
                 @empty
                 @endforelse
             </flux:select>
@@ -80,7 +80,7 @@ new class extends Component {
                 min="1"
                 required
             />
-            <flux:select label="{{ __('Status') }}" wire:model="status" required>
+            <flux:select label="{{ __('Status') }}" variant="listbox" wire:model="status" required>
                 <flux:select.option value="active">{{ __('Active') }}</flux:select.option>
                 <flux:select.option value="inactive">{{ __('Inactive') }}</flux:select.option>
             </flux:select>

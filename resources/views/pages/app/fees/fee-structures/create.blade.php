@@ -21,6 +21,15 @@ class extends Component {
     public string $frequency = 'annually';
     public string $due_date = '';
 
+    public function mount(): void
+    {
+        // Set current academic year as default
+        $currentYear = AcademicYear::where('is_current', true)->first();
+        if ($currentYear) {
+            $this->academic_year_id = (string) $currentYear->id;
+        }
+    }
+
     #[Computed]
     public function feeTypes()
     {

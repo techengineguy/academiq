@@ -50,7 +50,7 @@ class extends Component {
 };
 ?>
 
-<div class="space-y-6">
+<div class="space-y-6 py-4">
     <x-dialog/>
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>

@@ -5,6 +5,7 @@ use Livewire\Attributes\Title;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use App\Models\Section;
+use App\Models\ClassModel;
 use Livewire\WithPagination;
 use Flux\Flux;
 use TallStackUi\Traits\Interactions;
@@ -15,11 +16,33 @@ class extends Component {
     use WithPagination;
     use Interactions;
 
+    public string $search = '';
+
+    #[Computed]
+    public function hasClasses(): bool
+    {
+        return ClassModel::exists();
+    }
+
     #[Computed]
     public function sections()
     {
         return Section::with('class')
-            ->orderBy('name', 'asc')->paginate(10);
+            ->when($this->search, function ($query) {
+                $query->where(function ($q) {
+                    $q->where('name', 'like', "%{$this->search}%")
+                      ->orWhereHas('class', function ($q2) {
+                          $q2->where('name', 'like', "%{$this->search}%");
+                      });
+                });
+            })
+            ->orderBy('name', 'asc')
+            ->paginate(10);
+    }
+
+    public function updatedSearch(): void
+    {
+        $this->resetPage();
     }
 
     public $sectionIdToDelete = null;
@@ -52,6 +75,24 @@ class extends Component {
 
 <div class="py-4 space-y-6">
     <x-dialog/>
+
+    @if(!$this->hasClasses)
+        <div class="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/20">
+            <div class="flex items-start gap-3">
+                <flux:icon name="information-circle" class="h-5 w-5 shrink-0 text-blue-600 dark:text-blue-400" />
+                <div class="flex-1">
+                    <h3 class="text-sm font-semibold text-blue-900 dark:text-blue-100">{{ __('Classes Required') }}</h3>
+                    <p class="mt-1 text-sm text-blue-700 dark:text-blue-300">
+                        {{ __('You need to create at least one class before creating sections. Sections are used to divide classes into smaller groups.') }}
+                    </p>
+                    <flux:button href="{{ route('classes.index') }}" wire:navigate variant="primary" size="sm" class="mt-3">
+                        {{ __('Go to Classes') }}
+                    </flux:button>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Sections') }}</h1>
@@ -63,6 +104,14 @@ class extends Component {
     </div>
 
     <flux:card>
+        <div class="mb-4">
+            <flux:input 
+                wire:model.live.debounce.300ms="search" 
+                placeholder="{{ __('Search by section name or class...') }}" 
+                icon="magnifying-glass"
+            />
+        </div>
+
         @if($this->sections->count())
             <flux:table :paginate="$this->sections">
                 <flux:table.columns>

@@ -21,6 +21,12 @@ class extends Component {
     public ?int $scheduleIdToDelete = null;
 
     #[Computed]
+    public function hasExams(): bool
+    {
+        return Exam::exists();
+    }
+
+    #[Computed]
     public function schedules()
     {
         $query = ExamSchedule::with(['exam', 'class', 'subject'])
@@ -87,6 +93,23 @@ class extends Component {
 ?>
 <div class="space-y-6 py-4">
     <x-dialog />
+
+    @if(!$this->hasExams)
+        <div class="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/20">
+            <div class="flex items-start gap-3">
+                <flux:icon name="information-circle" class="h-5 w-5 shrink-0 text-blue-600 dark:text-blue-400" />
+                <div class="flex-1">
+                    <h3 class="text-sm font-semibold text-blue-900 dark:text-blue-100">{{ __('Exam Required') }}</h3>
+                    <p class="mt-1 text-sm text-blue-700 dark:text-blue-300">
+                        {{ __('You need to create at least one exam before creating exam schedules. Schedules define the subjects, dates, and times for each exam.') }}
+                    </p>
+                    <flux:button href="{{ route('exams.index') }}" wire:navigate variant="primary" size="sm" class="mt-3">
+                        {{ __('Go to Exams') }}
+                    </flux:button>
+                </div>
+            </div>
+        </div>
+    @endif
 
     <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>

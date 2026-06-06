@@ -15,10 +15,25 @@ class extends Component {
     use WithPagination;
     use Interactions;
 
+    public string $search = '';
+
     #[Computed]
     public function classes()
     {
-        return ClassModel::orderBy('name', 'asc')->paginate(10);
+        return ClassModel::query()
+            ->when($this->search, function ($query) {
+                $query->where(function ($q) {
+                    $q->where('name', 'like', "%{$this->search}%")
+                      ->orWhere('code', 'like', "%{$this->search}%");
+                });
+            })
+            ->orderBy('name', 'asc')
+            ->paginate(10);
+    }
+
+    public function updatedSearch(): void
+    {
+        $this->resetPage();
     }
 
     public $classIdToDelete = null;
@@ -62,6 +77,14 @@ class extends Component {
     </div>
 
     <flux:card>
+        <div class="mb-4">
+            <flux:input 
+                wire:model.live.debounce.300ms="search" 
+                placeholder="{{ __('Search by name or code...') }}" 
+                icon="magnifying-glass"
+            />
+        </div>
+
         @if($this->classes->count())
             <flux:table :paginate="$this->classes">
                 <flux:table.columns>

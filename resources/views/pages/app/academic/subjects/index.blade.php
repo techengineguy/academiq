@@ -15,10 +15,26 @@ class extends Component {
     use WithPagination;
     use Interactions;
 
+    public string $search = '';
+
     #[Computed]
     public function subjects()
     {
-        return Subject::orderBy('name', 'asc')->paginate(10);
+        return Subject::query()
+            ->when($this->search, function ($query) {
+                $query->where(function ($q) {
+                    $q->where('name', 'like', "%{$this->search}%")
+                      ->orWhere('code', 'like', "%{$this->search}%")
+                      ->orWhere('type', 'like', "%{$this->search}%");
+                });
+            })
+            ->orderBy('name', 'asc')
+            ->paginate(10);
+    }
+
+    public function updatedSearch(): void
+    {
+        $this->resetPage();
     }
 
     public $subjectIdToDelete = null;
@@ -62,6 +78,14 @@ class extends Component {
     </div>
 
     <flux:card>
+        <div class="mb-4">
+            <flux:input 
+                wire:model.live.debounce.300ms="search" 
+                placeholder="{{ __('Search by name, code, or type...') }}" 
+                icon="magnifying-glass"
+            />
+        </div>
+
         @if($this->subjects->count())
             <flux:table :paginate="$this->subjects">
                 <flux:table.columns>
